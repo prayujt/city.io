@@ -4,15 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"log"
 	"net/http"
 	"os"
+	"time"
 )
+
+var db *sql.DB
 
 func main() {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		panic(err)
+		log.Fatal("Error loading .env file")
 	}
 
 	dbUrl := fmt.Sprintf("%s:%s@tcp(%s)/%s",
@@ -21,12 +26,23 @@ func main() {
 		os.Getenv("MYSQL_HOST"),
 		os.Getenv("MYSQL_DB_NAME"))
 
-	_, err = sql.Open("mysql", dbUrl)
+	db, err = sql.Open("mysql", dbUrl)
 
 	if err != nil {
-		panic(err)
+		log.Fatal("Couldn't connect to db")
 	}
 
-	fmt.Println("Serving at localhost:8000...")
-	http.ListenAndServe(":8000", nil)
+	log.Println(fmt.Sprintf("Serving at localhost:%s...", os.Getenv("API_PORT")))
+	router := mux.NewRouter()
+
+	// include other file routes here, passing in the router
+
+	server := &http.Server{
+		Handler:      router,
+		Addr:         fmt.Sprintf("127.0.0.1:%s", os.Getenv("API_PORT")),
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	log.Fatal(server.ListenAndServe())
 }
