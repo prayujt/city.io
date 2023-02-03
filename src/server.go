@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+    "github.com/rs/cors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -38,8 +39,15 @@ func main() {
 	// include other file routes here, passing in the router
 	handleLoginRoutes(router)
 
+    c := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowCredentials: true,
+    })
+
+    handler := c.Handler(router)
+
 	server := &http.Server{
-		Handler:      router,
+		Handler:      handler,
 		Addr:         fmt.Sprintf("0.0.0.0:%s", os.Getenv("API_PORT")),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
