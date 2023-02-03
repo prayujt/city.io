@@ -23,7 +23,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	_, err = db.Exec("INSERT INTO Accounts (username, password) VALUES (?, ?, ?)", acc.Username, acc.Password)
+	_, err = db.Exec("INSERT INTO Accounts (username, password) VALUES (?, ?)", acc.Username, acc.Password)
 	if err != nil {
 		fmt.Fprintf(response, "false")
 	} else {
