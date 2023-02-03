@@ -38,13 +38,14 @@ body {
   -ms-transform: scale(1);
   z-index: 5;
   max-width: 330px;
+  padding-top: 15px;
 }
 .box.back {
   transform: scale(.95);
   -webkit-transform: scale(.95);
   -ms-transform: scale(.95);
   top: -20px;
-  opacity: .8;
+  opacity: 0.8;
   z-index: -1;
 }
 .box:before {
@@ -60,6 +61,7 @@ body {
   -webkit-transform: scale(.95);
   -ms-transform: scale(.95);
   z-index: -1;
+  opacity: 0;
 }
 .login-wrapper .example-form {
   min-width: 100%;
@@ -78,7 +80,7 @@ body {
 }
 .login-wrapper mat-card-header mat-card-title {
   font-size: 30px;
-  margin: 0;
+  margin-right: 25px;
 }
 .login-wrapper .mat-card {
   padding: 40px 70px 50px;
