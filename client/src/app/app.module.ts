@@ -10,12 +10,14 @@ import { AngularMaterialModule } from './angular-material.module';
 import { RegisterComponent } from './components/register/register.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { GameComponent } from './components/game/game.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +25,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     AngularMaterialModule,
     FlexLayoutModule,
-    FormsModule, ReactiveFormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
