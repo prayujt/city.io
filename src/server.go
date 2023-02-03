@@ -32,7 +32,7 @@ func main() {
 		log.Fatal("Couldn't connect to db")
 	}
 
-	log.Println(fmt.Sprintf("Serving at localhost:%s...", os.Getenv("API_PORT")))
+	log.Println(fmt.Sprintf("Serving at %s:%s...", os.Getenv("API_HOST"), os.Getenv("API_PORT")))
 	router := mux.NewRouter()
 
 	// include other file routes here, passing in the router
@@ -40,7 +40,7 @@ func main() {
 
 	server := &http.Server{
 		Handler:      router,
-		Addr:         fmt.Sprintf("127.0.0.1:%s", os.Getenv("API_PORT")),
+		Addr:         fmt.Sprintf("0.0.0.0:%s", os.Getenv("API_PORT")),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
