@@ -36,6 +36,7 @@ func main() {
 	router := mux.NewRouter()
 
 	// include other file routes here, passing in the router
+	handleLoginRoutes(router)
 
 	server := &http.Server{
 		Handler:      router,
