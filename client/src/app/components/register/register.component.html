@@ -6,16 +6,16 @@
       <form class="example-form">
         <mat-card-content>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Username">
+            <input matInput #username placeholder="Username">
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Email">
+            <input matInput #password placeholder="Password">
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Password">
+            <input matInput #password2 placeholder="Confirm Password">
           </mat-form-field>
         </mat-card-content>
-        <button mat-stroked-button color="accent" class="btn-block">Register</button>
+        <button (click)="getData(username.value, password.value, password2.value)" mat-stroked-button color="primary" class="btn-block">Register</button>
       </form>
     </mat-card>
   </div>
