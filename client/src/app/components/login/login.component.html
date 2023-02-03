@@ -9,7 +9,8 @@
           <input matInput placeholder="Username">
         </mat-form-field>
         <mat-form-field class="example-full-width">
-          <input matInput placeholder="Password">
+          <input matInput [type]="showPassword ? 'text' : 'password'" name="password" placeholder="Password">
+          <mat-icon matSuffix (click)="toggleVisibility()">visibility</mat-icon>
         </mat-form-field>
       </mat-card-content>
       <button mat-stroked-button color="accent" class="btn-block">Log in</button>
