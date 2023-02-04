@@ -14,6 +14,11 @@ type Account struct {
 	Password string
 }
 
+type AccountMatch struct {
+	Status bool
+	Uuid   string
+}
+
 func createAccount(response http.ResponseWriter, request *http.Request) {
 	fmt.Println("Received request to /login/createAccount")
 	var acc Account
@@ -23,7 +28,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	_, err = db.Exec("INSERT INTO Accounts (username, password) VALUES (?, ?)", acc.Username, acc.Password)
+	_, err = db.Exec("INSERT INTO Accounts (uuid, username, password) VALUES (uuid(), ?, ?)", acc.Username, acc.Password)
 	if err != nil {
 		fmt.Fprintf(response, "false")
 	} else {
@@ -40,14 +45,17 @@ func verifyAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	var username string
-	err = db.QueryRow("SELECT username FROM Accounts WHERE username=? and password=?", acc.Username, acc.Password).Scan(&username)
+	var uuid string
+	err = db.QueryRow("SELECT uuid FROM Accounts WHERE username=? and password=?", acc.Username, acc.Password).Scan(&uuid)
+
+	status := AccountMatch{Status: true, Uuid: uuid}
 
 	switch err {
 	case sql.ErrNoRows:
-		fmt.Fprintf(response, "false")
+		status.Status = false
+		json.NewEncoder(response).Encode(status)
 	case nil:
-		fmt.Fprintf(response, "true")
+		json.NewEncoder(response).Encode(status)
 	default:
 		panic(err)
 	}

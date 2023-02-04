@@ -6,14 +6,17 @@
 ##### Body:
 ```
 {
-    username: string, 
-    password: string
+    username:   string,
+    password:   string
 }
 ```
 
 ##### Response:
 ```
-"true" || "false", depending on if account credentials are correct
+{
+    Status:     boolean,
+    Uuid:       string
+}
 ```
 
 
@@ -21,8 +24,8 @@
 ##### Body:
 ```
 {
-    username: string, 
-    password: string
+    username:   string,
+    password:   string
 }
 ```
 
@@ -34,10 +37,11 @@
 
 ## Game
 
-#### Get City for Account: `GET /city/{username}`
+#### Get City for Account: `GET /city/{uuid}`
 ##### Return:
 ```
 {
+    population: int,
     ...
 }
 ```
