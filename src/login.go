@@ -52,10 +52,7 @@ func verifyAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	status := AccountMatch{Status: true, Uuid: uuid}
-	if uuid == "" {
-		status.Status = false
-	}
+	status := AccountMatch{Status: uuid != "", Uuid: uuid}
 
 	json.NewEncoder(response).Encode(status)
 }
