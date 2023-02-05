@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,7 +21,7 @@ type AccountMatch struct {
 }
 
 func createAccount(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /login/createAccount")
+	log.Println("Received request to /login/createAccount")
 	var acc Account
 	err := json.NewDecoder(request.Body).Decode(&acc)
 
@@ -28,7 +29,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	_, err = db.Exec("INSERT INTO Accounts (uuid, username, password) VALUES (uuid(), ?, ?)", acc.Username, acc.Password)
+	err = execute(fmt.Sprintf("INSERT INTO Accounts (uuid, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
 	if err != nil {
 		fmt.Fprintf(response, "false")
 	} else {
@@ -37,7 +38,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 }
 
 func verifyAccount(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /login/verifyAccount")
+	log.Println("Received request to /login/verifyAccount")
 	var acc Account
 	err := json.NewDecoder(request.Body).Decode(&acc)
 
@@ -46,19 +47,17 @@ func verifyAccount(response http.ResponseWriter, request *http.Request) {
 	}
 
 	var uuid string
-	err = db.QueryRow("SELECT uuid FROM Accounts WHERE username=? and password=?", acc.Username, acc.Password).Scan(&uuid)
-
-	status := AccountMatch{Status: true, Uuid: uuid}
-
-	switch err {
-	case sql.ErrNoRows:
-		status.Status = false
-		json.NewEncoder(response).Encode(status)
-	case nil:
-		json.NewEncoder(response).Encode(status)
-	default:
+	err = queryValue(fmt.Sprintf("SELECT uuid FROM Accounts WHERE username='%s' AND password='%s'", acc.Username, acc.Password), &uuid)
+	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
+
+	status := AccountMatch{Status: true, Uuid: uuid}
+	if uuid == "" {
+		status.Status = false
+	}
+
+	json.NewEncoder(response).Encode(status)
 }
 
 func handleLoginRoutes(r *mux.Router) {
