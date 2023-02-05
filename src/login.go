@@ -11,13 +11,13 @@ import (
 )
 
 type Account struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type AccountMatch struct {
-	Status bool
-	Uuid   string
+	Status bool   `json:"status"`
+	Uuid   string `json:"uuid"`
 }
 
 func createAccount(response http.ResponseWriter, request *http.Request) {
