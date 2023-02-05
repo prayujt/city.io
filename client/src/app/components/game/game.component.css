@@ -1,0 +1,25 @@
+.game {
+    height: 100%;
+}
+.container {
+    padding: 50px;
+}
+.content table td, .content table th {
+    border: 1px solid #dbdbdb;
+    vertical-align: middle;
+    background-color: #90EE90;
+    height: 2em;
+    width: 2em;
+    font-size: 50px;
+    text-align: center;
+}
+.content table {
+    width: 100%;
+    margin: 0 auto;
+}
+.content table tr:hover {
+    background-color: transparent;
+}
+.battleship-tile:hover {
+    cursor: pointer;
+}
