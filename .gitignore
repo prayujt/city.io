@@ -1,4 +1,6 @@
 *.exe
 src/city.io
 
+client/.vscode
+
 .env
