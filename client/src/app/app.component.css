@@ -1,3 +1,6 @@
 #game_button {
     margin-left: 1em;
 }
+.router {
+    display: flex;
+}

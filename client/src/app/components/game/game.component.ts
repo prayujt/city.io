@@ -7,9 +7,7 @@ import { Component } from '@angular/core';
 })
 
 export class GameComponent {
-  constructor(
-
-  ) {
+  constructor() {
 
   }
 }
