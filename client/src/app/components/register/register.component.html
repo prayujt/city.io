@@ -11,24 +11,18 @@
                 <mat-form-field class="example-full-width">
                     <input
                         matInput
-                        [type]="showPassword ? 'text' : 'password'"
+                        [type]="'password'"
                         #password
                         placeholder="Password"
                     />
-                    <mat-icon matSuffix (click)="toggleVisibility()"
-                        >visibility</mat-icon
-                    >
                 </mat-form-field>
                 <mat-form-field class="example-full-width">
                     <input
                         matInput
-                        [type]="showPassword ? 'text' : 'password'"
+                        [type]="'password'"
                         #password2
                         placeholder="Confirm Password"
                     />
-                    <mat-icon matSuffix (click)="toggleVisibility()"
-                        >visibility</mat-icon
-                    >
                 </mat-form-field>
             </mat-card-content>
             <button
