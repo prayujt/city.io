@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { environment } from '../../../environments/environment';
+
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
@@ -23,12 +25,14 @@ export class LoginComponent {
                 duration: 2000,
             });
         } else {
-            console.log('Valid Password');
             this.http
-                .post<any>('http://prayujt.com:8000/login/verifyAccount', {
-                    username: username,
-                    password: password,
-                })
+                .post<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/login/verifyAccount`,
+                    {
+                        username: username,
+                        password: password,
+                    }
+                )
                 .subscribe((response) => {
                     console.log(response);
                 });

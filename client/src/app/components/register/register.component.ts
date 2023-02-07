@@ -1,14 +1,15 @@
-import { Component, Injectable } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.css'],
 })
-@Injectable()
 export class RegisterComponent {
     constructor(
         private http: HttpClient,
@@ -40,10 +41,13 @@ export class RegisterComponent {
         } else {
             console.log('Valid Password');
             this.http
-                .post<any>('http://prayujt.com:8000/login/createAccount', {
-                    username: username,
-                    password: password,
-                })
+                .post<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/login/createAccount`,
+                    {
+                        username: username,
+                        password: password,
+                    }
+                )
                 .subscribe((response) => {
                     console.log(response);
                     if (!response) {
