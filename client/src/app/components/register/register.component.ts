@@ -39,7 +39,6 @@ export class RegisterComponent {
                 duration: 2000,
             });
         } else {
-            console.log('Valid Password');
             this.http
                 .post<any>(
                     `http://${environment.API_HOST}:${environment.API_PORT}/login/createAccount`,
@@ -49,7 +48,6 @@ export class RegisterComponent {
                     }
                 )
                 .subscribe((response) => {
-                    console.log(response);
                     if (!response) {
                         this._snackBar.open(
                             'This username is not available!',

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 
@@ -10,7 +11,11 @@ import { environment } from '../../../environments/environment';
     styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-    constructor(private http: HttpClient, private _snackBar: MatSnackBar) {}
+    constructor(
+        private http: HttpClient, 
+        private _snackBar: MatSnackBar, 
+        private router: Router
+    ) {}
     public showPassword: boolean = false;
     public toggleVisibility(): void {
         this.showPassword = !this.showPassword;
@@ -34,7 +39,14 @@ export class LoginComponent {
                     }
                 )
                 .subscribe((response) => {
-                    console.log(response);
+                    if (response['status']) {
+                        this.router.navigate(['game']);
+                    }
+                    else {
+                        this._snackBar.open('Invalid username or password!', 'Close', {
+                            duration: 2000,
+                        });
+                    }
                 });
         }
     }

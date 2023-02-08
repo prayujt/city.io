@@ -14,8 +14,8 @@
 ##### Response:
 ```
 {
-    Status:     boolean,
-    Uuid:       string
+    status:     boolean,
+    uuid:       string
 }
 ```
 
