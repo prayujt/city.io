@@ -11,7 +11,8 @@ const routes: Routes = [
   {path: 'game', component: GameComponent }
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
+    providers: [],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
