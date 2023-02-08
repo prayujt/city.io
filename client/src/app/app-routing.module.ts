@@ -8,7 +8,7 @@ const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  {path: 'game', component: GameComponent }
+  { path: 'game', component: GameComponent }
 ];
 @NgModule({
     imports: [RouterModule.forRoot(routes)],

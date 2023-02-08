@@ -4,5 +4,3 @@ CREATE TABLE Accounts (
     password varchar(50) NOT NULL,
     UNIQUE(username)
 );
-
-CREATE TABLE
