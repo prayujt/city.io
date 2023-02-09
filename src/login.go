@@ -16,8 +16,8 @@ type Account struct {
 }
 
 type AccountMatch struct {
-	Status bool   `json:"status"`
-	Uuid   string `json:"uuid"`
+	Status   bool   `json:"status"`
+	PlayerId string `json:"playerId"`
 }
 
 func createAccount(response http.ResponseWriter, request *http.Request) {
@@ -29,7 +29,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	err = execute(fmt.Sprintf("INSERT INTO Accounts (uuid, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
+	err = execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
 	if err != nil {
 		fmt.Fprintf(response, "false")
 	} else {
@@ -46,13 +46,13 @@ func verifyAccount(response http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	var uuid string
-	err = queryValue(fmt.Sprintf("SELECT uuid FROM Accounts WHERE username='%s' AND password='%s'", acc.Username, acc.Password), &uuid)
+	var playerId string
+	err = queryValue(fmt.Sprintf("SELECT player_id FROM Accounts WHERE username='%s' AND password='%s'", acc.Username, acc.Password), &playerId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
 
-	status := AccountMatch{Status: uuid != "", Uuid: uuid}
+	status := AccountMatch{Status: playerId != "", PlayerId: playerId}
 
 	json.NewEncoder(response).Encode(status)
 }
