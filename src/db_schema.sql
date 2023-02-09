@@ -24,8 +24,15 @@ FOR EACH ROW
 SET NEW.city_name=CONCAT('City ', NEW.city_id);
 
 CREATE TABLE Buildings (
-       building_name varchar(50) PRIMARY KEY,
-       building_value int,
-       city_id varchar(50),
-       FOREIGN KEY(city_id) REFERENCES Cities(city_id)
+    building_name varchar(50) PRIMARY KEY,
+    building_value int,
+    city_id varchar(50),
+    FOREIGN KEY(city_id) REFERENCES Cities(city_id)
+);
+
+CREATE TABLE Sessions (
+    session_id varchar(50) PRIMARY KEY,
+    player_id varchar(50),
+    expires_on timestamp,
+    FOREIGN KEY(player_id) REFERENCES Accounts(player_id)
 );

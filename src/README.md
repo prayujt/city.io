@@ -2,24 +2,6 @@
 
 ## Login
 
-#### Login to Account: `POST /login/verifyAccount`
-##### Body:
-```
-{
-    username:       string,
-    password:       string
-}
-```
-
-##### Response:
-```
-{
-    status:         boolean,
-    player_id:      string
-}
-```
-
-
 #### Create Account: `POST /login/createAccount`
 ##### Body:
 ```
@@ -32,6 +14,23 @@
 ##### Response:
 ```
 "true" || "false", depending on if account creation succeeded
+```
+
+#### Login to Account: `POST /login/createSession`
+##### Body:
+```
+{
+    username:       string,
+    password:       string
+}
+```
+
+##### Response:
+```
+{
+    status:         boolean,
+    sessionId:      string
+}
 ```
 
 

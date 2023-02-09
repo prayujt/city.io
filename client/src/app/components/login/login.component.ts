@@ -32,7 +32,7 @@ export class LoginComponent {
         } else {
             this.http
                 .post<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/login/verifyAccount`,
+                    `http://${environment.API_HOST}:${environment.API_PORT}/login/createSession`,
                     {
                         username: username,
                         password: password,

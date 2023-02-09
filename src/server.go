@@ -64,9 +64,9 @@ func queryValue[T any](query_ string, value *T) error {
 	return err
 }
 
-func execute(exec string) error {
-	_, err := db.Exec(exec)
-	return err
+func execute(exec string) (sql.Result, error) {
+	result, err := db.Exec(exec)
+	return result, err
 }
 
 func main() {
