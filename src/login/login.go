@@ -1,6 +1,8 @@
-package main
+package api
 
 import (
+	database "api/database"
+
 	"encoding/json"
 	"fmt"
 	"log"
@@ -35,7 +37,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_, err = execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
+	_, err = database.Execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
 	if err == nil {
 		status = true
 	}
@@ -69,7 +71,7 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err := execute(
+	result, err := database.Execute(
 		fmt.Sprintf(
 			"INSERT INTO Sessions (session_id, player_id, expires_on) SELECT '%s', player_id, DATE_ADD(NOW(), INTERVAL 24 HOUR) FROM Accounts WHERE username='%s' AND password='%s';", sessionId, acc.Username, acc.Password))
 
@@ -85,7 +87,7 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 	status = true
 }
 
-func handleLoginRoutes(r *mux.Router) {
+func HandleLoginRoutes(r *mux.Router) {
 	r.HandleFunc("/login/createAccount", createAccount).Methods("POST")
 	r.HandleFunc("/login/createSession", createSession).Methods("POST")
 }
