@@ -1,13 +1,13 @@
 package main
 
 import (
-	"database/sql"
+	database "api/database"
+	login "api/login"
+
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"reflect"
-	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -15,59 +15,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
-
-var db *sql.DB
-
-func query[T any](query_ string, arr *[]T) {
-	rows, err := db.Query(query_)
-	if err != nil {
-		panic(err)
-	}
-
-	structType := reflect.TypeOf(arr).Elem().Elem()
-
-	var fields []string
-	cols, err := rows.Columns()
-	for _, col := range cols {
-		found := false
-		for i := 0; i < structType.NumField(); i++ {
-			if strings.EqualFold(structType.Field(i).Name, col) || strings.EqualFold(structType.Field(i).Tag.Get("json"), col) {
-				fields = append(fields, structType.Field(i).Name)
-				found = true
-			}
-		}
-		if !found {
-			fields = append(fields, "")
-		}
-	}
-
-	for rows.Next() {
-		newStruct := reflect.New(structType).Elem()
-		var properties []interface{}
-
-		for _, field := range fields {
-			if field == "" {
-				var nothing interface{}
-				properties = append(properties, &nothing)
-			} else {
-				properties = append(properties, newStruct.FieldByName(field).Addr().Interface())
-			}
-		}
-
-		rows.Scan(properties...)
-		*arr = append(*arr, newStruct.Interface().(T))
-	}
-}
-
-func queryValue[T any](query_ string, value *T) error {
-	err := db.QueryRow(query_).Scan(value)
-	return err
-}
-
-func execute(exec string) (sql.Result, error) {
-	result, err := db.Exec(exec)
-	return result, err
-}
 
 func main() {
 	err := godotenv.Load("../.env")
@@ -80,18 +27,13 @@ func main() {
 		os.Getenv("MYSQL_PASSWORD"),
 		os.Getenv("MYSQL_HOST"),
 		os.Getenv("MYSQL_DB_NAME"))
-
-	db, err = sql.Open("mysql", dbUrl)
-
-	if err != nil {
-		log.Fatal("Couldn't connect to db")
-	}
+	database.InitDatabase(dbUrl)
 
 	log.Println(fmt.Sprintf("Serving at %s:%s...", os.Getenv("API_HOST"), os.Getenv("API_PORT")))
 	router := mux.NewRouter()
 
 	// include other file routes here, passing in the router
-	handleLoginRoutes(router)
+	login.HandleLoginRoutes(router)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
