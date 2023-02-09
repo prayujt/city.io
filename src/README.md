@@ -6,16 +6,16 @@
 ##### Body:
 ```
 {
-    username:   string,
-    password:   string
+    username:       string,
+    password:       string
 }
 ```
 
 ##### Response:
 ```
 {
-    status:     boolean,
-    uuid:       string
+    status:         boolean,
+    player_id:      string
 }
 ```
 
@@ -24,8 +24,8 @@
 ##### Body:
 ```
 {
-    username:   string,
-    password:   string
+    username:       string,
+    password:       string
 }
 ```
 
@@ -41,7 +41,7 @@
 ##### Return:
 ```
 {
-    population: int,
+    population:     int,
     ...
 }
 ```

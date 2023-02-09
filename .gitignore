@@ -47,4 +47,4 @@ Thumbs.db
 
 # Go files
 *.exe
-src/city.io
+src/api

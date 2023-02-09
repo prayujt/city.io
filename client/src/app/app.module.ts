@@ -19,7 +19,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-    declarations: [AppComponent, LoginComponent, RegisterComponent, GameComponent],
+    declarations: [
+        AppComponent,
+        LoginComponent,
+        RegisterComponent,
+        GameComponent,
+    ],
     imports: [
         BrowserModule,
         AppRoutingModule,
