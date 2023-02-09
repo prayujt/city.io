@@ -1,13 +1,13 @@
 # User Stories
 ### Front-end
-As a player, I want to be able to view a page that allows me to create an account so that I can join the game.
-As a player, I want to be able to view a page that allows me to provide an already-created username and password so that I can access my progress in the game. 
-As a player, I want to view a map of my city that shows the buildings and resources I have amassed while playing the game so that I can see my progress.
-As a player, I want to be able to navigate between pages within the game so that I can access both login and game functionality.
+- As a player, I want to be able to view a page that allows me to create an account so that I can join the game.
+- As a player, I want to be able to view a page that allows me to provide an already-created username and password so that I can access my progress in the game. 
+- As a player, I want to view a map of my city that shows the buildings and resources I have amassed while playing the game so that I can see my progress.
+- As a player, I want to be able to navigate between pages within the game so that I can access both login and game functionality.
 ### Back-end
-As a player, I want to be able to create an account and have my credentials stored in a secure location so that my account is saved.
-As a player, I want my data to be linked to my account so that I can have my progress in the game saved when I log back on.
-As a player, I want to have a board exclusive to my account so that I can play at my own pace.
+- As a player, I want to be able to create an account and have my credentials stored in a secure location so that my account is saved.
+- As a player, I want my data to be linked to my account so that I can have my progress in the game saved when I log back on.
+- As a player, I want to have a board exclusive to my account so that I can play at my own pace.
 
 # Issues Addressed
 - [Initialize HTTP Server in Go](https://github.com/prayujt/city.io/issues/2)
