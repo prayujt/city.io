@@ -12,8 +12,8 @@ import { environment } from '../../../environments/environment';
 })
 export class LoginComponent {
     constructor(
-        private http: HttpClient, 
-        private _snackBar: MatSnackBar, 
+        private http: HttpClient,
+        private _snackBar: MatSnackBar,
         private router: Router
     ) {}
     public showPassword: boolean = false;
@@ -41,11 +41,14 @@ export class LoginComponent {
                 .subscribe((response) => {
                     if (response['status']) {
                         this.router.navigate(['game']);
-                    }
-                    else {
-                        this._snackBar.open('Invalid username or password!', 'Close', {
-                            duration: 2000,
-                        });
+                    } else {
+                        this._snackBar.open(
+                            'Invalid username or password!',
+                            'Close',
+                            {
+                                duration: 2000,
+                            }
+                        );
                     }
                 });
         }
