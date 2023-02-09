@@ -12,6 +12,7 @@
 # Issues Addressed
 - [Initialize HTTP Server in Go](https://github.com/prayujt/city.io/issues/2)
 - [Setup connection to MySQL database using .env file](https://github.com/prayujt/city.io/issues/3)
+- [Initialize game state when an account is created](https://github.com/prayujt/city.io/issues/4)
 - [Setup HTTP endpoints for creating a user and validating logins](https://github.com/prayujt/city.io/issues/5)
 - [Initialize Account Creation Page](https://github.com/prayujt/city.io/issues/6)
 - [Initialize Login Page](https://github.com/prayujt/city.io/issues/7)
@@ -27,7 +28,7 @@
 Our plan was to set up the login screen and the initial board. We planned to create a registration page that allows users to create an account. This account will obviously belong solely to the user and it will generate a board exclusive to the user. Users will not be able to create an account with a username that is already stored in the database. Additionally, we planned to add an authentication system that verifies user logins. If the user login is valid, then the user will be able to enter the game and view their city. Otherwise, the user will see a popup that tells them that the login is incorrect. 
 
 # What We Accomplished
-We were able to make a fully functional login page. It implemented all of the features that we planned to add, in both the front-end and the back-end.
+We were able to make a fully functional login page. It implemented all of the features that we planned to add, in both the front-end and the back-end. We also went a bit further in setting up the initial game state by adding Cities and Buildings tables to our database. In this, we also set up triggers to the database that would create the city once a new account is made. Thus, the database would handle much of the initial game setup. 
 
 # What Didn’t Work
 We were able to start developing the game user interface. However, there are issues with how the game appears based on the dimensions of the screen. In the next sprint, we will be working on standardizing how the game appears across different screens so that the game appears as we want it to. We also had some difficulties adjusting to writing front-end code using the Angular framework. For example, we struggled with setting colors of components, especially ones in which we implemented the Material UI components. 
