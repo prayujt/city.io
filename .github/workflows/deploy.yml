@@ -2,7 +2,7 @@ name: Deploy Project
 
 on:
   push:
-    branches: [ "github-workflow" ]
+    branches: [ "master" ]
 
 jobs:
 
@@ -55,4 +55,5 @@ jobs:
     - name: Deploy
       run: |
         ${{ secrets.PM2_PATH }} reload all
+        rm -rf /var/www/city.io/*
         cp -r client/dist/client/* /var/www/city.io
