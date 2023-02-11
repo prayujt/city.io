@@ -12,6 +12,7 @@ jobs:
     env:
       GOPATH: ${{ secrets.GOPATH }}
       GOCACHE: ${{ secrets.GOCACHE }}
+      HOME: ${{ secrets.HOME }}
 
     steps:
     - uses: actions/checkout@v3
