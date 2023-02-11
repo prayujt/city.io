@@ -21,8 +21,10 @@ jobs:
       with:
         go-version: 1.19
 
+    - name: Install dependencies
+      run: cd src; go get; cd ../client; npm install --quiet
     - name: Build
-      run: cd src; go build -v; cd ../client; npm install; npm run build; cd ..
+      run: cd src; go build; cd ../client; npm run build; cd ..
 
     - name: Test
       run: cd src; go test -v; cd ..
