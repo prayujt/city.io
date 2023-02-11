@@ -5,9 +5,9 @@ name: Go
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "github-workflow" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "github-workflow" ]
 
 jobs:
 
