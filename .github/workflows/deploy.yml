@@ -1,16 +1,14 @@
-name: Build and Run Tests
+name: Deploy Project
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches: [ "github-workflow" ]
 
 jobs:
 
-  build-test:
-    runs-on: ubuntu-latest
-      
+  deploy:
+    runs-on: [self-hosted, linux]
+
     steps:
     - uses: actions/checkout@v3
 
@@ -22,7 +20,7 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: 1.19
-        
+
     - name: Make .env file
       run: |
         touch .env
@@ -33,14 +31,14 @@ jobs:
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
-        
+
     - name: Install dependencies
       run: |
         cd src
         go get
         cd ../client
         npm install --silent
-      
+
     - name: Build
       run: |
         cd src
@@ -49,8 +47,7 @@ jobs:
         npm run build
         cd ..
 
-    - name: Run Tests
+    - name: Deploy
       run: |
-        cd src
-        go test -v api/tests
-        cd ..
+        pm2 reload all
+        cp -r client/dist/client/* /var/www/city.io
