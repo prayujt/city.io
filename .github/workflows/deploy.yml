@@ -4,6 +4,8 @@ on:
   push:
     branches: [ "master" ]
 
+  workflow_dispatch:
+
 jobs:
 
   deploy:
@@ -54,9 +56,6 @@ jobs:
 
     - name: Deploy
       run: |
-        # ${{ secrets.PM2_PATH }} stop all
-        # ${{ secrets.PM2_PATH }} delete all
-        # ${{ secrets.PM2_PATH }} start src/api
         ${{ secrets.PM2_PATH }} reload all
         rm -rf /var/www/city.io/*
         cp -r client/dist/client/* /var/www/city.io
