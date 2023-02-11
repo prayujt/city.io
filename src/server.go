@@ -1,8 +1,8 @@
 package main
 
 import (
-	database "api/database"
-	login "api/login"
+	"api/database"
+	"api/login"
 
 	"fmt"
 	"log"
