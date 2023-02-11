@@ -2,7 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"log"
+	_ "github.com/go-sql-driver/mysql"
 	"reflect"
 	"strings"
 )
@@ -65,7 +65,29 @@ func InitDatabase(dbUrl string) {
 	db, err = sql.Open("mysql", dbUrl)
 
 	if err != nil {
-		log.Fatal("Couldn't connect to db")
+		panic(err)
 	}
 
+}
+
+func Reset() {
+	_, err := Execute("DELETE FROM Buildings")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = Execute("DELETE FROM Cities")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = Execute("DELETE FROM Sessions")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = Execute("DELETE FROM Accounts")
+	if err != nil {
+		panic(err)
+	}
 }
