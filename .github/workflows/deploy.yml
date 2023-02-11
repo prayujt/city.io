@@ -9,6 +9,10 @@ jobs:
   deploy:
     runs-on: [self-hosted, linux]
 
+    env:
+      GOPATH: ${{ secrets.GOPATH }}
+      GOCACHE: ${{ secrets.GOCACHE }}
+
     steps:
     - uses: actions/checkout@v3
 
