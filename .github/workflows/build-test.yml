@@ -27,4 +27,4 @@ jobs:
       run: cd src; go build; cd ../client; npm run build; cd ..
 
     - name: Test
-      run: cd src; go test -v; cd ..
+      run: cd src; go test -v api/tests; cd ..
