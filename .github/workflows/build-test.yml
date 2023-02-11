@@ -5,9 +5,9 @@ name: Build and Run Tests
 
 on:
   push:
-    branches: [ "github-workflow" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "github-workflow" ]
+    branches: [ "master" ]
 
 jobs:
 
