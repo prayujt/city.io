@@ -53,5 +53,5 @@ jobs:
 
     - name: Deploy
       run: |
-        pm2 reload all
+        ${{ secrets.PM2_PATH }} reload all
         cp -r client/dist/client/* /var/www/city.io
