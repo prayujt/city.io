@@ -1,7 +1,7 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: Go
+name: Build and Run Tests
 
 on:
   push:
@@ -13,20 +13,38 @@ jobs:
 
   build:
     runs-on: [self-hosted, linux]
-    
+    env:
+      GOPATH: ${{ secrets.GOPATH }}
+      GOCACHE: ${{ secrets.GOCACHE }}
+      
     steps:
     - uses: actions/checkout@v3
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 19.5.0
 
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.19
         
+    - name: Make .env file
+      run: |
+        touch .env
+        echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env
+        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env
+        echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} >> .env
+        echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} >> .env
+        echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
+        echo API_PORT=${{ secrets.API_PORT }} >> .env
+        echo API_HOST=${{ secrets.API_HOST }} >> .env
+        
     - name: Install dependencies
-      run: cd src; go get; cd ../client; npm install --quiet
+      run: cd src; go get; cd ../client; npm install --silent
       
     - name: Build
       run: cd src; go build; cd ../client; npm run build; cd ..
 
-    - name: Test
+    - name: Run Tests
       run: cd src; go test -v api/tests; cd ..
