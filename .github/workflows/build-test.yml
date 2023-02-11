@@ -22,7 +22,7 @@ jobs:
         go-version: 1.19
 
     - name: Build
-      run: cd src; go build -v; cd ..
+      run: cd src; go build -v; cd ../client; npm run build; cd ..
 
     - name: Test
       run: cd src; go test -v; cd ..
