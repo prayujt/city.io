@@ -1,7 +1,7 @@
-package api
+package login
 
 import (
-	database "api/database"
+	"api/database"
 
 	"encoding/json"
 	"fmt"
