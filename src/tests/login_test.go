@@ -4,8 +4,11 @@ import (
 	"api/login"
 
 	"encoding/json"
+	"fmt"
 	"testing"
 )
+
+var session_id string
 
 func TestAccountCreate(t *testing.T) {
 	acc := login.Account{
@@ -13,9 +16,9 @@ func TestAccountCreate(t *testing.T) {
 		Password: "test",
 	}
 
-	body := Post("/login/createAccount", acc)
+	response := Post("/login/createAccount", acc)
 
-	if string(body) != "true" {
+	if string(response) != "true" {
 		t.Error("Expected account creation to return true, instead got false")
 	}
 }
@@ -26,9 +29,9 @@ func TestDuplicateAccount(t *testing.T) {
 		Password: "test",
 	}
 
-	body := Post("/login/createAccount", acc)
+	response := Post("/login/createAccount", acc)
 
-	if string(body) != "false" {
+	if string(response) != "false" {
 		t.Error("Expected duplicate account creation to return false, instead got true")
 	}
 }
@@ -39,13 +42,15 @@ func TestAccountLogin(t *testing.T) {
 		Password: "test",
 	}
 
-	body := Post("/login/createSession", acc)
+	response := Post("/login/createSession", acc)
 
 	var session login.Session
-	json.Unmarshal(body, &session)
+	json.Unmarshal(response, &session)
 
 	if !session.Status {
 		t.Error("Expected session creation to return true, instead got false")
+	} else {
+		session_id = session.SessionId
 	}
 }
 
@@ -55,10 +60,10 @@ func TestIncorrectUsername(t *testing.T) {
 		Password: "test",
 	}
 
-	body := Post("/login/createSession", acc)
+	response := Post("/login/createSession", acc)
 
 	var session login.Session
-	json.Unmarshal(body, &session)
+	json.Unmarshal(response, &session)
 
 	if session.Status {
 		t.Error("Expected session creation with incorrect username to return false, instead got true")
@@ -71,10 +76,10 @@ func TestIncorrectPassword(t *testing.T) {
 		Password: "test2",
 	}
 
-	body := Post("/login/createSession", acc)
+	response := Post("/login/createSession", acc)
 
 	var session login.Session
-	json.Unmarshal(body, &session)
+	json.Unmarshal(response, &session)
 
 	if session.Status {
 		t.Error("Expected session creation with incorrect password to return false, instead got true")
@@ -87,12 +92,63 @@ func TestIncorrectUsernamePassword(t *testing.T) {
 		Password: "testing",
 	}
 
-	body := Post("/login/createSession", acc)
+	response := Post("/login/createSession", acc)
 
 	var session login.Session
-	json.Unmarshal(body, &session)
+	json.Unmarshal(response, &session)
 
 	if session.Status {
 		t.Error("Expected session creation with incorrect username and password to return false, instead got true")
+	}
+}
+
+func TestSessionStatus(t *testing.T) {
+	if session_id == "" {
+		t.Error("Cannot test session status when session creation test failed")
+		return
+	}
+
+	response := Get(fmt.Sprintf("/sessions/%s", session_id))
+
+	if string(response) != "true" {
+		t.Error("Expected to validate session, instead failed to validate")
+	}
+}
+
+func TestInvalidSession(t *testing.T) {
+	response := Get("/sessions/abcdefghijklmnop")
+
+	if string(response) != "false" {
+		t.Error("Expected to fail to validate session, instead succeeded")
+	}
+}
+
+func TestSessionRemove(t *testing.T) {
+	if session_id == "" {
+		t.Error("Cannot test session status when session creation test failed")
+		return
+	}
+
+	session := login.Session{
+		SessionId: session_id,
+	}
+
+	response := Post("/sessions/logout", session)
+
+	if string(response) != "true" {
+		t.Error("Expected to succeed in logout, instead failed")
+	}
+}
+
+func TestSessionStatusAfterLogout(t *testing.T) {
+	if session_id == "" {
+		t.Error("Cannot test session status when session creation test failed")
+		return
+	}
+
+	response := Get(fmt.Sprintf("/sessions/%s", session_id))
+
+	if string(response) != "false" {
+		t.Error("Expected to fail to validate deleted session, instead succeeded")
 	}
 }

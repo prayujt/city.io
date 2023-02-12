@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/matoous/go-nanoid/v2"
 )
 
 type Account struct {
@@ -89,33 +89,34 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 
 func getSession(response http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
-	var expired bool
-	err := database.QueryValue(fmt.Sprintf("SELECT expires_on < NOW() FROM Sessions WHERE session_id='%s'", vars["session_id"]), &expired)
+	expired := true
 
-	if err != nil {
-		fmt.Fprintf(response, fmt.Sprintf("%v", false))
-		return
-	}
+	defer func() {
+		fmt.Fprintf(response, fmt.Sprintf("%v", !expired))
+	}()
 
-	fmt.Fprintf(response, fmt.Sprintf("%v", !expired))
+	_ = database.QueryValue(fmt.Sprintf("SELECT expires_on < NOW() FROM Sessions WHERE session_id='%s'", vars["session_id"]), &expired)
 }
 
 func exitSession(response http.ResponseWriter, request *http.Request) {
 	var session Session
+	status := false
+
+	defer func() {
+		fmt.Fprintf(response, "%v", status)
+	}()
+
 	err := json.NewDecoder(request.Body).Decode(&session)
 
 	if err != nil {
-		fmt.Fprintf(response, fmt.Sprintf("%v", false))
+		return
 	}
 
 	_, err = database.Execute(fmt.Sprintf("DELETE FROM Sessions WHERE session_id='%s'", session.SessionId))
 
-	if err != nil {
-		fmt.Fprintf(response, fmt.Sprintf("%v", false))
-	} else {
-		fmt.Fprintf(response, fmt.Sprintf("%v", true))
+	if err == nil {
+		status = true
 	}
-
 }
 
 func HandleLoginRoutes(r *mux.Router) {
