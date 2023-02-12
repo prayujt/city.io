@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/matoous/go-nanoid/v2"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 type Account struct {
@@ -87,7 +87,41 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 	status = true
 }
 
+func getSession(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	var expired bool
+	err := database.QueryValue(fmt.Sprintf("SELECT expires_on < NOW() FROM Sessions WHERE session_id='%s'", vars["session_id"]), &expired)
+
+	if err != nil {
+		fmt.Fprintf(response, fmt.Sprintf("%v", false))
+		return
+	}
+
+	fmt.Fprintf(response, fmt.Sprintf("%v", !expired))
+}
+
+func exitSession(response http.ResponseWriter, request *http.Request) {
+	var session Session
+	err := json.NewDecoder(request.Body).Decode(&session)
+
+	if err != nil {
+		fmt.Fprintf(response, fmt.Sprintf("%v", false))
+	}
+
+	_, err = database.Execute(fmt.Sprintf("DELETE FROM Sessions WHERE session_id='%s'", session.SessionId))
+
+	if err != nil {
+		fmt.Fprintf(response, fmt.Sprintf("%v", false))
+	} else {
+		fmt.Fprintf(response, fmt.Sprintf("%v", true))
+	}
+
+}
+
 func HandleLoginRoutes(r *mux.Router) {
 	r.HandleFunc("/login/createAccount", createAccount).Methods("POST")
 	r.HandleFunc("/login/createSession", createSession).Methods("POST")
+
+	r.HandleFunc("/sessions/{session_id}", getSession).Methods("GET")
+	r.HandleFunc("/sessions/logout", exitSession).Methods("POST")
 }
