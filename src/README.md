@@ -42,7 +42,7 @@
 }
 ```
 
-### Post Logout: `POST /sessions/logout`
+#### Post Logout: `POST /sessions/logout`
 ##### Body:
 ```
 {
