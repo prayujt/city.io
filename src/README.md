@@ -12,9 +12,9 @@
 ```
 
 ##### Response:
-```
-"true" || "false", depending on if account creation succeeded
-```
+`"true" || "false"`, depending on if account creation succeeded
+
+</br>
 
 #### Login to Account: `POST /login/createSession`
 ##### Body:
@@ -32,33 +32,26 @@
     sessionId:      string
 }
 ```
+</br>
 
 #### Get Session: `GET /session/{session_id}`
-##### Return:
-```
-{
-    expired:        boolean,
-    ...
-}
-```
+##### Response:
+`"true" || "false"`, depending on if session is valid and has not expired
+
+</br>
 
 #### Post Logout: `POST /sessions/logout`
 ##### Body:
 ```
 {
-    status:         boolean,
     sessionId:      string
 }
 ```
 
 ##### Response:
-```
-{
-    status:         boolean,
-    sessionId:      string
-}
-```
+`"true" || "false"`, depending on if session logout succeeded
 
+</br>
 
 ## Game
 
