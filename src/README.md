@@ -33,6 +33,32 @@
 }
 ```
 
+#### Get Session: `GET /session/{session_id}`
+##### Return:
+```
+{
+    expired:        boolean,
+    ...
+}
+```
+
+#### Post Logout: `POST /sessions/logout`
+##### Body:
+```
+{
+    status:         boolean,
+    sessionId:      string
+}
+```
+
+##### Response:
+```
+{
+    status:         boolean,
+    sessionId:      string
+}
+```
+
 
 ## Game
 
