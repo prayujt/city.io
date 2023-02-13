@@ -51,6 +51,14 @@
 }
 ```
 
+##### Response:
+```
+{
+    status:         boolean,
+    sessionId:      string
+}
+```
+
 
 ## Game
 
