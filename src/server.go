@@ -19,7 +19,7 @@ import (
 func main() {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		log.Fatal("No .env file found... Using environment variables instead.")  
+		log.Println("No .env file found... Using environment variables instead.")
 	}
 
 	dbUrl := fmt.Sprintf("%s:%s@tcp(%s)/%s",
