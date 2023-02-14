@@ -28,8 +28,8 @@ jobs:
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
-        cp .env "{{defaultContext}}/src/.env"
-        cp .env "{{defaultContext}}/client/.env"
+        cp .env src/.env
+        cp .env client/.env
 
     - name: Build backend Docker image
       uses: docker/build-push-action@v4
