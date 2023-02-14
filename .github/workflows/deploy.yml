@@ -28,22 +28,22 @@ jobs:
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
-        cp .env src/.env
-        cp .env client/.env
+        cp .env "{{defaultContext}}/src/.env"
+        cp .env "{{defaultContext}}/client/.env"
 
     - name: Build backend Docker image
       uses: docker/build-push-action@v4
       with:
         push: false
         tags: city.io/backend
-        context: ./src
+        context: "{{defaultContext}}:src"
 
     - name: Build frontend Docker image
       uses: docker/build-push-action@v4
       with:
         push: false
         tags: city.io/frontend
-        context: ./client
+        context: "{{defaultContext}}:client"
         
     - name: Deploy
       run: docker compose up
