@@ -21,13 +21,15 @@ jobs:
     - name: Make .env files
       run: |
         touch .env
-        echo MYSQL_USER=${{ secrets.MYSQL_USER }} | tee -a src/.env | tee -a client/.env
-        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} | tee -a src/.env | tee -a client/.env
-        echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} | tee -a src/.env | tee -a client/.env
-        echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} | tee -a src/.env | tee -a client/.env
-        echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} | tee -a src/.env | tee -a client/.env
-        echo API_PORT=${{ secrets.API_PORT }} | tee -a src/.env | tee -a client/.env
-        echo API_HOST=${{ secrets.API_HOST }} | tee -a src/.env | tee -a client/.env
+        echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env
+        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env
+        echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} >> .env
+        echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} >> .env
+        echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
+        echo API_PORT=${{ secrets.API_PORT }} >> .env
+        echo API_HOST=${{ secrets.API_HOST }} >> .env
+        cp .env src/.env
+        cp .env client/.env
 
     - name: Build frontend Docker image
       uses: docker/build-push-action@v4
