@@ -36,14 +36,14 @@ jobs:
       with:
         push: false
         tags: city.io/backend
-        context: "./src"
+        context: ./src
 
     - name: Build frontend Docker image
       uses: docker/build-push-action@v4
       with:
         push: false
         tags: city.io/frontend
-        context: "./client"
+        context: ./client
         
     - name: Deploy
       run: docker compose up
