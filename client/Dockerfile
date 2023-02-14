@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY ./ ./
-COPY .env /app
+COPY ./.env /app
 RUN npm run build
 
 FROM nginx:1.18.0

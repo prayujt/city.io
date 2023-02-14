@@ -31,19 +31,19 @@ jobs:
         cp .env src/.env
         cp .env client/.env
 
-    - name: Build frontend Docker image
-      uses: docker/build-push-action@v4
-      with:
-        push: true
-        tags: city.io/frontend
-        context: "{{defaultContext}}:client"
-        
     - name: Build backend Docker image
       uses: docker/build-push-action@v4
       with:
-        push: true
+        push: false
         tags: city.io/frontend
         context: "{{defaultContext}}:src"
 
+    - name: Build frontend Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: false
+        tags: city.io/frontend
+        context: "{{defaultContext}}:client"
+        
     - name: Deploy
       run: docker compose up
