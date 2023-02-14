@@ -18,7 +18,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Make .env file
+    - name: Make .env files
       run: |
         touch .env
         echo MYSQL_USER=${{ secrets.MYSQL_USER }} | tee -a src/.env | tee -a client/.env
@@ -30,10 +30,18 @@ jobs:
         echo API_HOST=${{ secrets.API_HOST }} | tee -a src/.env | tee -a client/.env
 
     - name: Build frontend Docker image
-      run: docker build -t cityio-frontend client/
-
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: city.io/frontend
+        context: "{{defaultContext}}:client"
+        
     - name: Build backend Docker image
-      run: docker build -t cityio-backend src/
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: city.io/frontend
+        context: "{{defaultContext}}:src"
 
     - name: Deploy
       run: docker compose up
