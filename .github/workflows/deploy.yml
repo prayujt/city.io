@@ -22,7 +22,7 @@ jobs:
       run: |
         touch .env
         echo MYSQL_USER=${{ secrets.MYSQL_USER }} | tee -a src/.env | tee -a client/.env
-        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD } | tee -a src/.env | tee -a client/.env
+        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} | tee -a src/.env | tee -a client/.env
         echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} | tee -a src/.env | tee -a client/.env
         echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} | tee -a src/.env | tee -a client/.env
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} | tee -a src/.env | tee -a client/.env
