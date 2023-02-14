@@ -49,4 +49,4 @@ jobs:
           API_HOST=${{ secrets.API_HOST }}
         
     - name: Deploy
-      run: docker compose up
+      run: docker compose -f ./docker-compose.yml up
