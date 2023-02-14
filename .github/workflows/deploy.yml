@@ -1,6 +1,9 @@
 name: Deploy Project
 
 on:
+  pull_request:
+    branches: [ "master" ]
+
   push:
     branches: [ "master" ]
 
@@ -11,51 +14,25 @@ jobs:
   deploy:
     runs-on: [self-hosted, linux]
 
-    env:
-      GOPATH: ${{ secrets.GOPATH }}
-      GOCACHE: ${{ secrets.GOCACHE }}
-      HOME: ${{ secrets.HOME }}
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 19.5.0
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.19
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Make .env file
       run: |
         touch .env
-        echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env
-        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env
-        echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} >> .env
-        echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} >> .env
-        echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
-        echo API_PORT=${{ secrets.API_PORT }} >> .env
-        echo API_HOST=${{ secrets.API_HOST }} >> .env
+        echo MYSQL_USER=${{ secrets.MYSQL_USER }} | tee -a src/.env | tee -a client/.env
+        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD } | tee -a src/.env | tee -a client/.env
+        echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} | tee -a src/.env | tee -a client/.env
+        echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} | tee -a src/.env | tee -a client/.env
+        echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} | tee -a src/.env | tee -a client/.env
+        echo API_PORT=${{ secrets.API_PORT }} | tee -a src/.env | tee -a client/.env
+        echo API_HOST=${{ secrets.API_HOST }} | tee -a src/.env | tee -a client/.env
 
-    - name: Install dependencies
-      run: |
-        cd src
-        go get
-        cd ../client
-        npm install --silent
+    - name: Build frontend Docker image
+      run: docker build -t cityio-frontend client/
 
-    - name: Build
-      run: |
-        cd src
-        go build
-        cd ../client
-        npm run build
-        cd ..
+    - name: Build backend Docker image
+      run: docker build -t cityio-backend src/
 
     - name: Deploy
-      run: |
-        ${{ secrets.PM2_PATH }} reload all
-        rm -rf /var/www/city.io/*
-        cp -r client/dist/client/* /var/www/city.io
+      run: docker compose up
