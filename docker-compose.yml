@@ -1,0 +1,22 @@
+version: '3.4'
+services:
+  backend:
+    container_name: city.io-backend
+    image: city.io/backend
+    env_file: ./.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: .
+      target: backend
+    ports:
+      - "8000:8000"
+  frontend:
+    container_name: city.io-frontend
+    image: city.io/frontend
+    env_file: ./.env
+    build:
+      context: .
+      target: frontend
+    ports:
+      - "4200:80"

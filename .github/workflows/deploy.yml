@@ -10,23 +10,12 @@ jobs:
 
   deploy:
     runs-on: [self-hosted, linux]
-
-    env:
-      GOPATH: ${{ secrets.GOPATH }}
-      GOCACHE: ${{ secrets.GOCACHE }}
-      HOME: ${{ secrets.HOME }}
-
+    
     steps:
     - uses: actions/checkout@v3
-
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 19.5.0
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.19
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Make .env file
       run: |
@@ -35,27 +24,39 @@ jobs:
         echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env
         echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} >> .env
         echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} >> .env
-        echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
+        echo MYSQL_HOST=${{ secrets.DOCKER_MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
 
-    - name: Install dependencies
-      run: |
-        cd src
-        go get
-        cd ../client
-        npm install --silent
+    - name: Build backend Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: false
+        tags: city.io/backend
+        context: "{{defaultContext}}:src"
+        build-args: |
+          MYSQL_USER_ENV=${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD_ENV=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DB_NAME_ENV=${{ secrets.MYSQL_DB_NAME }}
+          MYSQL_TEST_DB_NAME_ENV=${{ secrets.MYSQL_TEST_DB_NAME }}
+          MYSQL_HOST_ENV=${{ secrets.DOCKER_MYSQL_HOST }}
+          API_PORT_ENV=${{ secrets.API_PORT }}
+          API_HOST_ENV=${{ secrets.API_HOST }}
 
-    - name: Build
-      run: |
-        cd src
-        go build
-        cd ../client
-        npm run build
-        cd ..
-
+    - name: Build frontend Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: false
+        tags: city.io/frontend
+        context: "{{defaultContext}}:client"
+        build-args: |
+          MYSQL_USER_ENV=${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD_ENV=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DB_NAME_ENV=${{ secrets.MYSQL_DB_NAME }}
+          MYSQL_TEST_DB_NAME_ENV=${{ secrets.MYSQL_TEST_DB_NAME }}
+          MYSQL_HOST_ENV=${{ secrets.DOCKER_MYSQL_HOST }}
+          API_PORT_ENV=${{ secrets.API_PORT }}
+          API_HOST_ENV=${{ secrets.API_HOST }}
+        
     - name: Deploy
-      run: |
-        ${{ secrets.PM2_PATH }} reload all
-        rm -rf /var/www/city.io/*
-        cp -r client/dist/client/* /var/www/city.io
+      run: docker compose up -d
