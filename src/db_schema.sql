@@ -30,6 +30,7 @@ CREATE TABLE Sessions (
     FOREIGN KEY(player_id) REFERENCES Accounts(player_id)
 );
 
+
 CREATE TABLE Buildings_Info (
     building_type VARCHAR(50),
     building_level INT,
