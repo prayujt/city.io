@@ -16,24 +16,6 @@
 
 </br>
 
-#### Login to Account: `POST /login/createSession`
-##### Body:
-```
-{
-    username:       string,
-    password:       string
-}
-```
-
-##### Response:
-```
-{
-    status:         boolean,
-    sessionId:      string
-}
-```
-</br>
-
 #### Get Session: `GET /session/{session_id}`
 ##### Response:
 `"true" || "false"`, depending on if session is valid and has not expired
@@ -63,3 +45,4 @@
     ...
 }
 ```
+

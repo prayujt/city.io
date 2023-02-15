@@ -38,9 +38,27 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 	}
 
 	_, err = database.Execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
-	if err == nil {
-		status = true
+	if err != nil {
+		// panic(err)
+		return
 	}
+
+	var city string = "City Hall"
+	result, err := database.Execute(
+		fmt.Sprintf(
+			"INSERT INTO Buildings (building_name, building_type, building_level, city_id, city_row, city_column) SELECT '%s', '%s', 1, city_id, 4, 4 FROM Cities WHERE city_owner=(SELECT player_id FROM Accounts where username='%s');", city, city, acc.Username))
+
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	status = true
+
 }
 
 func createSession(response http.ResponseWriter, request *http.Request) {
