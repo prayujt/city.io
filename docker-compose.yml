@@ -7,16 +7,15 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     build:
-      context: .
-      target: backend
+      context: src
     ports:
       - "8000:8000"
   frontend:
     container_name: city.io-frontend
     image: city.io/frontend
-    env_file: ./.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     build:
-      context: .
-      target: frontend
+      context: client
     ports:
       - "4200:80"

@@ -16,6 +16,8 @@ jobs:
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      with:
+        driver: docker
 
     - name: Make .env file
       run: |
@@ -27,36 +29,9 @@ jobs:
         echo MYSQL_HOST=${{ secrets.DOCKER_MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
-
-    - name: Build backend Docker image
-      uses: docker/build-push-action@v4
-      with:
-        push: false
-        tags: city.io/backend
-        context: "{{defaultContext}}:src"
-        build-args: |
-          MYSQL_USER_ENV=${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD_ENV=${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_DB_NAME_ENV=${{ secrets.MYSQL_DB_NAME }}
-          MYSQL_TEST_DB_NAME_ENV=${{ secrets.MYSQL_TEST_DB_NAME }}
-          MYSQL_HOST_ENV=${{ secrets.DOCKER_MYSQL_HOST }}
-          API_PORT_ENV=${{ secrets.API_PORT }}
-          API_HOST_ENV=${{ secrets.API_HOST }}
-
-    - name: Build frontend Docker image
-      uses: docker/build-push-action@v4
-      with:
-        push: false
-        tags: city.io/frontend
-        context: "{{defaultContext}}:client"
-        build-args: |
-          MYSQL_USER_ENV=${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD_ENV=${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_DB_NAME_ENV=${{ secrets.MYSQL_DB_NAME }}
-          MYSQL_TEST_DB_NAME_ENV=${{ secrets.MYSQL_TEST_DB_NAME }}
-          MYSQL_HOST_ENV=${{ secrets.DOCKER_MYSQL_HOST }}
-          API_PORT_ENV=${{ secrets.API_PORT }}
-          API_HOST_ENV=${{ secrets.API_HOST }}
         
     - name: Deploy
-      run: docker compose up -d
+      run: |
+        docker compose build backend
+        docker compose build frontend --build-arg API_PORT=${{ secrets.API_PORT }} --build-arg API_HOST=${{ secrets.API_HOST }}
+        docker compose up -d
