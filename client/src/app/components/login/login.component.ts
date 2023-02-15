@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-login',
@@ -11,11 +12,14 @@ import { environment } from '../../../environments/environment';
     styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+    public cookieValue: string = '';
     constructor(
         private http: HttpClient,
         private _snackBar: MatSnackBar,
-        private router: Router
+        private router: Router,
+        private cookieService: CookieService
     ) {}
+    public ngOnInit(): void {}
     public showPassword: boolean = false;
     public toggleVisibility(): void {
         this.showPassword = !this.showPassword;
@@ -41,6 +45,8 @@ export class LoginComponent {
                 .subscribe((response) => {
                     if (response['status']) {
                         this.router.navigate(['game']);
+                        this.cookieService.set('cookie', response['sessionId']);
+                        this.cookieValue = this.cookieService.get('cookie');
                     } else {
                         this._snackBar.open(
                             'Invalid username or password!',

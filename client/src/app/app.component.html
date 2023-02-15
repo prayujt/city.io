@@ -8,15 +8,23 @@
             >city.io</a
         >
     </div>
+    <div>
     <span class="nav-tool-items">
-        <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
-        <a
-            mat-button
-            mat-raised-button
-            routerLink="register"
-            routerLinkActive="active"
-            >Register</a
-        >
+        <div *ngIf="!loggedIn; else elseBlock">
+            <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
+            <a
+                mat-button
+                mat-raised-button
+                routerLink="register"
+                routerLinkActive="active"
+                >Register</a
+            >
+        </div>
+        <ng-template #elseBlock>
+            <a mat-button routerLink="login" routerLinkActive="active" (click)="logOut()">Log out</a>
+        </ng-template>
     </span>
+    </div>
+    <ng-template #elseBlock>Content to render when condition is false.</ng-template>
 </mat-toolbar>
 <router-outlet class="router"></router-outlet>

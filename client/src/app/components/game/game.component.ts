@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-game',
@@ -6,5 +7,14 @@ import { Component } from '@angular/core';
     styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
-    constructor() {}
+    constructor(
+        private cookieService: CookieService
+    ) {}
+    public ngOnInit(): void {
+        this.getID();
+    }
+    public getID(): string {
+        console.log(this.cookieService.get('cookie'));
+        return this.cookieService.get('cookie');
+    }
 }
