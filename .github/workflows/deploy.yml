@@ -24,13 +24,13 @@ jobs:
         tags: city.io/backend
         context: "{{defaultContext}}:src"
         build-args: |
-          MYSQL_USER=${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
-          MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }}
-          MYSQL_HOST=${{ secrets.MYSQL_HOST }}
-          API_PORT=${{ secrets.API_PORT }}
-          API_HOST=${{ secrets.API_HOST }}
+          MYSQL_USER_ARG=${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD_ARG=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DB_NAME_ARG=${{ secrets.MYSQL_DB_NAME }}
+          MYSQL_TEST_DB_NAME_ARG=${{ secrets.MYSQL_TEST_DB_NAME }}
+          MYSQL_HOST_ARG=${{ secrets.MYSQL_HOST }}
+          API_PORT_ARG=${{ secrets.API_PORT }}
+          API_HOST_ARG=${{ secrets.API_HOST }}
 
     - name: Build frontend Docker image
       uses: docker/build-push-action@v4
@@ -39,13 +39,13 @@ jobs:
         tags: city.io/frontend
         context: "{{defaultContext}}:client"
         build-args: |
-          MYSQL_USER=${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
-          MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }}
-          MYSQL_HOST=${{ secrets.MYSQL_HOST }}
-          API_PORT=${{ secrets.API_PORT }}
-          API_HOST=${{ secrets.API_HOST }}
+          MYSQL_USER_ARG=${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD_ARG=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DB_NAME_ARG=${{ secrets.MYSQL_DB_NAME }}
+          MYSQL_TEST_DB_NAME_ARG=${{ secrets.MYSQL_TEST_DB_NAME }}
+          MYSQL_HOST_ARG=${{ secrets.MYSQL_HOST }}
+          API_PORT_ARG=${{ secrets.API_PORT }}
+          API_HOST_ARG=${{ secrets.API_HOST }}
         
     - name: Deploy
       run: docker compose up -d
