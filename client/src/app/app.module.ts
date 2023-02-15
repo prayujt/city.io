@@ -18,6 +18,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 
+import { CookieService } from 'ngx-cookie-service';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -39,7 +41,7 @@ import { HttpClientModule } from '@angular/common/http';
         MatButtonModule,
         MatIconModule,
     ],
-    providers: [],
+    providers: [CookieService],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

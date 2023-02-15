@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-register',
@@ -14,7 +15,8 @@ export class RegisterComponent {
     constructor(
         private http: HttpClient,
         private _snackBar: MatSnackBar,
-        private router: Router
+        private router: Router,
+        private cookieService: CookieService
     ) {}
     ngOnInit() {}
     public showPassword: boolean = false;
