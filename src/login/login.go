@@ -22,6 +22,14 @@ type Session struct {
 	SessionId string `json:"sessionId"`
 }
 
+func HandleLoginRoutes(r *mux.Router) {
+	r.HandleFunc("/login/createAccount", createAccount).Methods("POST")
+	r.HandleFunc("/login/createSession", createSession).Methods("POST")
+
+	r.HandleFunc("/sessions/{session_id}", getSession).Methods("GET")
+	r.HandleFunc("/sessions/logout", exitSession).Methods("POST")
+}
+
 func createAccount(response http.ResponseWriter, request *http.Request) {
 	log.Println("Received request to /login/createAccount")
 
@@ -39,7 +47,6 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 
 	_, err = database.Execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
 	if err != nil {
-		// panic(err)
 		return
 	}
 
@@ -106,6 +113,7 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 }
 
 func getSession(response http.ResponseWriter, request *http.Request) {
+	log.Println("Received request to /sessions/{session_id}")
 	vars := mux.Vars(request)
 	expired := true
 
@@ -117,6 +125,7 @@ func getSession(response http.ResponseWriter, request *http.Request) {
 }
 
 func exitSession(response http.ResponseWriter, request *http.Request) {
+	log.Println("Received request to /sessions/logout")
 	var session Session
 	status := false
 
@@ -135,12 +144,4 @@ func exitSession(response http.ResponseWriter, request *http.Request) {
 	if err == nil {
 		status = true
 	}
-}
-
-func HandleLoginRoutes(r *mux.Router) {
-	r.HandleFunc("/login/createAccount", createAccount).Methods("POST")
-	r.HandleFunc("/login/createSession", createSession).Methods("POST")
-
-	r.HandleFunc("/sessions/{session_id}", getSession).Methods("GET")
-	r.HandleFunc("/sessions/logout", exitSession).Methods("POST")
 }
