@@ -22,7 +22,7 @@ func Query[T any](query_ string, arr *[]T) {
 	for _, col := range cols {
 		found := false
 		for i := 0; i < structType.NumField(); i++ {
-			if strings.EqualFold(structType.Field(i).Name, col) || strings.EqualFold(structType.Field(i).Tag.Get("json"), col) {
+			if strings.EqualFold(structType.Field(i).Name, col) || strings.EqualFold(structType.Field(i).Tag.Get("database"), col) {
 				fields = append(fields, structType.Field(i).Name)
 				found = true
 			}

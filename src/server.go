@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/database"
+	"api/game"
 	"api/login"
 
 	"fmt"
@@ -34,6 +35,7 @@ func main() {
 
 	// include other file routes here, passing in the router
 	login.HandleLoginRoutes(router)
+	game.HandleCityRoutes(router)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
