@@ -3,6 +3,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit{
         private http: HttpClient,
         private cookieService: CookieService,
         private _snackBar: MatSnackBar,
+        private router: Router,
     ) {}
     private ID: string = '';
     public loggedIn: boolean = false;
@@ -26,7 +28,9 @@ export class AppComponent implements OnInit{
                     `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
                 )
                 .subscribe((response) => {
-                    if (response) this.loggedIn = true
+                    if (response) { 
+                        this.loggedIn = true 
+                    }
                 })
             }
         }, 250);

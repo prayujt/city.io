@@ -18,7 +18,19 @@ export class RegisterComponent {
         private router: Router,
         private cookieService: CookieService
     ) {}
-    ngOnInit() {}
+    ngOnInit() {
+        let ID: string = this.cookieService.get('cookie');
+        if (ID != "") {
+            this.http.get<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+            )
+            .subscribe((response) => {
+                if (response) { 
+                    this.router.navigate(['game']);
+                }
+            })
+        }
+    }
     public showPassword: boolean = false;
     public toggleVisibility(): void {
         this.showPassword = !this.showPassword;
