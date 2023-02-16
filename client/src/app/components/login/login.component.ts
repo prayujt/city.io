@@ -19,7 +19,19 @@ export class LoginComponent {
         private router: Router,
         private cookieService: CookieService
     ) {}
-    public ngOnInit(): void {}
+    public ngOnInit(): void {
+        let ID: string = this.cookieService.get('cookie');
+        if (ID != "") {
+            this.http.get<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+            )
+            .subscribe((response) => {
+                if (response) { 
+                    this.router.navigate(['game']);
+                }
+            })
+        }
+    }
     public showPassword: boolean = false;
     public toggleVisibility(): void {
         this.showPassword = !this.showPassword;

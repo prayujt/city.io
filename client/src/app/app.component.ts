@@ -30,9 +30,6 @@ export class AppComponent implements OnInit{
                 .subscribe((response) => {
                     if (response) { 
                         this.loggedIn = true 
-                        this.router.navigate(['game']);
-                    } else {
-                        this.router.navigate(['login']);
                     }
                 })
             }
