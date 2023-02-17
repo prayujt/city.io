@@ -18,8 +18,11 @@ type Account struct {
 }
 
 type Session struct {
-	Status    bool   `json:"status"`
 	SessionId string `json:"sessionId"`
+}
+
+type Status struct {
+	Status bool `json:"status"`
 }
 
 func HandleLoginRoutes(r *mux.Router) {
@@ -35,7 +38,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 
 	status := false
 	defer func() {
-		fmt.Fprintf(response, fmt.Sprintf("%v", status))
+		json.NewEncoder(response).Encode(Status{Status: status})
 	}()
 
 	var acc Account
@@ -65,24 +68,19 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 	}
 
 	status = true
-
 }
 
 func createSession(response http.ResponseWriter, request *http.Request) {
 	log.Println("Received request to /login/createSession")
 
 	status := false
-	nullSession := Session{Status: false, SessionId: ""}
-
 	sessionId, err := gonanoid.New()
-	session := Session{Status: true, SessionId: sessionId}
 
 	defer func() {
-		if status {
-			json.NewEncoder(response).Encode(session)
-		} else {
-			json.NewEncoder(response).Encode(nullSession)
+		if !status {
+			sessionId = ""
 		}
+		json.NewEncoder(response).Encode(Session{SessionId: sessionId})
 	}()
 
 	if err != nil {
@@ -118,7 +116,7 @@ func getSession(response http.ResponseWriter, request *http.Request) {
 	expired := true
 
 	defer func() {
-		fmt.Fprintf(response, fmt.Sprintf("%v", !expired))
+		json.NewEncoder(response).Encode(Status{Status: !expired})
 	}()
 
 	_ = database.QueryValue(fmt.Sprintf("SELECT expires_on < NOW() FROM Sessions WHERE session_id='%s'", vars["session_id"]), &expired)
@@ -130,7 +128,7 @@ func exitSession(response http.ResponseWriter, request *http.Request) {
 	status := false
 
 	defer func() {
-		fmt.Fprintf(response, "%v", status)
+		json.NewEncoder(response).Encode(Status{Status: status})
 	}()
 
 	err := json.NewDecoder(request.Body).Decode(&session)

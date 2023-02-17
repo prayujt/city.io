@@ -43,9 +43,9 @@ export class LoginComponent {
                     }
                 )
                 .subscribe((response) => {
-                    if (response['status']) {
+                    if (response.sessionId != '') {
                         this.router.navigate(['game']);
-                        this.cookieService.set('cookie', response['sessionId']);
+                        this.cookieService.set('cookie', response.sessionId);
                         this.cookieValue = this.cookieService.get('cookie');
                     } else {
                         this._snackBar.open(

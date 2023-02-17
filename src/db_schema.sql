@@ -1,7 +1,7 @@
 CREATE TABLE Accounts (
     player_id VARCHAR(50) PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password CHAR(40) NOT NULL,
     UNIQUE(username)
 );
 
