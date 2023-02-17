@@ -50,7 +50,6 @@ export class RegisterComponent {
                     }
                 )
                 .subscribe((response) => {
-                    console.log(response);
                     if (!response.status) {
                         this._snackBar.open(
                             'This username is not available!',

@@ -1,7 +1,7 @@
 CREATE TABLE Accounts (
     player_id VARCHAR(50) PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    password CHAR(40) NOT NULL,
+    password CHAR(64) NOT NULL,
     UNIQUE(username)
 );
 
@@ -30,7 +30,7 @@ CREATE TABLE Sessions (
     FOREIGN KEY(player_id) REFERENCES Accounts(player_id)
 );
 
-CREATE TABLE Buildings_Info (
+CREATE TABLE Building_Info (
     building_type VARCHAR(50),
     building_level INT,
     building_production DOUBLE,
@@ -48,6 +48,9 @@ CREATE TABLE Buildings (
     city_row INT,
     city_column INT,
     FOREIGN KEY(city_id) REFERENCES Cities(city_id),
-    FOREIGN KEY(building_type, building_level) REFERENCES Buildings_Info(building_type, building_level),
+    FOREIGN KEY(building_type, building_level) REFERENCES Building_Info(building_type, building_level),
     PRIMARY KEY(city_id, city_row, city_column)
 );
+
+INSERT INTO Building_Info VALUES
+('City Hall', 1, 0.0, 0, 0.0, 0);
