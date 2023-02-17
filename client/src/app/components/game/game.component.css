@@ -9,8 +9,8 @@
     .game_board table td, .content table th {
         border: 1px solid #dbdbdb;
         background-color: #90ee90;
-        height: 10.48vh;
-        width: 10.48vh;
+        height: 10.38vh;
+        width: 10.38vh;
         font-size: 60px;
     }
 
