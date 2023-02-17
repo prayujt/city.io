@@ -18,8 +18,11 @@ type Account struct {
 }
 
 type Session struct {
-	Status    bool   `json:"status"`
 	SessionId string `json:"sessionId"`
+}
+
+type Status struct {
+	Status bool `json:"status"`
 }
 
 func HandleLoginRoutes(r *mux.Router) {
@@ -35,7 +38,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 
 	status := false
 	defer func() {
-		fmt.Fprintf(response, fmt.Sprintf("%v", status))
+		json.NewEncoder(response).Encode(Status{Status: status})
 	}()
 
 	var acc Account
@@ -45,7 +48,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_, err = database.Execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', '%s')", acc.Username, acc.Password))
+	_, err = database.Execute(fmt.Sprintf("INSERT INTO Accounts (player_id, username, password) VALUES (uuid(), '%s', SHA2('%s', 256))", acc.Username, acc.Password))
 	if err != nil {
 		return
 	}
@@ -65,24 +68,19 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 	}
 
 	status = true
-
 }
 
 func createSession(response http.ResponseWriter, request *http.Request) {
 	log.Println("Received request to /login/createSession")
 
 	status := false
-	nullSession := Session{Status: false, SessionId: ""}
-
 	sessionId, err := gonanoid.New()
-	session := Session{Status: true, SessionId: sessionId}
 
 	defer func() {
-		if status {
-			json.NewEncoder(response).Encode(session)
-		} else {
-			json.NewEncoder(response).Encode(nullSession)
+		if !status {
+			sessionId = ""
 		}
+		json.NewEncoder(response).Encode(Session{SessionId: sessionId})
 	}()
 
 	if err != nil {
@@ -98,7 +96,7 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"INSERT INTO Sessions (session_id, player_id, expires_on) SELECT '%s', player_id, DATE_ADD(NOW(), INTERVAL 24 HOUR) FROM Accounts WHERE username='%s' AND password='%s';", sessionId, acc.Username, acc.Password))
+			"INSERT INTO Sessions (session_id, player_id, expires_on) SELECT '%s', player_id, DATE_ADD(NOW(), INTERVAL 24 HOUR) FROM Accounts WHERE username='%s' AND password=SHA2('%s', 256);", sessionId, acc.Username, acc.Password))
 
 	if err != nil {
 		return
@@ -113,12 +111,12 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 }
 
 func getSession(response http.ResponseWriter, request *http.Request) {
-	log.Println("Received request to /sessions/{session_id}")
+	// log.Println("Received request to /sessions/{session_id}")
 	vars := mux.Vars(request)
 	expired := true
 
 	defer func() {
-		fmt.Fprintf(response, fmt.Sprintf("%v", !expired))
+		json.NewEncoder(response).Encode(Status{Status: !expired})
 	}()
 
 	_ = database.QueryValue(fmt.Sprintf("SELECT expires_on < NOW() FROM Sessions WHERE session_id='%s'", vars["session_id"]), &expired)
@@ -130,7 +128,7 @@ func exitSession(response http.ResponseWriter, request *http.Request) {
 	status := false
 
 	defer func() {
-		fmt.Fprintf(response, "%v", status)
+		json.NewEncoder(response).Encode(Status{Status: status})
 	}()
 
 	err := json.NewDecoder(request.Body).Decode(&session)

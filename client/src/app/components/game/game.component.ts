@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 
-
 @Component({
     selector: 'app-game',
     templateUrl: './game.component.html',
@@ -20,15 +19,16 @@ export class GameComponent {
     public ngOnInit(): void {
         this.getID();
         let ID: string = this.cookieService.get('cookie');
-        if (ID != "") {
-            this.http.get<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
-            )
-            .subscribe((response) => {
-                if (!response) { 
-                    this.router.navigate(['login']);
-                }
-            })
+        if (ID != '') {
+            this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                )
+                .subscribe((response) => {
+                    if (!response) {
+                        this.router.navigate(['login']);
+                    }
+                });
         }
     }
     public getID(): string {

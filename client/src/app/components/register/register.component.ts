@@ -20,15 +20,16 @@ export class RegisterComponent {
     ) {}
     ngOnInit() {
         let ID: string = this.cookieService.get('cookie');
-        if (ID != "") {
-            this.http.get<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
-            )
-            .subscribe((response) => {
-                if (response) { 
-                    this.router.navigate(['game']);
-                }
-            })
+        if (ID != '') {
+            this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                )
+                .subscribe((response) => {
+                    if (response) {
+                        this.router.navigate(['game']);
+                    }
+                });
         }
     }
     public showPassword: boolean = false;
@@ -62,7 +63,7 @@ export class RegisterComponent {
                     }
                 )
                 .subscribe((response) => {
-                    if (!response) {
+                    if (!response.status) {
                         this._snackBar.open(
                             'This username is not available!',
                             'Close',

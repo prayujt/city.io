@@ -21,15 +21,16 @@ export class LoginComponent {
     ) {}
     public ngOnInit(): void {
         let ID: string = this.cookieService.get('cookie');
-        if (ID != "") {
-            this.http.get<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
-            )
-            .subscribe((response) => {
-                if (response) { 
-                    this.router.navigate(['game']);
-                }
-            })
+        if (ID != '') {
+            this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                )
+                .subscribe((response) => {
+                    if (response) {
+                        this.router.navigate(['game']);
+                    }
+                });
         }
     }
     public showPassword: boolean = false;
@@ -55,9 +56,9 @@ export class LoginComponent {
                     }
                 )
                 .subscribe((response) => {
-                    if (response['status']) {
+                    if (response.sessionId != '') {
                         this.router.navigate(['game']);
-                        this.cookieService.set('cookie', response['sessionId']);
+                        this.cookieService.set('cookie', response.sessionId);
                         this.cookieValue = this.cookieService.get('cookie');
                     } else {
                         this._snackBar.open(
