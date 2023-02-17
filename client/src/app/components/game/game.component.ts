@@ -25,7 +25,7 @@ export class GameComponent {
                     `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
                 )
                 .subscribe((response) => {
-                    if (!response) {
+                    if (!response.status) {
                         this.router.navigate(['login']);
                     }
                 });
