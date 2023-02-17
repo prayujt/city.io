@@ -1,45 +1,15 @@
 <div class="game" fxLayout="column" fxLayoutAlign="center center">
     <div class="game_board">
         <table>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>🏨</td>
-                <td>🏢</td>
-                <td>🏥</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>🏠</td>
-                <td>🏦</td>
-                <td>🏠</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>🏠</td>
-                <td>🏠</td>
-                <td>🏭</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr *ngFor="let block of buildings">
+                <td *ngFor="let building of block">
+                    {{building.building_icon}}
+                </td>
             </tr>
         </table>
     </div>
 </div>
-<mat-tab-group class="bottom_menu">
+<!-- <mat-tab-group class="bottom_menu">
     <mat-tab label="Buildings">
         <mat-grid-list cols="8" rowHeight="80px">
             <mat-grid-tile class="menu_tiles">🏠</mat-grid-tile>
@@ -53,4 +23,4 @@
         </mat-grid-list>
     </mat-tab>
     <mat-tab label="Unique Buildings"></mat-tab>
-</mat-tab-group>
+</mat-tab-group> -->
