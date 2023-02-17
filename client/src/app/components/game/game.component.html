@@ -1,8 +1,8 @@
-<div class="game" fxLayout="column" fxLayoutAlign="center center">
+<div class="game">
     <div class="game_board">
         <table>
             <tr *ngFor="let block of buildings">
-                <td *ngFor="let building of block">
+                <td *ngFor="let building of block" (click)="onTileClick()">
                     {{building.building_icon}}
                 </td>
             </tr>

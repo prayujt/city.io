@@ -1,40 +1,19 @@
 <!-- Toolbar -->
-<mat-toolbar color="primary" class="app-header">
+<!-- <mat-toolbar color="primary" class="app-header">
     <div>
-        <a
-            href="https://github.com/prayujt/city.io"
-            target="_blank"
-            class="positronx"
-            >city.io</a
-        >
+        <a href="https://github.com/prayujt/city.io" target="_blank" class="positronx">city.io</a>
     </div>
     <div>
         <span class="nav-tool-items">
             <div *ngIf="!loggedIn; else elseBlock">
-                <a mat-button routerLink="login" routerLinkActive="active"
-                    >Log in</a
-                >
-                <a
-                    mat-button
-                    mat-raised-button
-                    routerLink="register"
-                    routerLinkActive="active"
-                    >Register</a
-                >
+                <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
+                <a mat-button mat-raised-button routerLink="register" routerLinkActive="active">Register</a>
             </div>
             <ng-template #elseBlock>
-                <a
-                    mat-button
-                    routerLink="login"
-                    routerLinkActive="active"
-                    (click)="logOut()"
-                    >Log out</a
-                >
+                <a mat-button routerLink="login" routerLinkActive="active" (click)="logOut()">Log out</a>
             </ng-template>
         </span>
     </div>
-    <ng-template #elseBlock
-        >Content to render when condition is false.</ng-template
-    >
-</mat-toolbar>
+    <ng-template #elseBlock>Content to render when condition is false.</ng-template>
+</mat-toolbar> -->
 <router-outlet class="router"></router-outlet>

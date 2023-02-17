@@ -41,12 +41,16 @@ export class GameComponent {
         return this.cookieService.get('cookie');
     }
 
-    createCity() : GameComponent {
+    createCity(): GameComponent {
         this.cityService.createCity();
         return this;
     }
 
-    get buildings () : Building[][] {
+    get buildings(): Building[][] {
         return this.cityService.getBuildings();
+    }
+
+    onTileClick() {
+        // show buildable buildings
     }
 }

@@ -1,35 +1,28 @@
 .game {
-    height: 90%;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.game_board table td,
-.content table th {
-    border: 1px solid #dbdbdb;
-    vertical-align: middle;
-    background-color: #90ee90;
-    height: 1.5em;
-    width: 1.5em;
-    font-size: 50px;
-    text-align: center;
-}
-.game_board table {
-    width: 100%;
-    margin: 0 auto;
-}
-.game_board table tr:hover {
-    background-color: transparent;
-}
-.bottom_menu {
-    background-color: white;
-    bottom: 0;
-    position: fixed;
-    width: 100%;
-}
-.menu_tiles {
-    justify-content: center;
-    align-items: center;
-    font-size: 40px;
-}
+    height: 100%;
+    width: 70%;
+            flex-direction: row;
+            align-items: center;
+    }
+
+    .game_board table td, .content table th {
+        border: 1px solid #dbdbdb;
+        background-color: #90ee90;
+        height: 1.5em;
+        width: 1.5em;
+        font-size: 60px;
+    }
+
+    .bottom_menu {
+        background-color: white;
+        bottom: 0;
+        position: fixed;
+        width: 100%;
+    }
+
+    .menu_tiles {
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+    }
