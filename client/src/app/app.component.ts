@@ -3,6 +3,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
