@@ -57,7 +57,6 @@ CREATE TABLE Buildings (
 );
 
 INSERT INTO Building_Info VALUES
---building type, level,production, hapiness, capacity, cost, time
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
 ('Apartment', 1, 500.00, 2, 5000, 10000.00, 1),
 ('Supermarket', 1, 4000.00, 2, 400, 10000.00, 1),
