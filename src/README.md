@@ -111,7 +111,6 @@
 {
     buildingName:   string,
     buildingType:   string,
-    buildingLevel:  int,
     cityRow:        int,
     cityColumn:     int
 }

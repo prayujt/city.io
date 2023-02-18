@@ -108,12 +108,24 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"INSERT INTO Buildings SELECT '%s', '%s', '%d', city_id, '%d', '%d' FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s'", building.BuildingName, building.BuildingType, building.BuildingLevel, building.CityRow, building.CityColumn, sessionId))
+			"UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type='%s' AND building_level=1) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s')", building.BuildingType, sessionId))
 	if err != nil {
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	result, err = database.Execute(
+		fmt.Sprintf(
+			"INSERT INTO Buildings SELECT '%s', '%s', 1, city_id, '%d', '%d' FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s'", building.BuildingName, building.BuildingType, building.CityRow, building.CityColumn, sessionId))
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err = result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
 		return
 	}
@@ -139,12 +151,24 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"UPDATE Buildings SET building_level=building_level+1 WHERE city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s') AND city_row='%d' AND city_column='%d'", sessionId, building.CityRow, building.CityColumn))
+			"UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type='%s' AND building_level=(SELECT building_level + 1 FROM Buildings WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s') AND city_row='%d' AND city_column='%d')) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s')", building.BuildingType, sessionId, building.CityRow, building.CityColumn, sessionId))
 	if err != nil {
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	result, err = database.Execute(
+		fmt.Sprintf(
+			"UPDATE Buildings SET building_level=building_level+1 WHERE city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s') AND city_row='%d' AND city_column='%d'", sessionId, building.CityRow, building.CityColumn))
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err = result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
 		return
 	}

@@ -2,7 +2,8 @@ CREATE TABLE Accounts (
     player_id VARCHAR(50) PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     password CHAR(64) NOT NULL,
-    balance DOUBLE,
+    balance DOUBLE DEFAULT 2000000.0,
+    CHECK (balance > 0),
     UNIQUE(username)
 );
 
@@ -58,8 +59,17 @@ CREATE TABLE Buildings (
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
-('Apartment', 1, 500.00, 2, 5000, 10000.00, 1),
-('Supermarket', 1, 4000.00, 2, 400, 10000.00, 1),
-('Hospital', 1, 1000.00, 5, 1000, 10000.00 , 1),
-('School', 1, 2000.00, 4, 500, 10000.00, 1);
-
+('Apartment', 1, 500.00, 2, 5000, 400000.00, 60),
+('Apartment', 2, 750.00, 2, 7500, 800000.00, 300),
+('Apartment', 3, 1000.00, 3, 10000, 1000000.00, 900),
+('Apartment', 4, 2000.00, 3, 12500, 1500000.00, 1800),
+('Apartment', 5, 3000.00, 3, 15000, 2000000.00, 3600),
+('Apartment', 6, 5000.00, 4, 17500, 3000000.00, 9000),
+('Apartment', 7, 7500.00, 4, 20000, 5000000.00, 18000),
+('Apartment', 8, 1000.00, 4, 25000, 7500000.00, 36000),
+('Apartment', 9, 1500.00, 4, 50000, 10000000.00, 72000),
+('Apartment', 10, 2000.00, 5, 100000, 15000000.00, 144000),
+('Hospital', 1, 1000.00, 5, 1000, 250000.00, 60),
+('School', 1, 2000.00, 3, 500, 250000.00, 60),
+('Supermarket', 1, 10000.00, 1, 250, 250000.00, 120),
+('Barracks', 1, 1000, 3, 500, 300000, 120);
