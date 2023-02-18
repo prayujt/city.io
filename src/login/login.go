@@ -56,7 +56,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 	var city string = "City Hall"
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"INSERT INTO Buildings (building_name, building_type, building_level, city_id, city_row, city_column) SELECT '%s', '%s', 1, city_id, 4, 4 FROM Cities WHERE city_owner=(SELECT player_id FROM Accounts where username='%s');", city, city, acc.Username))
+			"INSERT INTO Buildings (building_name, building_type, building_level, city_id, city_row, city_column) SELECT '%s', '%s', 1, city_id, 4, 6 FROM Cities WHERE city_owner=(SELECT player_id FROM Accounts where username='%s');", city, city, acc.Username))
 
 	if err != nil {
 		return
@@ -111,7 +111,6 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 }
 
 func getSession(response http.ResponseWriter, request *http.Request) {
-	// log.Println("Received request to /sessions/{session_id}")
 	vars := mux.Vars(request)
 	expired := true
 

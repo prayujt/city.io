@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-var session_id string
-
 func TestAccountCreate(t *testing.T) {
 	acc := login.Account{
 		Username: "test",
@@ -55,8 +53,6 @@ func TestAccountLogin(t *testing.T) {
 
 	if session.SessionId == "" {
 		t.Error("Expected session creation to return true, instead got false")
-	} else {
-		session_id = session.SessionId
 	}
 }
 
@@ -109,12 +105,7 @@ func TestIncorrectUsernamePassword(t *testing.T) {
 }
 
 func TestSessionStatus(t *testing.T) {
-	if session_id == "" {
-		t.Error("Cannot test session status when session creation test failed")
-		return
-	}
-
-	response := Get(fmt.Sprintf("/sessions/%s", session_id))
+	response := Get(fmt.Sprintf("/sessions/%s", sessionId))
 
 	var result login.Status
 	json.Unmarshal(response, &result)
@@ -136,13 +127,8 @@ func TestInvalidSession(t *testing.T) {
 }
 
 func TestSessionRemove(t *testing.T) {
-	if session_id == "" {
-		t.Error("Cannot test session status when session creation test failed")
-		return
-	}
-
 	session := login.Session{
-		SessionId: session_id,
+		SessionId: sessionId,
 	}
 
 	response := Post("/sessions/logout", session)
@@ -156,12 +142,7 @@ func TestSessionRemove(t *testing.T) {
 }
 
 func TestSessionStatusAfterLogout(t *testing.T) {
-	if session_id == "" {
-		t.Error("Cannot test session status when session creation test failed")
-		return
-	}
-
-	response := Get(fmt.Sprintf("/sessions/%s", session_id))
+	response := Get(fmt.Sprintf("/sessions/%s", sessionId))
 
 	var result login.Status
 	json.Unmarshal(response, &result)

@@ -18,8 +18,8 @@ type City struct {
 }
 
 type Buildings struct {
-	IsOwner   bool        `json:"isOwner"`
-	Buildings interface{} `json:"buildings"`
+	IsOwner   bool       `json:"isOwner"`
+	Buildings []Building `json:"buildings"`
 }
 
 type Building struct {
@@ -33,6 +33,10 @@ type Building struct {
 	// HappinessChange    float64 `database:"happiness_change"`
 	// BuildCost          float64 `database:"build_cost"`
 	// BuildTime          int     `database:"build_time"`
+}
+
+type Status struct {
+	Status bool `json:"status"`
 }
 
 func HandleCityRoutes(r *mux.Router) {
@@ -65,7 +69,7 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 
-	var buildings interface{}
+	var buildings Buildings
 	defer func() {
 		json.NewEncoder(response).Encode(buildings)
 	}()
@@ -87,9 +91,87 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 }
 
 func createBuilding(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	sessionId := vars["session_id"]
+	status := false
 
+	defer func() {
+		json.NewEncoder(response).Encode(Status{Status: status})
+	}()
+
+	var building Building
+	err := json.NewDecoder(request.Body).Decode(&building)
+
+	if err != nil {
+		return
+	}
+
+	result, err := database.Execute(
+		fmt.Sprintf(
+			"UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type='%s' AND building_level=1) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s')", building.BuildingType, sessionId))
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	result, err = database.Execute(
+		fmt.Sprintf(
+			"INSERT INTO Buildings SELECT '%s', '%s', 1, city_id, '%d', '%d' FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s'", building.BuildingName, building.BuildingType, building.CityRow, building.CityColumn, sessionId))
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err = result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	status = true
 }
 
 func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	sessionId := vars["session_id"]
+	status := false
 
+	defer func() {
+		json.NewEncoder(response).Encode(Status{Status: status})
+	}()
+
+	var building Building
+	err := json.NewDecoder(request.Body).Decode(&building)
+
+	if err != nil {
+		return
+	}
+
+	result, err := database.Execute(
+		fmt.Sprintf(
+			"UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type='%s' AND building_level=(SELECT building_level + 1 FROM Buildings WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s') AND city_row='%d' AND city_column='%d')) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s')", building.BuildingType, sessionId, building.CityRow, building.CityColumn, sessionId))
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	result, err = database.Execute(
+		fmt.Sprintf(
+			"UPDATE Buildings SET building_level=building_level+1 WHERE city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s') AND city_row='%d' AND city_column='%d'", sessionId, building.CityRow, building.CityColumn))
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err = result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	status = true
 }
