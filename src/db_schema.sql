@@ -57,6 +57,35 @@ CREATE TABLE Buildings (
     PRIMARY KEY(city_id, city_row, city_column)
 );
 
+CREATE TABLE Builds (
+    city_id VARCHAR(50),
+    city_row INT,
+    city_column INT,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    FOREIGN KEY(city_id, city_row, city_column) REFERENCES Buildings(city_id, city_row, city_column),
+    PRIMARY KEY(city_id, city_row, city_column)
+);
+
+CREATE TRIGGER Start_Build
+AFTER INSERT ON Buildings
+FOR EACH ROW
+INSERT INTO Builds VALUES (
+    NEW.city_id, NEW.city_row, NEW.city_column, NOW(), TIMESTAMPADD(SECOND, (SELECT build_time FROM Building_Info WHERE building_type=NEW.building_type AND building_level=NEW.building_level), NOW())
+);
+
+CREATE TRIGGER Start_Upgrade
+AFTER UPDATE ON Buildings
+FOR EACH ROW
+INSERT INTO Builds VALUES (
+    NEW.city_id, NEW.city_row, NEW.city_column, NOW(), TIMESTAMPADD(SECOND, (SELECT build_time FROM Building_Info WHERE building_type=NEW.building_type AND building_level=NEW.building_level), NOW())
+);
+
+CREATE EVENT Delete_Finished_Builds ON SCHEDULE EVERY 1 SECOND
+STARTS '2023-01-01 00:00:00'
+DO
+DELETE FROM Builds WHERE end_time < NOW();
+
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
 ('Apartment', 1, 500.00, 2, 5000, 400000.00, 60),

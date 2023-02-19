@@ -42,6 +42,7 @@ type Status struct {
 func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/{session_id}", getCity).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings", getBuildings).Methods("GET")
+	r.HandleFunc("/cities/{session_id}/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
 
 	r.HandleFunc("/cities/{session_id}/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/{session_id}/upgradeBuilding", upgradeBuilding).Methods("POST")
@@ -88,6 +89,23 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 	database.Query(query, &buildingResult)
 
 	buildings = Buildings{IsOwner: len(param) == 0, Buildings: buildingResult}
+}
+
+func getBuilding(response http.ResponseWriter, request *http.Request) {
+	// vars := mux.Vars(request)
+	// sessionId := vars["session_id"]
+	// cityRow := vars["city_row"]
+	// cityColumn := vars["city_column"]
+
+	// param := request.URL.Query()["username"]
+
+	// var query string
+	// if len(param) > 0 {
+	// 	query = fmt.Sprintf("SELECT building_type, building_level, building_name, city_row, city_column FROM Buildings NATURAL JOIN Cities JOIN Accounts ON city_owner=player_id WHERE username='%s';", param[0])
+
+	// } else {
+	// 	query = fmt.Sprintf("SELECT building_type, building_level, building_name, city_row, city_column FROM Buildings NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s';", sessionId)
+	// }
 }
 
 func createBuilding(response http.ResponseWriter, request *http.Request) {
