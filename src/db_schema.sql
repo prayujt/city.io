@@ -84,7 +84,7 @@ INSERT INTO Builds VALUES (
 CREATE EVENT Delete_Finished_Builds ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
 DO
-DELETE FROM Builds WHERE end_time < NOW();
+DELETE FROM Builds WHERE end_time <= NOW();
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),

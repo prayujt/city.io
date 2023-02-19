@@ -71,7 +71,12 @@ func InitDatabase(dbUrl string) {
 }
 
 func Reset() {
-	_, err := Execute("DELETE FROM Buildings")
+	_, err := Execute("DELETE FROM Builds")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = Execute("DELETE FROM Buildings")
 	if err != nil {
 		panic(err)
 	}
