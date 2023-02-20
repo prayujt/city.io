@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
+import { Building } from 'src/app/building';
+import { CityService } from '../../city.service';
 
 @Component({
     selector: 'app-game',
@@ -14,8 +16,11 @@ export class GameComponent {
     constructor(
         private http: HttpClient,
         private router: Router,
-        private cookieService: CookieService
-    ) {}
+        private cookieService: CookieService,
+        private cityService: CityService
+    ) {
+        this.createCity();
+    }
     public ngOnInit(): void {
         this.getID();
         let ID: string = this.cookieService.get('cookie');
@@ -34,5 +39,18 @@ export class GameComponent {
     public getID(): string {
         console.log(this.cookieService.get('cookie'));
         return this.cookieService.get('cookie');
+    }
+
+    createCity(): GameComponent {
+        this.cityService.createCity();
+        return this;
+    }
+
+    get buildings(): Building[][] {
+        return this.cityService.getBuildings();
+    }
+
+    onTileClick() {
+        // show buildable buildings
     }
 }
