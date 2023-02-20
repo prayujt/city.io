@@ -36,6 +36,7 @@ func main() {
 	// include other file routes here, passing in the router
 	login.HandleLoginRoutes(router)
 	game.HandleCityRoutes(router)
+	game.HandleVisitRoutes(router)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
