@@ -1,12 +1,18 @@
 export class Building {
-    production_rate: number = 0.0;
-    upgrade: number = 1;
     type: string = "";
-    happiness_factor: number = 0.0;
-    build_time: number = 0;
     level: number = 1;
-    upgrade_cost: number = 0;
+    name: string = "";
+    production: number = 0.0;
+    happiness_change: number = 0.0;
+    start_time: string = "";
+    end_time: string = "";
     building_icon: string = "";
+    build_cost: number = 0.0;
+    build_time: number = 0;
+    building_icons: Map<string, string> = new Map([
+        ["City Hall", "🏛"],
+        ["Hospital", "🏥"]
+    ]);
     // production rate
     // upgrade
     // type
@@ -18,14 +24,11 @@ export class Building {
 
     // building types
     
-    constructor(type: string) {
-        if (type == "city_hall") {
-            this.production_rate = 0;
-            this.type = type;
-            this.happiness_factor = 0.0;
-            this.build_time = 0;
-            this.upgrade_cost = 1000;
-            this.building_icon = "🕋";
-        }
+    constructor(level: number = 0, name: string = "", type: string = "") {
+        this.level = level;
+        this.name = name;
+        this.type = type;
+        this.building_icon = this.building_icons.get(type) as string;
+        // initialize stats
     }
 }

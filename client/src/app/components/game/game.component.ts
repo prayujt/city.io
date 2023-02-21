@@ -34,7 +34,24 @@ export class GameComponent {
                         this.router.navigate(['login']);
                     }
                 });
+            this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                )
+                .subscribe((response) => {
+                    this.cityService.setBuildings(response.buildings);
+                });
+            setInterval(() => {
+                this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                )
+                .subscribe((response) => {
+                    this.cityService.setBuildings(response.buildings);
+                });
+            }, 1000);
         }
+
     }
     public getID(): string {
         console.log(this.cookieService.get('cookie'));
