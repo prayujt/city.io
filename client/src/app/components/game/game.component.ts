@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { environment } from '../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
@@ -17,10 +18,14 @@ export class GameComponent {
         private http: HttpClient,
         private router: Router,
         private cookieService: CookieService,
-        private cityService: CityService
+        private cityService: CityService,
+        private _snackBar: MatSnackBar
     ) {
         this.createCity();
     }
+    public loggedIn: boolean = false;
+    private ID: string = '';
+
     public ngOnInit(): void {
         this.getID();
         let ID: string = this.cookieService.get('cookie');
@@ -34,8 +39,55 @@ export class GameComponent {
                         this.router.navigate(['login']);
                     }
                 });
+            this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                )
+                .subscribe((response) => {
+                    this.cityService.setBuildings(response.buildings);
+                });
+            setInterval(() => {
+                this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                )
+                .subscribe((response) => {
+                    this.cityService.setBuildings(response.buildings);
+                });
+            }, 1000);
+        } else {
+            this.router.navigate(['login']);
         }
+
     }
+
+    public logOut(): void {
+        this.http
+            .post<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/logout`,
+                {
+                    sessionId: this.ID,
+                }
+            )
+            .subscribe((response) => {
+                if (response.status) {
+                    this._snackBar.open('Log out successful!', 'Close', {
+                        duration: 2000,
+                    });
+                    this.loggedIn = false;
+                    this.router.navigate(['login']).then(() => {
+                        window.location.reload();
+                        this.cookieService.delete('cookie');
+                    });
+                    this.cookieService.delete('cookie')
+                } else {
+                    this._snackBar.open('Could not log out!', 'Close', {
+                        duration: 2000,
+                    });
+                }
+            });
+    }
+
     public getID(): string {
         console.log(this.cookieService.get('cookie'));
         return this.cookieService.get('cookie');

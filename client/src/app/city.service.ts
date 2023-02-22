@@ -12,10 +12,7 @@ export class CityService {
     for (let i = 0; i < 9; i++) {
       this.buildings[i] = [];
       for (let j = 0; j < 13; j++) {
-        if (i == 4 && j == 6)
-          this.buildings[i][j] = new Building("city_hall");
-        else
-        this.buildings[i][j] = new Building("");
+        this.buildings[i][j] = new Building();
       }
     }
 
@@ -24,5 +21,17 @@ export class CityService {
 
   getBuildings() : Building[][] {
     return this.buildings;
+  }
+
+  setBuildings(buildings: Array<{
+    buildingLevel: number,
+    buildingName: string,
+    buildingType: string,
+    cityColumn: number,
+    cityRow: number
+  }>) {
+    for (let i = 0; i < buildings.length; i++) {
+      this.buildings[buildings[i].cityRow][buildings[i].cityColumn] = new Building(buildings[i].buildingLevel, buildings[i].buildingName, buildings[i].buildingType);
+    }
   }
 }

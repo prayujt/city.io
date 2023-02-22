@@ -11,7 +11,11 @@
         background-color: #90ee90;
         height: 10.3vh;
         width: 10.3vh;
+        text-align: center;
         font-size: 60px;
+    }
+    .game_board table td:hover {
+        background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
     }
 
     .bottom_menu {
@@ -25,4 +29,46 @@
         justify-content: center;
         align-items: center;
         font-size: 40px;
+    }
+
+    .mat-drawer { /* sidebar */
+        width: 420px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .logout-button {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        color: white;
+        background-color: rgb(255, 0, 0);
+        height: 30px;
+    }
+    .logout-button:hover {
+        background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
+    }
+
+    .scout-button {
+        order: 0;
+        align-items: center;
+        height: 100px;
+        width: 300px;
+        font-size: 45px;
+        margin: auto;
+        color: white;
+        background-color: rgb(46, 197, 0);
+    }
+    .scout-button:hover {
+        background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
+    }
+
+    .display-box {
+        height: 550px;
+        width: 350px;
+        border-radius: 5px;
+        margin: auto;
+        background-color: rgb(230, 230, 230);
     }

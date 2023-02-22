@@ -1,14 +1,25 @@
-<div class="game">
-    <div class="game_board">
-        <table>
-            <tr *ngFor="let block of buildings">
-                <td *ngFor="let building of block" (click)="onTileClick()">
-                    {{building.building_icon}}
-                </td>
-            </tr>
-        </table>
-    </div>
-</div>
+<mat-drawer-container [hasBackdrop]="false">
+    <!-- SIDEBAR CONTENT -->
+    <mat-drawer mode="over" opened class="mat-drawer" position="end">
+        <a mat-button routerLink="login" routerLinkActive="active" class="logout-button" (click)="logOut()">Log out</a>
+        <a mat-button class="scout-button">Scout</a>
+        <div class="display-box"></div>
+    </mat-drawer>
+    <!-- MAIN CONTENT -->
+    <mat-drawer-content>
+        <div class="game">
+            <div class="game_board">
+                <table>
+                    <tr *ngFor="let block of buildings">
+                        <td *ngFor="let building of block" (click)="onTileClick()">
+                            {{building.building_icon}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </mat-drawer-content>
+</mat-drawer-container>
 <!-- <mat-tab-group class="bottom_menu">
     <mat-tab label="Buildings">
         <mat-grid-list cols="8" rowHeight="80px">
