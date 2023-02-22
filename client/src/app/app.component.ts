@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
                     )
                     .subscribe((response) => {
                         if (response.status) this.loggedIn = true;
+                        else this.loggedIn = false;
                     });
             }
         }, 250);
