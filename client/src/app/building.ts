@@ -13,6 +13,8 @@ export class Building {
         ["City Hall", "🏛"],
         ["Hospital", "🏥"]
     ]);
+    row: number = 0;
+    column: number = 0;
     // production rate
     // upgrade
     // type
@@ -24,11 +26,17 @@ export class Building {
 
     // building types
     
-    constructor(level: number = 0, name: string = "", type: string = "") {
+    constructor(level: number = 0, name: string = "", type: string = "", row: number = 0, column: number = 0) {
         this.level = level;
         this.name = name;
         this.type = type;
+        this.row = row;
+        this.column = column;
         this.building_icon = this.building_icons.get(type) as string;
         // initialize stats
+    }
+
+    setIcon() {
+        this.building_icon = this.building_icons.get(this.type) as string;
     }
 }

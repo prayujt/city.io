@@ -11,7 +11,7 @@
             <div class="game_board">
                 <table>
                     <tr *ngFor="let block of buildings">
-                        <td *ngFor="let building of block" (click)="onTileClick()">
+                        <td data-id="{{building.row}} {{building.column}}" class = "tile" *ngFor="let building of block" (click)="onTileClick(building.row, building.column)">
                             {{building.building_icon}}
                         </td>
                     </tr>

@@ -58,7 +58,6 @@ export class GameComponent {
         } else {
             this.router.navigate(['login']);
         }
-
     }
 
     public logOut(): void {
@@ -102,7 +101,13 @@ export class GameComponent {
         return this.cityService.getBuildings();
     }
 
-    onTileClick() {
+    onTileClick(row: number, column: number) {
         // show buildable buildings
+
+        // change CSS for selected tile
+        const tiles = Array.from(document.querySelectorAll('.tile'));
+        tiles.forEach(tile => tile.classList.remove('selected'));
+        const tile = document.querySelector(`td[id="${row} ${column}"]`);
+        tile?.classList.add('selected');
     }
 }
