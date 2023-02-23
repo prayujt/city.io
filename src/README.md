@@ -93,7 +93,7 @@
     isOwner:        boolean,
     buildings:      [{
                         buildingType:   string,
-                        buildingLevel:  string,
+                        buildingLevel:  int,
                         buildingName:   string,
                         cityRow:        int,
                         cityColumn:     int
