@@ -2,6 +2,7 @@ package tests
 
 import (
 	"api/game"
+	"time"
 
 	"encoding/json"
 	"fmt"
@@ -122,4 +123,53 @@ func TestBuildingCreateDuplicate(t *testing.T) {
 			t.Error("Expected the building to remain the same, instead got new building")
 		}
 	}
+}
+
+func TestUpgradeBuilding(t *testing.T) {
+	building := game.Building{
+		BuildingName:  "Test",
+		BuildingType:  "Test",
+		BuildingLevel: 1,
+		CityRow:       1,
+		CityColumn:    1,
+	}
+
+	response := Post(fmt.Sprintf("/cities/%s/createBuilding", sessionId), building)
+	var result game.Status
+	json.Unmarshal(response, &result)
+
+	if !result.Status {
+		t.Error("Expected to succeed in creating building")
+	}
+
+	time.Sleep(time.Second * 2)
+
+	response = Post(fmt.Sprintf("/cities/%s/upgradeBuilding", sessionId), building)
+	var result2 game.Status
+	json.Unmarshal(response, &result2)
+
+	if !result2.Status {
+		t.Error("Expected to pass in upgrading")
+	}
+
+	response = Get(fmt.Sprintf("/cities/%s/buildings", sessionId))
+
+	var buildingUpgrade game.Buildings
+	json.Unmarshal(response, &buildingUpgrade)
+
+	if !buildingUpgrade.IsOwner {
+		t.Error("Expected city to be owned by player")
+	}
+
+	var foundBuilding bool
+	for _, building := range buildingUpgrade.Buildings {
+		if building.CityRow == 1 && building.CityColumn == 1 && building.BuildingLevel == 2 {
+			foundBuilding = true
+		}
+	}
+
+	if foundBuilding == false {
+		t.Error("Expected the building to upgrade, instead stayed the same")
+	}
+
 }
