@@ -1,9 +1,12 @@
 <mat-drawer-container [hasBackdrop]="false">
     <!-- SIDEBAR CONTENT -->
     <mat-drawer mode="over" opened class="mat-drawer" position="end">
-        <a mat-button routerLink="login" routerLinkActive="active" class="logout-button" (click)="logOut()">Log out</a>
-        <a mat-button class="scout-button">Scout</a>
-        <div class="display-box"></div>
+        <div class="sidebar-container">
+            <a mat-button routerLink="login" routerLinkActive="active" class="logout-button" (click)="logOut()">Log out</a>
+            <a mat-button class="scout-button">Scout</a>
+            <div class="display-box"></div>
+        </div>
+
     </mat-drawer>
     <!-- MAIN CONTENT -->
     <mat-drawer-content>
