@@ -150,4 +150,20 @@ func TestSessionStatusAfterLogout(t *testing.T) {
 	if result.Status != false {
 		t.Error("Expected to fail to validate deleted session, instead succeeded")
 	}
+
+	acc := login.Account{
+		Username: "root",
+		Password: "root",
+	}
+
+	response = Post("/login/createSession", acc)
+
+	session := login.Session{}
+	json.Unmarshal(response, &session)
+
+	if session.SessionId == "" {
+		t.Error("Error in recreating deleted session")
+	}
+	sessionId = session.SessionId
+
 }

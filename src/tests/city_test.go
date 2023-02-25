@@ -2,6 +2,7 @@ package tests
 
 import (
 	"api/game"
+	"strings"
 	"time"
 
 	"encoding/json"
@@ -47,7 +48,19 @@ func TestBuildingOwnedGet(t *testing.T) {
 }
 
 func TestBuildingNotOwnedGet(t *testing.T) {
-	response := Get(fmt.Sprintf("/cities/%s/buildings?username=player1", sessionId))
+	response := Get(fmt.Sprintf("/cities"))
+
+	var cities []game.Ownership
+	json.Unmarshal(response, &cities)
+
+	var unownedCity string
+	for _, pair := range cities {
+		if pair.CityOwner == "player1" {
+			unownedCity = pair.CityName
+		}
+	}
+
+	response = Get(fmt.Sprintf("/cities/%s/buildings?cityName=%s", sessionId, strings.ReplaceAll(unownedCity, " ", "+")))
 
 	var result game.Buildings
 	json.Unmarshal(response, &result)
@@ -63,7 +76,6 @@ func TestBuildingNotOwnedGet(t *testing.T) {
 
 func TestBuildingCreate(t *testing.T) {
 	building := game.Building{
-		BuildingName:  "Hospital",
 		BuildingType:  "Hospital",
 		BuildingLevel: 1,
 		CityRow:       0,
@@ -94,7 +106,6 @@ func TestBuildingCreate(t *testing.T) {
 
 func TestBuildingCreateDuplicate(t *testing.T) {
 	building := game.Building{
-		BuildingName:  "School",
 		BuildingType:  "School",
 		BuildingLevel: 1,
 		CityRow:       0,
@@ -127,10 +138,9 @@ func TestBuildingCreateDuplicate(t *testing.T) {
 
 func TestUpgradeBuilding(t *testing.T) {
 	building := game.Building{
-		BuildingName:  "Test",
 		BuildingType:  "Test",
 		BuildingLevel: 1,
-		CityRow:       1,
+		CityRow:       0,
 		CityColumn:    1,
 	}
 
@@ -162,8 +172,8 @@ func TestUpgradeBuilding(t *testing.T) {
 	}
 
 	var foundBuilding bool
-	for _, building := range buildingUpgrade.Buildings {
-		if building.CityRow == 1 && building.CityColumn == 1 && building.BuildingLevel == 2 {
+	for _, building2 := range buildingUpgrade.Buildings {
+		if building2.CityRow == building.CityRow && building2.CityColumn == building.CityColumn && building2.BuildingLevel == building.BuildingLevel+1 {
 			foundBuilding = true
 		}
 	}

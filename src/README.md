@@ -94,7 +94,6 @@
     buildings:      [{
                         buildingType:   string,
                         buildingLevel:  int,
-                        buildingName:   string,
                         cityRow:        int,
                         cityColumn:     int
                     },
@@ -116,7 +115,6 @@
 ```
 
 {
-    buildingName:       string,
     buildingType:       string,
     buildingLevel:      int,
     buildingProduction: double,
@@ -133,7 +131,6 @@
 ##### Body:
 ```
 {
-    buildingName:   string,
     buildingType:   string,
     cityRow:        int,
     cityColumn:     int

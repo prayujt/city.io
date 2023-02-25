@@ -55,7 +55,7 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"INSERT INTO Buildings (building_name, building_type, building_level, city_id, city_row, city_column) SELECT 'City Hall', 'City Hall', 1, city_id, 4, 6 FROM Cities WHERE city_owner=(SELECT player_id FROM Accounts where username='%s');", acc.Username))
+			"INSERT INTO Buildings (building_type, building_level, city_id, city_row, city_column) SELECT 'City Hall', 1, city_id, 4, 6 FROM Cities WHERE city_owner=(SELECT player_id FROM Accounts where username='%s');", acc.Username))
 
 	if err != nil {
 		return

@@ -26,7 +26,6 @@ type Buildings struct {
 type Building struct {
 	BuildingType       string  `database:"building_type" json:"buildingType"`
 	BuildingLevel      int     `database:"building_level" json:"buildingLevel"`
-	BuildingName       string  `database:"building_name" json:"buildingName"`
 	CityId             string  `database:"city_id" json:"cityId"`
 	CityRow            int     `database:"city_row" json:"cityRow"`
 	CityColumn         int     `database:"city_column" json:"cityColumn"`
@@ -34,6 +33,7 @@ type Building struct {
 	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
 	StartTime          string  `database:"start_time" json:"startTime"`
 	EndTime            string  `database:"end_time" json:"endTime"`
+	// BuildingName       string  `database:"building_name" json:"buildingName"`
 	// BuildCost          float64 `database:"build_cost"`
 	// BuildTime          int     `database:"build_time"`
 }
@@ -55,6 +55,8 @@ func getCity(response http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 
+	cityName := request.URL.Query()["cityName"]
+
 	var city City
 
 	defer func() {
@@ -62,7 +64,12 @@ func getCity(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	var result []City
-	database.Query(fmt.Sprintf("SELECT city_id, population, city_name FROM Cities NATURAL JOIN Sessions WHERE session_id='%s'", sessionId), &result)
+
+	if len(cityName) > 0 {
+		database.Query(fmt.Sprintf("SELECT city_id, population, city_name FROM Cities NATURAL JOIN Sessions WHERE session_id='%s' AND city_name='%s'", sessionId, cityName[0]), &result)
+	} else {
+		database.Query(fmt.Sprintf("SELECT city_id, population, city_name FROM Cities NATURAL JOIN Sessions WHERE session_id='%s' AND town=0", sessionId), &result)
+	}
 
 	if len(result) > 0 {
 		city = result[0]
@@ -78,20 +85,29 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 		json.NewEncoder(response).Encode(buildings)
 	}()
 
-	param := request.URL.Query()["username"]
+	cityName := request.URL.Query()["cityName"]
 
 	var query string
-	if len(param) > 0 {
-		query = fmt.Sprintf("SELECT building_name, building_type, building_level, city_row, city_column FROM Buildings NATURAL JOIN Cities JOIN Accounts ON city_owner=player_id WHERE username='%s';", param[0])
+	if len(cityName) > 0 {
+		query = fmt.Sprintf("SELECT building_type, building_level, city_row, city_column FROM Buildings NATURAL JOIN Cities JOIN Accounts ON city_owner=player_id WHERE city_name='%s';", cityName[0])
 
 	} else {
-		query = fmt.Sprintf("SELECT building_name, building_type, building_level, city_row, city_column FROM Buildings NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s';", sessionId)
+		query = fmt.Sprintf("SELECT building_type, building_level, city_row, city_column FROM Buildings NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s';", sessionId)
 	}
 
 	var buildingResult []Building
 	database.Query(query, &buildingResult)
 
-	buildings = Buildings{IsOwner: len(param) == 0, Buildings: buildingResult}
+	var isOwner bool
+	if len(cityName) > 0 {
+		database.QueryValue(
+			fmt.Sprintf(
+				"SELECT player_id=(SELECT player_id FROM Sessions WHERE session_id='%s') FROM Cities JOIN Sessions ON city_owner=player_id WHERE city_name='%s'", sessionId, cityName[0]), &isOwner)
+	} else {
+		isOwner = true
+	}
+
+	buildings = Buildings{IsOwner: isOwner, Buildings: buildingResult}
 }
 
 func getBuilding(response http.ResponseWriter, request *http.Request) {
@@ -100,7 +116,7 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 	cityRow, _ := strconv.Atoi(vars["city_row"])
 	cityColumn, _ := strconv.Atoi(vars["city_column"])
 
-	param := request.URL.Query()["username"]
+	cityName := request.URL.Query()["cityName"]
 
 	var building []Building
 	defer func() {
@@ -112,10 +128,10 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	var query string
-	if len(param) > 0 {
-		query = fmt.Sprintf("SELECT building_name, building_type, building_level, building_production, happiness_change, start_time, end_time FROM Buildings NATURAL JOIN Building_Info LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE Buildings.city_id=(SELECT city_id FROM Accounts JOIN Cities ON player_id=city_owner WHERE username='%s') AND Buildings.city_row=%d AND Buildings.city_column=%d;", param[0], cityRow, cityColumn)
+	if len(cityName) > 0 {
+		query = fmt.Sprintf("SELECT building_type, building_level, building_production, happiness_change, start_time, end_time FROM Buildings NATURAL JOIN Building_Info LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE Buildings.city_id=(SELECT city_id FROM Cities WHERE cityName='%s') AND Buildings.city_row=%d AND Buildings.city_column=%d;", cityName[0], cityRow, cityColumn)
 	} else {
-		query = fmt.Sprintf("SELECT building_name, building_type, building_level, building_production, happiness_change, start_time, end_time FROM Buildings NATURAL JOIN Building_Info LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE Buildings.city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s') AND Buildings.city_row=%d AND Buildings.city_column=%d;", sessionId, cityRow, cityColumn)
+		query = fmt.Sprintf("SELECT building_type, building_level, building_production, happiness_change, start_time, end_time FROM Buildings NATURAL JOIN Building_Info LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE Buildings.city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s' AND town=0) AND Buildings.city_row=%d AND Buildings.city_column=%d;", sessionId, cityRow, cityColumn)
 	}
 
 	database.Query(query, &building)
@@ -124,6 +140,7 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 func createBuilding(response http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
+	cityName := request.URL.Query()["cityName"]
 	status := false
 
 	defer func() {
@@ -149,10 +166,18 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err = database.Execute(
-		fmt.Sprintf(
-			"INSERT INTO Buildings SELECT '%s', '%s', 1, city_id, %d, %d FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s'", building.BuildingName, building.BuildingType, building.CityRow, building.CityColumn, sessionId))
+	var query string
+	if len(cityName) > 0 {
+		query = fmt.Sprintf("INSERT INTO Buildings SELECT '%s', 1, city_id, %d, %d FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s' AND city_name='%s'", building.BuildingType, building.CityRow, building.CityColumn, sessionId, cityName[0])
+	} else {
+		query = fmt.Sprintf("INSERT INTO Buildings SELECT '%s', 1, city_id, %d, %d FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s' AND town=0", building.BuildingType, building.CityRow, building.CityColumn, sessionId)
+	}
+
+	result, err = database.Execute(query)
 	if err != nil {
+		result, err = database.Execute(
+			fmt.Sprintf(
+				"UPDATE Accounts SET balance = balance + (SELECT build_cost FROM Building_Info WHERE building_type='%s' AND building_level=1) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s')", building.BuildingType, sessionId))
 		return
 	}
 
@@ -167,6 +192,7 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
+	cityName := request.URL.Query()["cityName"]
 	status := false
 
 	defer func() {
@@ -180,9 +206,14 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err := database.Execute(
-		fmt.Sprintf(
-			"UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type='%s' AND building_level=(SELECT building_level + 1 FROM Buildings WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s') AND city_row=%d AND city_column=%d)) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s')", building.BuildingType, sessionId, building.CityRow, building.CityColumn, sessionId))
+	var query string
+	if len(cityName) > 0 {
+		query = fmt.Sprintf("UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type=(SELECT building_type FROM Buildings NATURAL JOIN Cities WHERE city_name='%s' AND city_row=%d AND city_column=%d) AND building_level=(SELECT building_level+1 FROM Buildings NATURAL JOIN Cities WHERE city_name='%s' AND city_row=%d AND city_column=%d)) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s');", cityName[0], building.CityRow, building.CityColumn, cityName[0], building.CityRow, building.CityColumn, sessionId)
+	} else {
+		query = fmt.Sprintf("UPDATE Accounts SET balance = balance - (SELECT build_cost FROM Building_Info WHERE building_type=(SELECT building_type FROM Buildings NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s' AND town=0 AND city_row=%d AND city_column=%d) AND building_level=(SELECT building_level+1 FROM Buildings NATURAL JOIN Cities JOIN Sessions ON player_id=city_owner WHERE session_id='%s' AND town=0 AND city_row=%d AND city_column=%d)) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s');", sessionId, building.CityRow, building.CityColumn, sessionId, building.CityRow, building.CityColumn, sessionId)
+	}
+	result, err := database.Execute(query)
+
 	if err != nil {
 		return
 	}
@@ -192,10 +223,21 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err = database.Execute(
-		fmt.Sprintf(
-			"UPDATE Buildings SET building_level=building_level+1 WHERE city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s') AND city_row=%d AND city_column=%d", sessionId, building.CityRow, building.CityColumn))
+	if len(cityName) > 0 {
+		query = fmt.Sprintf("UPDATE Buildings SET building_level=building_level+1 WHERE city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s' AND city_name='%s') AND city_row=%d AND city_column=%d", sessionId, cityName, building.CityRow, building.CityColumn)
+	} else {
+		query = fmt.Sprintf("UPDATE Buildings SET building_level=building_level+1 WHERE city_id=(SELECT city_id FROM Sessions JOIN Cities ON player_id=city_owner WHERE session_id='%s' AND town=0) AND city_row=%d AND city_column=%d", sessionId, building.CityRow, building.CityColumn)
+	}
+
+	result, err = database.Execute(query)
+
 	if err != nil {
+		if len(cityName) > 0 {
+			query = fmt.Sprintf("UPDATE Accounts SET balance = balance + (SELECT build_cost FROM Building_Info WHERE building_type=(SELECT building_type FROM Buildings NATURAL JOIN Cities WHERE city_name='%s' AND city_row=%d AND city_column=%d) AND building_level=(SELECT building_level+1 FROM Buildings NATURAL JOIN Cities WHERE city_name='%s' AND city_row=%d AND city_column=%d)) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s');", cityName[0], building.CityRow, building.CityColumn, cityName[0], building.CityRow, building.CityColumn, sessionId)
+		} else {
+			query = fmt.Sprintf("UPDATE Accounts SET balance = balance + (SELECT build_cost FROM Building_Info WHERE building_type=(SELECT building_type FROM Buildings NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s' AND town=0 AND city_row=%d AND city_column=%d) AND building_level=(SELECT building_level+1 FROM Buildings NATURAL JOIN Cities JOIN Sessions ON player_id=city_owner WHERE session_id='%s' AND town=0 AND city_row=%d AND city_column=%d)) WHERE player_id=(SELECT player_id FROM Sessions WHERE session_id='%s');", sessionId, building.CityRow, building.CityColumn, sessionId, building.CityRow, building.CityColumn, sessionId)
+		}
+		result, err = database.Execute(query)
 		return
 	}
 
