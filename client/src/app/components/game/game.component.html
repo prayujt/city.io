@@ -10,7 +10,11 @@
                     <h2 style="text-align:center">Level {{buildingLevel}}</h2>
                     <h2 style="text-indent:20px">Production🪙: ${{buildingProduction}}/hr</h2>
                     <h2 style="text-indent:20px">Happiness🙂: {{happinessChange}}</h2>
-                    <mat-progress-bar mode="determinate" [value]="100"></mat-progress-bar>                </div>
+                    <div *ngIf="progBar">
+                        <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+                        <h3 style="text-align:center">{{hh}}:{{mm}}:{{ss}}</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </mat-drawer>
