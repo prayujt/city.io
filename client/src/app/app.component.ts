@@ -20,19 +20,17 @@ export class AppComponent implements OnInit {
     public loggedIn: boolean = false;
 
     public ngOnInit(): void {
-        setInterval(() => {
-            this.ID = this.cookieService.get('cookie');
-            if (this.ID != '') {
-                this.http
-                    .get<any>(
-                        `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
-                    )
-                    .subscribe((response) => {
-                        this.loggedIn = response.status;
-                    });
-            }
-        }, 250);
-    }
-
-    title = 'client';
+        // setInterval(() => {
+        //     this.ID = this.cookieService.get('cookie');
+        //     if (this.ID != '') {
+        //         this.http
+        //             .get<any>(
+        //                 `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
+        //             )
+        //             .subscribe((response) => {
+        //                 this.loggedIn = response.status;
+        //             });
+        //     }
+        // }, 250);
+        }
 }

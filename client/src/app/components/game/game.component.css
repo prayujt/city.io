@@ -47,7 +47,8 @@
     }
 
     .logout-button {
-        /* right: 10px;
+        /* position: absolute;
+        right: 10px;
         top: 10px; */
         color: white;
         background-color: rgb(255, 0, 0);
@@ -64,7 +65,7 @@
         width: 300px;
         font-size: 45px;
         margin: auto;
-        color: white;
+        color: rgb(255, 255, 255);
         background-color: rgb(46, 197, 0);
     }
     .scout-button:hover {

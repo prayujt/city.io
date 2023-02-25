@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { environment } from '../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
@@ -19,7 +20,7 @@ export class GameComponent {
         private router: Router,
         private cookieService: CookieService,
         private cityService: CityService,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
     ) {
         this.createCity();
     }
@@ -27,12 +28,11 @@ export class GameComponent {
     private ID: string = '';
 
     public ngOnInit(): void {
-        this.getID();
-        let ID: string = this.cookieService.get('cookie');
-        if (ID != '') {
+        this.ID = this.getID();
+        if (this.ID != '') {
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
                 )
                 .subscribe((response) => {
                     if (!response.status) {
@@ -41,7 +41,7 @@ export class GameComponent {
                 });
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
@@ -49,7 +49,7 @@ export class GameComponent {
             setInterval(() => {
                 this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
@@ -101,6 +101,17 @@ export class GameComponent {
         return this.cityService.getBuildings();
     }
 
+    buildingType!: string;
+    buildingLevel!: number;
+    buildingProduction!: number;
+    happinessChange!: number;
+    startTime!: string;
+    endTime!: string;
+    clicked: boolean = false;
+    progBar: boolean = false;
+    startUnix!: number;
+    endUnix!: number;
+
     onTileClick(row: number, column: number) {
         // show buildable buildings
 
@@ -109,5 +120,27 @@ export class GameComponent {
         tiles.forEach(tile => tile.classList.remove('selected'));
         const tile = document.querySelector(`td[id="${row} ${column}"]`);
         tile?.classList.add('selected');
+
+        // update sidebar stats
+        this.http
+            .get<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings/${row}/${column}`
+            )
+            .subscribe((response => {
+                this.buildingType = response.buildingType;
+                this.buildingLevel = response.buildingLevel;
+                this.buildingProduction = response.buildingProduction;
+                this.happinessChange = response.happinessChange;
+                this.startTime = response.startTime;
+                this.endTime = response.endTime;
+            }))
+        this.clicked = true;
+        if (this.startTime != null && this.endTime != null) {
+            this.progBar = true;
+            this.startUnix = Date.parse(this.startTime);
+            this.endUnix = Date.parse(this.endTime);
+        }
+        else this.progBar = false;
+        console.log("clicky")
     }
 }
