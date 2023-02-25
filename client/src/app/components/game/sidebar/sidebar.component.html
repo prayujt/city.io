@@ -1,0 +1,31 @@
+<!-- SIDEBAR CONTENT -->
+<div class="sidebar-container">
+    <a
+        mat-button
+        routerLink="login"
+        routerLinkActive="active"
+        class="logout-button"
+        (click)="logOut()"
+        >Log out</a
+    >
+    <a mat-button class="scout-button">Scout</a>
+    <div class="display-box">
+        <div *ngIf="clicked">
+            <h1 style="text-align: center">{{ buildingType }}</h1>
+            <h2 style="text-align: center">Level {{ buildingLevel }}</h2>
+            <h2 style="text-indent: 20px">
+                Production🪙: ${{ buildingProduction }}/hr
+            </h2>
+            <h2 style="text-indent: 20px">
+                Happiness🙂: {{ happinessChange }}
+            </h2>
+            <div *ngIf="progBar">
+                <mat-progress-bar
+                    mode="determinate"
+                    [value]="progress"
+                ></mat-progress-bar>
+                <h3 style="text-align: center">{{ hh }}:{{ mm }}:{{ ss }}</h3>
+            </div>
+        </div>
+    </div>
+</div>

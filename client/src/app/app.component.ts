@@ -1,9 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -11,26 +6,6 @@ import { Router } from '@angular/router';
     styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-    constructor(
-        private http: HttpClient,
-        private cookieService: CookieService,
-        private _snackBar: MatSnackBar
-    ) {}
-    private ID: string = '';
-    public loggedIn: boolean = false;
-
-    public ngOnInit(): void {
-        // setInterval(() => {
-        //     this.ID = this.cookieService.get('cookie');
-        //     if (this.ID != '') {
-        //         this.http
-        //             .get<any>(
-        //                 `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
-        //             )
-        //             .subscribe((response) => {
-        //                 this.loggedIn = response.status;
-        //             });
-        //     }
-        // }, 250);
-        }
+    constructor() {}
+    public ngOnInit(): void {}
 }
