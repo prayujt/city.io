@@ -11,7 +11,10 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { GameComponent } from './components/game/game.component';
-import { SidebarComponent } from './components/game/sidebar/sidebar.component';
+import {
+    SidebarComponent,
+    VisitDialogComponent,
+} from './components/game/sidebar/sidebar.component';
 
 import { AngularMaterialModule } from './angular-material.module';
 
@@ -24,6 +27,7 @@ import { CookieService } from 'ngx-cookie-service';
         RegisterComponent,
         GameComponent,
         SidebarComponent,
+        VisitDialogComponent,
     ],
     imports: [
         BrowserModule,

@@ -39,29 +39,43 @@ export class GameComponent {
                         this.router.navigate(['login']);
                     }
                 });
+            let parameter = '';
+            if (this.cookieService.get('cityName') != '') {
+                parameter = `?cityName=${encodeURIComponent(
+                    this.cookieService.get('cityName')
+                )}`;
+            }
+
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings${parameter}`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
                 });
+
             setInterval(() => {
+                let parameter = '';
+                if (this.cookieService.get('cityName') != '') {
+                    parameter = `?cityName=${encodeURIComponent(
+                        this.cookieService.get('cityName')
+                    )}`;
+                }
                 this.http
                     .get<any>(
-                        `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings`
+                        `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings${parameter}`
                     )
                     .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
                     });
-            }, 1000);
+            }, 250);
         } else {
             this.router.navigate(['login']);
         }
     }
 
     public getID(): string {
-        return this.cookieService.get('cookie');
+        return this.cookieService.get('sessionId');
     }
 
     createCity(): GameComponent {
@@ -100,41 +114,5 @@ export class GameComponent {
 
         this.row = row;
         this.column = column;
-        // update sidebar stats
-        // clearInterval(this.interval);
-        // this.http
-        //     .get<any>(
-        //         `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings/${row}/${column}`
-        //     )
-        //     .subscribe((response) => {
-        //         this.buildingType = response.buildingType;
-        //         this.buildingLevel = response.buildingLevel;
-        //         this.buildingProduction = response.buildingProduction;
-        //         this.happinessChange = response.happinessChange;
-        //         this.startTime = response.startTime;
-        //         this.endTime = response.endTime;
-        //     });
-        // this.clicked = true;
-
-        // this.interval = setInterval(() => {
-        //     if (this.startTime != '' && this.endTime != '') {
-        //         this.progBar = true;
-        //         this.startUnix = Date.parse(this.startTime);
-        //         this.endUnix = Date.parse(this.endTime);
-        //         let time: number = Date.now();
-        //         this.progress =
-        //             ((time - this.startUnix) /
-        //                 (this.endUnix - this.startUnix)) *
-        //             100;
-        //         if (this.progress > 100) this.progBar = false;
-        //         this.remaining = this.endUnix - time;
-        //         this.ss = this.remaining / 1000;
-        //         this.hh = Math.floor(this.ss / 3600);
-        //         this.ss %= 3600;
-        //         this.mm = Math.floor(this.ss / 60);
-        //         this.ss %= 60;
-        //         this.ss = Math.floor(this.ss);
-        //     } else this.progBar = false;
-        // }, 100);
     }
 }

@@ -8,7 +8,7 @@
         (click)="logOut()"
         >Log out</a
     >
-    <a mat-button class="scout-button">Scout</a>
+    <a mat-button class="scout-button" (click)="openDialog()">Scout</a>
     <div class="display-box">
         <div *ngIf="clicked">
             <h1 style="text-align: center">{{ buildingType }}</h1>

@@ -1,7 +1,12 @@
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
+
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -20,7 +25,8 @@ export class SidebarComponent {
         private http: HttpClient,
         private router: Router,
         private cookieService: CookieService,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
+        private dialog: MatDialog
     ) {}
 
     buildingType!: string;
@@ -44,9 +50,16 @@ export class SidebarComponent {
     public ngOnInit(): void {
         this.interval = setInterval(() => {
             if (this.buildingType != '') this.clicked = true;
+
+            let parameter = '';
+            let cityName = this.cookieService.get('cityName');
+            if (cityName != '') {
+                parameter = `?cityName=${encodeURIComponent(cityName)}`;
+            }
+
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings/${this.row}/${this.column}`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings/${this.row}/${this.column}${parameter}`
                 )
                 .subscribe((response) => {
                     this.buildingType = response.buildingType;
@@ -93,14 +106,94 @@ export class SidebarComponent {
                     });
                     this.router.navigate(['login']).then(() => {
                         window.location.reload();
-                        this.cookieService.delete('cookie');
                     });
-                    this.cookieService.delete('cookie');
+                    this.cookieService.delete('sessionId');
                 } else {
                     this._snackBar.open('Could not log out!', 'Close', {
                         duration: 2000,
                     });
                 }
             });
+    }
+
+    public openDialog(): void {
+        let dialogRef = this.dialog.open(VisitDialogComponent, {
+            width: '1000px',
+            height: '600px',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            // console.log(`Dialog result: ${result}`);
+        });
+    }
+}
+
+export interface City {
+    cityOwner: string;
+    cityName: string;
+}
+
+@Component({
+    selector: 'visit-dialog',
+    templateUrl: './visit-dialog.html',
+})
+export class VisitDialogComponent {
+    cities: City[] = [];
+    cityCtrl = new FormControl('');
+    filteredCities!: Observable<City[]>;
+
+    towns: City[] = [];
+    townCtrl = new FormControl('');
+    filteredTowns!: Observable<City[]>;
+
+    constructor(public http: HttpClient, private cookieService: CookieService) {
+        this.filteredCities = this.cityCtrl.valueChanges.pipe(
+            startWith(''),
+            map((city) =>
+                city ? this._filterCities(city) : this.cities.slice()
+            )
+        );
+
+        this.filteredTowns = this.townCtrl.valueChanges.pipe(
+            startWith(''),
+            map((town) => (town ? this._filterTowns(town) : this.towns.slice()))
+        );
+    }
+    ngOnInit() {
+        this.http
+            .get<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/cities`
+            )
+            .subscribe((response) => {
+                this.cities = response;
+            });
+
+        this.http
+            .get<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/towns`
+            )
+            .subscribe((response) => {
+                this.towns = response;
+            });
+    }
+
+    private _filterCities(value: string): any[] {
+        const filterValue = value.toLowerCase();
+
+        return this.cities.filter((city) =>
+            city.cityOwner.toLowerCase().includes(filterValue)
+        );
+    }
+
+    private _filterTowns(value: string): any[] {
+        const filterValue = value.toLowerCase();
+
+        return this.towns.filter((town) =>
+            town.cityOwner.toLowerCase().includes(filterValue)
+        );
+    }
+
+    public visitCity(cityName: string) {
+        this.cookieService.set('cityName', cityName);
     }
 }

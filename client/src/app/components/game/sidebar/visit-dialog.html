@@ -1,0 +1,65 @@
+<h1 mat-dialog-title>Cities</h1>
+<div mat-dialog-content>
+    <mat-tab-group animationDuration="0ms">
+        <mat-tab label="Cities">
+            <mat-form-field style="width: 100%" appearance="fill">
+                <mat-label>City</mat-label>
+                <input
+                    matInput
+                    aria-label="City"
+                    [matAutocomplete]="auto"
+                    [formControl]="cityCtrl"
+                />
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option
+                        *ngFor="let city of filteredCities | async"
+                        [value]="city.cityOwner"
+                    >
+                        <span>{{ city.cityOwner }}</span> |
+                        <span>{{ city.cityName }}</span>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <mat-list role="list">
+                <button
+                    mat-list-item
+                    *ngFor="let city of cities"
+                    (click)="visitCity(city.cityName)"
+                >
+                    {{ city.cityOwner }} - {{ city.cityName }}
+                </button>
+            </mat-list>
+        </mat-tab>
+
+        <mat-tab label="Towns">
+            <mat-form-field style="width: 100%" appearance="fill">
+                <mat-label>Town</mat-label>
+                <input
+                    matInput
+                    aria-label="Town"
+                    [matAutocomplete]="auto"
+                    [formControl]="townCtrl"
+                />
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option
+                        *ngFor="let town of filteredTowns | async"
+                        [value]="town.cityOwner"
+                    >
+                        <span>{{ town.cityOwner }}</span> |
+                        <span>{{ town.cityName }}</span>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-list role="list">
+                <button
+                    mat-list-item
+                    *ngFor="let town of towns"
+                    (click)="visitCity(town.cityName)"
+                >
+                    {{ town.cityOwner }} - {{ town.cityName }}
+                </button>
+            </mat-list>
+        </mat-tab>
+    </mat-tab-group>
+</div>
