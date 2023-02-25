@@ -104,9 +104,7 @@ export class SidebarComponent {
                     this._snackBar.open('Log out successful!', 'Close', {
                         duration: 2000,
                     });
-                    this.router.navigate(['login']).then(() => {
-                        window.location.reload();
-                    });
+                    this.router.navigate(['login']);
                     this.cookieService.delete('sessionId');
                 } else {
                     this._snackBar.open('Could not log out!', 'Close', {
