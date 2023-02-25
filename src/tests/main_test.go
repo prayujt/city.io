@@ -38,6 +38,7 @@ func TestMain(m *testing.M) {
 	router := mux.NewRouter()
 	login.HandleLoginRoutes(router)
 	game.HandleCityRoutes(router)
+	game.HandleVisitRoutes(router)
 
 	server := httptest.NewServer(router)
 	URL = server.URL

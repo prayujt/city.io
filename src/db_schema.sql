@@ -9,13 +9,16 @@ CREATE TABLE Accounts (
 
 CREATE TABLE Cities (
     city_id VARCHAR(50) PRIMARY KEY,
-    city_name VARCHAR(50),
+    city_name VARCHAR(50) UNIQUE,
     city_owner VARCHAR(50),
     population INT DEFAULT 1000,
     population_capacity INT DEFAULT 1000,
     tax_rate DOUBLE DEFAULT 15.0,
+    town BOOLEAN DEFAULT FALSE,
     FOREIGN KEY(city_owner) REFERENCES Accounts(player_id)
 );
+
+INSERT INTO Accounts VALUES ('neutral', 'Neutral', '', 2000000);
 
 CREATE TRIGGER Create_City
 AFTER INSERT ON Accounts
@@ -46,7 +49,6 @@ CREATE TABLE Building_Info (
 );
 
 CREATE TABLE Buildings (
-    building_name VARCHAR(50),
     building_type VARCHAR(50),
     building_level INT,
     city_id VARCHAR(50),
