@@ -20,42 +20,17 @@ export class AppComponent implements OnInit {
     public loggedIn: boolean = false;
 
     public ngOnInit(): void {
-        setInterval(() => {
-            this.ID = this.cookieService.get('cookie');
-            if (this.ID != '') {
-                this.http
-                    .get<any>(
-                        `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
-                    )
-                    .subscribe((response) => {
-                        if (response.status) this.loggedIn = true;
-                        else this.loggedIn = false;
-                    });
-            }
-        }, 250);
-    }
-
-    public logOut(): void {
-        this.http
-            .post<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/logout`,
-                {
-                    sessionId: this.ID,
-                }
-            )
-            .subscribe((response) => {
-                if (response.status) {
-                    this._snackBar.open('Log out successful!', 'Close', {
-                        duration: 2000,
-                    });
-                    this.loggedIn = false;
-                } else {
-                    this._snackBar.open('Could not log out!', 'Close', {
-                        duration: 2000,
-                    });
-                }
-            });
-    }
-
-    title = 'client';
+        // setInterval(() => {
+        //     this.ID = this.cookieService.get('cookie');
+        //     if (this.ID != '') {
+        //         this.http
+        //             .get<any>(
+        //                 `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
+        //             )
+        //             .subscribe((response) => {
+        //                 this.loggedIn = response.status;
+        //             });
+        //     }
+        // }, 250);
+        }
 }

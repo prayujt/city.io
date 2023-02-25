@@ -12,7 +12,7 @@ export class CityService {
     for (let i = 0; i < 9; i++) {
       this.buildings[i] = [];
       for (let j = 0; j < 13; j++) {
-        this.buildings[i][j] = new Building();
+        this.buildings[i][j] = new Building(0, "", "", i, j);
       }
     }
 
@@ -31,7 +31,10 @@ export class CityService {
     cityRow: number
   }>) {
     for (let i = 0; i < buildings.length; i++) {
-      this.buildings[buildings[i].cityRow][buildings[i].cityColumn] = new Building(buildings[i].buildingLevel, buildings[i].buildingName, buildings[i].buildingType);
+      this.buildings[buildings[i].cityRow][buildings[i].cityColumn].level = buildings[i].buildingLevel;
+      this.buildings[buildings[i].cityRow][buildings[i].cityColumn].name = buildings[i].buildingName;
+      this.buildings[buildings[i].cityRow][buildings[i].cityColumn].type = buildings[i].buildingType;
+      this.buildings[buildings[i].cityRow][buildings[i].cityColumn].setIcon();
     }
   }
 }

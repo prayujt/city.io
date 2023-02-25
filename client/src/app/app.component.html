@@ -1,20 +1,15 @@
 <!-- Toolbar -->
-<div *ngIf="!loggedIn">
+<!-- <div *ngIf="!loggedIn">
     <mat-toolbar color="primary" class="app-header">
         <div>
             <a href="https://github.com/prayujt/city.io" target="_blank" class="positronx">city.io</a>
         </div>
         <div>
             <span class="nav-tool-items">
-                <div *ngIf="!loggedIn; else elseBlock">
-                    <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
-                    <a mat-button mat-raised-button routerLink="register" routerLinkActive="active">Register</a>
-                </div>
-                <ng-template #elseBlock>
-                    <a mat-button routerLink="login" routerLinkActive="active" (click)="logOut()">Log out</a>
-                </ng-template>
+                <a mat-button routerLink="login" routerLinkActive="active">Log in</a>
+                <a mat-button mat-raised-button routerLink="register" routerLinkActive="active">Register</a>
             </span>
         </div>
     </mat-toolbar>
-</div>
+</div> -->
 <router-outlet class="router"></router-outlet>

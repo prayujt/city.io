@@ -19,7 +19,7 @@ export class GameComponent {
         private router: Router,
         private cookieService: CookieService,
         private cityService: CityService,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
     ) {
         this.createCity();
     }
@@ -27,12 +27,11 @@ export class GameComponent {
     private ID: string = '';
 
     public ngOnInit(): void {
-        this.getID();
-        let ID: string = this.cookieService.get('cookie');
-        if (ID != '') {
+        this.ID = this.getID();
+        if (this.ID != '') {
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.ID}`
                 )
                 .subscribe((response) => {
                     if (!response.status) {
@@ -41,7 +40,7 @@ export class GameComponent {
                 });
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
@@ -49,7 +48,7 @@ export class GameComponent {
             setInterval(() => {
                 this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${ID}/buildings`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
@@ -58,7 +57,6 @@ export class GameComponent {
         } else {
             this.router.navigate(['login']);
         }
-
     }
 
     public logOut(): void {
@@ -102,7 +100,66 @@ export class GameComponent {
         return this.cityService.getBuildings();
     }
 
-    onTileClick() {
+    buildingType!: string;
+    buildingLevel!: number;
+    buildingProduction!: number;
+    happinessChange!: number;
+    startTime!: string;
+    endTime!: string;
+    clicked: boolean = false;
+    progBar: boolean = false;
+
+    startUnix!: number;
+    endUnix!: number;
+    progress!: number;
+    interval: any;
+    remaining!: number;
+    hh!: number;
+    mm!: number;
+    ss!: number;
+
+    onTileClick(row: number, column: number) {
         // show buildable buildings
+
+        // change CSS for selected tile
+        const tiles = Array.from(document.querySelectorAll('.tile'));
+        tiles.forEach(tile => tile.classList.remove('selected'));
+        const tile = document.querySelector(`td[id="${row} ${column}"]`);
+        tile?.classList.add('selected');
+
+        // update sidebar stats
+        clearInterval(this.interval);
+        this.http
+            .get<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.ID}/buildings/${row}/${column}`
+            )
+            .subscribe((response => {
+                this.buildingType = response.buildingType;
+                this.buildingLevel = response.buildingLevel;
+                this.buildingProduction = response.buildingProduction;
+                this.happinessChange = response.happinessChange;
+                this.startTime = response.startTime;
+                this.endTime = response.endTime;
+            }))
+        this.clicked = true;
+        
+        this.interval = setInterval(() => {
+            if (this.startTime != "" && this.endTime != "") {
+                this.progBar = true;
+                this.startUnix = Date.parse(this.startTime);
+                this.endUnix = Date.parse(this.endTime);
+                let time: number = Date.now();
+                this.progress = (time-this.startUnix) / (this.endUnix-this.startUnix) * 100;
+                if (this.progress > 100) this.progBar = false;
+                this.remaining = this.endUnix-time;
+                this.ss = this.remaining / 1000;
+                this.hh = Math.floor(this.ss / 3600);
+                this.ss %= 3600;
+                this.mm = Math.floor(this.ss / 60);
+                this.ss %= 60;
+                this.ss = Math.floor(this.ss);
+            }
+            else this.progBar = false;
+        }, 100);
     }
 }

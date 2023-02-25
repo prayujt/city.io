@@ -14,6 +14,10 @@
         text-align: center;
         font-size: 60px;
     }
+        .selected {
+            background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
+        }
+
     .game_board table td:hover {
         background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
     }
@@ -30,21 +34,25 @@
         align-items: center;
         font-size: 40px;
     }
-
-    .mat-drawer { /* sidebar */
+    .mat-drawer {
+        display: block;
         width: 420px;
+    }
+
+    .sidebar-container { /* sidebar */
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        /* justify-content: center;
+        align-items: center; */
     }
 
     .logout-button {
-        position: absolute;
+        /* position: absolute;
         right: 10px;
-        top: 10px;
+        top: 10px; */
         color: white;
         background-color: rgb(255, 0, 0);
+        width: 75px;
         height: 30px;
     }
     .logout-button:hover {
@@ -52,13 +60,12 @@
     }
 
     .scout-button {
-        order: 0;
-        align-items: center;
+        /* align-items: center; */
         height: 100px;
         width: 300px;
         font-size: 45px;
         margin: auto;
-        color: white;
+        color: rgb(255, 255, 255);
         background-color: rgb(46, 197, 0);
     }
     .scout-button:hover {
@@ -66,9 +73,10 @@
     }
 
     .display-box {
-        height: 550px;
+        height: 450px;
         width: 350px;
         border-radius: 5px;
         margin: auto;
+        margin-top: 75px;
         background-color: rgb(230, 230, 230);
     }
