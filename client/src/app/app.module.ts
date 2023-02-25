@@ -1,24 +1,22 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AngularMaterialModule } from './angular-material.module';
 import { RegisterComponent } from './components/register/register.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GameComponent } from './components/game/game.component';
+import {
+    SidebarComponent,
+    VisitDialogComponent,
+} from './components/game/sidebar/sidebar.component';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { HttpClientModule } from '@angular/common/http';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-
+import { AngularMaterialModule } from './angular-material.module';
 
 import { CookieService } from 'ngx-cookie-service';
 
@@ -28,6 +26,8 @@ import { CookieService } from 'ngx-cookie-service';
         LoginComponent,
         RegisterComponent,
         GameComponent,
+        SidebarComponent,
+        VisitDialogComponent,
     ],
     imports: [
         BrowserModule,
@@ -38,11 +38,6 @@ import { CookieService } from 'ngx-cookie-service';
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressBarModule,
     ],
     providers: [CookieService],
     bootstrap: [AppComponent],

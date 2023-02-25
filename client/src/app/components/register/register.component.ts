@@ -19,7 +19,7 @@ export class RegisterComponent {
         private cookieService: CookieService
     ) {}
     ngOnInit() {
-        let ID: string = this.cookieService.get('cookie');
+        let ID: string = this.cookieService.get('sessionId');
         if (ID != '') {
             this.http
                 .get<any>(

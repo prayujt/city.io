@@ -20,11 +20,11 @@ export class LoginComponent {
         private cookieService: CookieService
     ) {}
     public ngOnInit(): void {
-        let ID: string = this.cookieService.get('cookie');
-        if (ID != '') {
+        let sessionId: string = this.cookieService.get('sessionId');
+        if (sessionId != '') {
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${sessionId}`
                 )
                 .subscribe((response) => {
                     if (response.status) {
@@ -58,8 +58,8 @@ export class LoginComponent {
                 .subscribe((response) => {
                     if (response.sessionId != '') {
                         this.router.navigate(['game']);
-                        this.cookieService.set('cookie', response.sessionId);
-                        this.cookieValue = this.cookieService.get('cookie');
+                        this.cookieService.set('sessionId', response.sessionId);
+                        this.cookieValue = this.cookieService.get('sessionId');
                     } else {
                         this._snackBar.open(
                             'Invalid username or password!',

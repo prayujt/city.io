@@ -28,7 +28,7 @@ INSERT INTO Cities (city_id, city_owner) SELECT uuid(), NEW.player_id;
 CREATE TRIGGER City_Name
 BEFORE INSERT ON Cities
 FOR EACH ROW
-SET NEW.city_name=CONCAT('City ', NEW.city_id);
+SET NEW.city_name=CONCAT(IF(NEW.town=0, 'City ', 'Town '), NEW.city_id);
 
 CREATE TABLE Sessions (
     session_id VARCHAR(50) PRIMARY KEY,
@@ -122,3 +122,18 @@ INSERT INTO Building_Info VALUES
 ('Barracks', 1, 1000.00, 3, 500, 300000.00, 120),
 ('Test', 1, 0.0, 0, 0, 1.00, 1),
 ('Test', 2, 0.0, 0, 0, 1.00, 1);
+
+INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) VALUES
+(uuid(), 'neutral', 2500, 2500, 1),
+(uuid(), 'neutral', 2500, 2500, 1),
+(uuid(), 'neutral', 2500, 2500, 1),
+(uuid(), 'neutral', 2500, 2500, 1),
+(uuid(), 'neutral', 5000, 5000, 1),
+(uuid(), 'neutral', 5000, 5000, 1),
+(uuid(), 'neutral', 5000, 5000, 1),
+(uuid(), 'neutral', 5000, 5000, 1),
+(uuid(), 'neutral', 10000, 10000, 1),
+(uuid(), 'neutral', 10000, 10000, 1),
+(uuid(), 'neutral', 10000, 10000, 1),
+(uuid(), 'neutral', 10000, 10000, 1),
+(uuid(), 'neutral', 25000, 25000, 1);
