@@ -88,6 +88,16 @@ STARTS '2023-01-01 00:00:00'
 DO
 DELETE FROM Builds WHERE end_time <= NOW();
 
+CREATE EVENT Run_Production ON SCHEDULE EVERY 1 SECOND
+STARTS '2023-01-01 00:00:00'
+DO
+UPDATE Accounts Set balance = balance + (SELECT SUM(building_production) FROM Buildings NATURAL JOIN Building_Info NATURAL JOIN Cities WHERE city_owner=player_id);
+
+CREATE EVENT Run_Taxes ON SCHEDULE EVERY 1 SECOND
+STARTS '2023-01-01 00:00:00'
+DO
+UPDATE Accounts Set balance = balance + (SELECT SUM(population * tax_rate / 86400) FROM Cities WHERE city_owner=player_id);
+
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
 ('Apartment', 1, 500.00, 2, 5000, 400000.00, 60),
@@ -101,8 +111,14 @@ INSERT INTO Building_Info VALUES
 ('Apartment', 9, 1500.00, 4, 50000, 10000000.00, 72000),
 ('Apartment', 10, 2000.00, 5, 100000, 15000000.00, 144000),
 ('Hospital', 1, 1000.00, 5, 1000, 250000.00, 60),
+('Hospital', 2, 2000.00, 5, 1000, 500000.00, 300),
+('Hospital', 3, 3000.00, 5, 1000, 750000.00, 900),
 ('School', 1, 2000.00, 3, 500, 250000.00, 60),
+('School', 2, 2000.00, 3, 500, 500000.00, 300),
+('School', 3, 2000.00, 3, 500, 750000.00, 900),
 ('Supermarket', 1, 10000.00, 1, 250, 250000.00, 120),
-('Barracks', 1, 1000, 3, 500, 300000, 120),
+('Supermarket', 2, 15000.00, 1, 250, 750000.00, 360),
+('Supermarket', 3, 10000.00, 1, 250, 1500000.00, 900),
+('Barracks', 1, 1000.00, 3, 500, 300000.00, 120),
 ('Test', 1, 0.0, 0, 0, 1.00, 1),
 ('Test', 2, 0.0, 0, 0, 1.00, 1);
