@@ -45,6 +45,7 @@ export class SidebarComponent {
     progress!: number;
     interval: any;
     remaining!: number;
+    dd!: number;
     hh!: number;
     mm!: number;
     ss!: number;
@@ -82,8 +83,11 @@ export class SidebarComponent {
                         (this.endUnix - this.startUnix)) *
                     100;
                 if (this.progress > 100) this.progBar = false;
+
                 this.remaining = this.endUnix - time;
                 this.ss = this.remaining / 1000;
+                this.dd = Math.floor(this.ss / 86400);
+                this.ss %= 86400;
                 this.hh = Math.floor(this.ss / 3600);
                 this.ss %= 3600;
                 this.mm = Math.floor(this.ss / 60);

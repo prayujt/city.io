@@ -31,8 +31,28 @@
 }
 
 .upgrade-button {
-    margin-top: 50%;
+    margin-top: 60%;
     margin-left: 25%;
     width: 50%;
     height: 50px;
+}
+
+.timer {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 1.4em;
+    letter-spacing: -1px;
+}
+
+.timer span {
+    font-size: 2em;
+    margin: 0 3px 0 15px;
+}
+
+.timer-container {
+    display: inline;
+}
+
+.progress-bar {
+    margin-top: 5%;
 }
