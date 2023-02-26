@@ -20,6 +20,7 @@ export class SidebarComponent {
     @Input() row!: number;
     @Input() column!: number;
     @Input() sessionId!: string;
+    @Input() isOwner!: boolean;
 
     constructor(
         private http: HttpClient,
@@ -115,15 +116,43 @@ export class SidebarComponent {
             });
     }
 
+    public upgrade(): void {
+        let parameter = '';
+        let cityName = this.cookieService.get('cityName');
+        if (cityName != '') {
+            parameter = `?cityName=${encodeURIComponent(cityName)}`;
+        }
+
+        this.http
+            .post<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/upgradeBuilding${parameter}`,
+                {
+                    cityRow: this.row,
+                    cityColumn: this.column,
+                }
+            )
+            .subscribe((response) => {
+                if (response.status) {
+                    this._snackBar.open('Upgrade started!', 'Close', {
+                        duration: 2000,
+                    });
+                } else {
+                    this._snackBar.open('Error upgrading building!', 'Close', {
+                        duration: 2000,
+                    });
+                }
+            });
+    }
+
     public openDialog(): void {
         let dialogRef = this.dialog.open(VisitDialogComponent, {
             width: '1000px',
             height: '600px',
         });
 
-        dialogRef.afterClosed().subscribe((result) => {
-            // console.log(`Dialog result: ${result}`);
-        });
+        // dialogRef.afterClosed().subscribe((result) => {
+        // console.log(`Dialog result: ${result}`);
+        // });
     }
 }
 

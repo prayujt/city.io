@@ -37,26 +37,30 @@ export class CityService {
                 for (let j = 0; j < 13; j++) {
                     this.buildings[i][j].level = 0;
                     this.buildings[i][j].type = '';
+                    this.buildings[i][j].setIcon();
                 }
             }
-        }
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 13; j++) {
-                let matched = false;
-                for (let k = 0; k < buildings.length; k++) {
-                    if (
-                        buildings[k].cityRow == i &&
-                        buildings[k].cityColumn == j
-                    ) {
-                        this.buildings[i][j].level = buildings[k].buildingLevel;
-                        this.buildings[i][j].type = buildings[k].buildingType;
-                        matched = true;
+        } else {
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 13; j++) {
+                    let matched = false;
+                    for (let k = 0; k < buildings.length; k++) {
+                        if (
+                            buildings[k].cityRow == i &&
+                            buildings[k].cityColumn == j
+                        ) {
+                            this.buildings[i][j].level =
+                                buildings[k].buildingLevel;
+                            this.buildings[i][j].type =
+                                buildings[k].buildingType;
+                            matched = true;
+                        }
+                        if (!matched) {
+                            this.buildings[i][j].level = 0;
+                            this.buildings[i][j].type = '';
+                        }
+                        this.buildings[i][j].setIcon();
                     }
-                    if (!matched) {
-                        this.buildings[i][j].level = 0;
-                        this.buildings[i][j].type = '';
-                    }
-                    this.buildings[i][j].setIcon();
                 }
             }
         }
