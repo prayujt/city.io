@@ -2,7 +2,7 @@ CREATE TABLE Accounts (
     player_id VARCHAR(50) PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     password CHAR(64) NOT NULL,
-    balance DOUBLE DEFAULT 2000000.0,
+    balance DOUBLE DEFAULT 2000000.0 NOT NULL,
     CHECK (balance > 0),
     UNIQUE(username)
 );
@@ -91,12 +91,12 @@ DELETE FROM Builds WHERE end_time <= NOW();
 CREATE EVENT Run_Production ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
 DO
-UPDATE Accounts Set balance = balance + (SELECT SUM(building_production) FROM Buildings NATURAL JOIN Building_Info NATURAL JOIN Cities WHERE city_owner=player_id);
+UPDATE Accounts SET balance = balance + (SELECT SUM(building_production) / 3600 FROM Buildings NATURAL JOIN Building_Info NATURAL JOIN Cities LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE start_time IS NULL);
 
 CREATE EVENT Run_Taxes ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
 DO
-UPDATE Accounts Set balance = balance + (SELECT SUM(population * tax_rate / 86400) FROM Cities WHERE city_owner=player_id);
+UPDATE Accounts Set balance = balance + (SELECT SUM(population * tax_rate / 86400) FROM Cities WHERE city_owner=player_id) WHERE username != 'Neutral';
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),

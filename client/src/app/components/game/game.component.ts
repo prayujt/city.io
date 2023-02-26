@@ -26,6 +26,7 @@ export class GameComponent {
     public row: number = 0;
     public column: number = 0;
     public sessionId: string = '';
+    public isOwner!: boolean;
 
     public ngOnInit(): void {
         this.sessionId = this.getID();
@@ -67,6 +68,7 @@ export class GameComponent {
                     )
                     .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
+                        this.isOwner = response.isOwner;
                     });
             }, 250);
         } else {
