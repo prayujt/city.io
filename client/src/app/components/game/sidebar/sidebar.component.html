@@ -82,14 +82,35 @@
                     Upgrade
                 </button>
             </mat-card-content>
-            <mat-card-footer>
+            <mat-card-footer class="progress-bar">
                 <div *ngIf="progBar">
                     <mat-progress-bar
                         mode="determinate"
                         [value]="progress"
                     ></mat-progress-bar>
-                    <h3 style="text-align: center">
-                        {{ hh }}:{{ mm }}:{{ ss }}
+                    <br />
+                    <h3 class="timer" style="text-align: center">
+                        <div *ngIf="dd != 0" class="timer-container">
+                            <span id="days"> {{ dd }} </span>Day(s)
+                        </div>
+                        <div
+                            *ngIf="hh != 0 || (dd != 0 && hh == 0)"
+                            class="timer-container"
+                        >
+                            <span id="hours"> {{ hh }} </span>Hrs
+                        </div>
+                        <div
+                            *ngIf="mm != 0 || (hh != 0 && mm == 0)"
+                            class="timer-container"
+                        >
+                            <span id="minutes"> {{ mm }} </span>Min
+                        </div>
+                        <div
+                            *ngIf="ss != 0 || (mm != 0 && ss == 0)"
+                            class="timer-container"
+                        >
+                            <span id="seconds"> {{ ss }} </span>S
+                        </div>
                     </h3>
                 </div>
             </mat-card-footer>
