@@ -22,11 +22,11 @@
 }
 
 .display-box {
-    height: 600px;
-    width: 80%;
+    height: fit-content;
+    width: 90%;
     border-radius: 5px;
     margin: auto;
-    margin-top: 20%;
+    margin-top: 10%;
     background-color: rgb(255, 255, 255);
 }
 
