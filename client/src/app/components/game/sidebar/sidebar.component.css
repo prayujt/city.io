@@ -1,42 +1,31 @@
-.sidebar-container {
-    /* sidebar */
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center;
-    align-items: center; */
+.sidebar-buttons {
+    width: 100%;
 }
 
 .logout-button {
-    /* position: absolute;
-    right: 10px;
-    top: 10px; */
-    color: white;
-    background-color: rgb(255, 0, 0);
-    width: 75px;
+    width: 15%;
     height: 30px;
+    margin-top: 0px;
 }
 .logout-button:hover {
     background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
 }
 
 .scout-button {
-    /* align-items: center; */
     height: 100px;
-    width: 300px;
+    width: 80%;
     font-size: 45px;
-    margin: auto;
-    color: rgb(255, 255, 255);
-    background-color: rgb(46, 197, 0);
 }
+
 .scout-button:hover {
     background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
 }
 
 .display-box {
-    height: 450px;
-    width: 350px;
+    height: 600px;
+    width: 80%;
     border-radius: 5px;
     margin: auto;
-    margin-top: 75px;
-    background-color: rgb(230, 230, 230);
+    margin-top: 20%;
+    background-color: rgb(255, 255, 255);
 }

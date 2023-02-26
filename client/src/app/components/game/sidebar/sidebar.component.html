@@ -1,31 +1,79 @@
 <!-- SIDEBAR CONTENT -->
 <div class="sidebar-container">
-    <a
-        mat-button
-        routerLink="login"
-        routerLinkActive="active"
-        class="logout-button"
-        (click)="logOut()"
-        >Log out</a
-    >
-    <a mat-button class="scout-button" (click)="openDialog()">Scout</a>
-    <div class="display-box">
-        <div *ngIf="clicked">
-            <h1 style="text-align: center">{{ buildingType }}</h1>
-            <h2 style="text-align: center">Level {{ buildingLevel }}</h2>
-            <h2 style="text-indent: 20px">
-                Production🪙: ${{ buildingProduction }}/hr
-            </h2>
-            <h2 style="text-indent: 20px">
-                Happiness🙂: {{ happinessChange }}
-            </h2>
-            <div *ngIf="progBar">
-                <mat-progress-bar
-                    mode="determinate"
-                    [value]="progress"
-                ></mat-progress-bar>
-                <h3 style="text-align: center">{{ hh }}:{{ mm }}:{{ ss }}</h3>
-            </div>
-        </div>
+    <div class="sidebar-buttons">
+        <a
+            mat-raised-button
+            color="primary"
+            class="scout-button"
+            (click)="openDialog()"
+            >Scout</a
+        >
+        <a
+            mat-button
+            color="warn"
+            routerLink="login"
+            routerLinkActive="active"
+            class="logout-button"
+            (click)="logOut()"
+            >Log out</a
+        >
+    </div>
+    <div *ngIf="clicked">
+        <mat-card class="display-box">
+            <mat-card-header>
+                <mat-card-title>
+                    {{
+                        buildingType == ""
+                            ? "No building is selected"
+                            : buildingType
+                    }}
+                </mat-card-title>
+                <mat-card-subtitle>
+                    {{ buildingLevel == 0 ? "" : "Level " + buildingLevel }}
+                </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content *ngIf="buildingType != ''">
+                <br />
+                <br />
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title> Production 🪙 </mat-panel-title>
+                            <mat-panel-description>
+                                ${{ buildingProduction }}/hr
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <p>
+                            Production is the rate at which this building
+                            produces money for your city.
+                        </p>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title> Happiness 🙂 </mat-panel-title>
+                            <mat-panel-description>
+                                {{ happinessChange }}
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <p>
+                            Happiness represents how this building affects
+                            population growth in your city.
+                        </p>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </mat-card-content>
+            <mat-card-footer>
+                <div *ngIf="progBar">
+                    <mat-progress-bar
+                        mode="determinate"
+                        [value]="progress"
+                    ></mat-progress-bar>
+                    <h3 style="text-align: center">
+                        {{ hh }}:{{ mm }}:{{ ss }}
+                    </h3>
+                </div>
+            </mat-card-footer>
+        </mat-card>
     </div>
 </div>
