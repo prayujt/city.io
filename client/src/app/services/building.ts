@@ -10,7 +10,9 @@ export class Building {
     build_time: number = 0;
     building_icons: Map<string, string> = new Map([
         ['City Hall', '🏛'],
+        ['Apartment', '🏢'],
         ['Hospital', '🏥'],
+        ['School', '🏫'],
     ]);
     row: number = 0;
     column: number = 0;

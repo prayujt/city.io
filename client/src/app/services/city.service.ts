@@ -32,6 +32,14 @@ export class CityService {
             cityRow: number;
         }>
     ) {
+        if (buildings == null) {
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 13; j++) {
+                    this.buildings[i][j].level = 0;
+                    this.buildings[i][j].type = '';
+                }
+            }
+        }
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 13; j++) {
                 let matched = false;

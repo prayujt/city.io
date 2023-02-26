@@ -38,6 +38,7 @@ export class SidebarComponent {
     clicked: boolean = false;
     progBar: boolean = false;
 
+    panelOpenState: boolean = false;
     startUnix!: number;
     endUnix!: number;
     progress!: number;
