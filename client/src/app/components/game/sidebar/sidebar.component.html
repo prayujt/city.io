@@ -1,13 +1,32 @@
 <!-- SIDEBAR CONTENT -->
 <div class="sidebar-container">
+    <mat-card class="city-information" (click)="openDialog()">
+        <mat-card-header>
+            <mat-card-title>
+                {{ cityName }}
+            </mat-card-title>
+            <mat-card-subtitle>
+                {{ cityOwner }}
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p class="player-balance">
+                {{
+                    cityOwner == "Neutral"
+                        ? ""
+                        : "$" + playerBalance.toLocaleString("en-US")
+                }}
+            </p>
+        </mat-card-content>
+    </mat-card>
     <div class="sidebar-buttons">
-        <a
-            mat-raised-button
-            color="primary"
-            class="scout-button"
-            (click)="openDialog()"
-            >Scout</a
-        >
+        <!-- <a
+             mat-raised-button
+             color="primary"
+             class="scout-button"
+             (click)="openDialog()"
+             >Scout</a
+             > -->
         <a
             mat-button
             color="warn"
@@ -19,7 +38,7 @@
         >
     </div>
     <div *ngIf="clicked">
-        <mat-card class="display-box">
+        <mat-card class="building-information">
             <mat-card-header>
                 <mat-card-title>
                     {{

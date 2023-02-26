@@ -5,8 +5,9 @@
 .logout-button {
     width: 15%;
     height: 30px;
-    margin-top: 0px;
+    margin-left: 85%;
 }
+
 .logout-button:hover {
     background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
 }
@@ -17,16 +18,27 @@
     font-size: 45px;
 }
 
-.scout-button:hover {
+.player-balance {
+    font-family: "Roboto", sans-serif;
+    color: green;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+/* .scout-button:hover { */
+/* background-image: linear-gradient(rgb(0 0 0/10%) 0 0); */
+/* } */
+
+.city-information:hover {
     background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
 }
 
-.display-box {
+.building-information {
     height: fit-content;
     width: 90%;
     border-radius: 5px;
     margin: auto;
-    margin-top: 10%;
+    margin-top: 5%;
     background-color: rgb(255, 255, 255);
 }
 

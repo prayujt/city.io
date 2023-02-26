@@ -3,6 +3,7 @@ package game
 import (
 	"api/database"
 	"encoding/json"
+	"math"
 
 	"fmt"
 	"net/http"
@@ -12,10 +13,12 @@ import (
 )
 
 type City struct {
-	CityId     string `database:"city_id" json:"cityId"`
-	Population int    `database:"population" json:"population"`
-	CityName   string `database:"city_name" json:"cityName"`
-	// CityOwner  string `database:"city_owner" json:"cityOwner"`
+	// CityId     string `database:"city_id" json:"cityId"`
+	CityName           string  `database:"city_name" json:"cityName"`
+	Population         int     `database:"population" json:"population"`
+	PopulationCapacity int     `database:"population_capacity" json:"populationCapacity"`
+	PlayerBalance      float64 `database:"balance" json:"playerBalance"`
+	CityOwner          string  `database:"username" json:"cityOwner"`
 }
 
 type Buildings struct {
@@ -66,12 +69,13 @@ func getCity(response http.ResponseWriter, request *http.Request) {
 	var result []City
 
 	if len(cityName) > 0 {
-		database.Query(fmt.Sprintf("SELECT city_id, population, city_name FROM Cities NATURAL JOIN Sessions WHERE session_id='%s' AND city_name='%s'", sessionId, cityName[0]), &result)
+		database.Query(fmt.Sprintf("SELECT username, balance, population, population_capacity, city_name FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_name='%s'", cityName[0]), &result)
 	} else {
-		database.Query(fmt.Sprintf("SELECT city_id, population, city_name FROM Cities NATURAL JOIN Sessions WHERE session_id='%s' AND town=0", sessionId), &result)
+		database.Query(fmt.Sprintf("SELECT username, balance, population, population_capacity, city_name FROM Cities JOIN Sessions NATURAL JOIN Accounts ON city_owner=player_id WHERE session_id='%s' AND town=0", sessionId), &result)
 	}
 
 	if len(result) > 0 {
+		result[0].PlayerBalance = math.Round(result[0].PlayerBalance*100) / 100
 		city = result[0]
 	}
 }

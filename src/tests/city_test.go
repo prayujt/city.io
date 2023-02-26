@@ -16,7 +16,7 @@ func TestCityGet(t *testing.T) {
 	var result game.City
 	json.Unmarshal(response, &result)
 
-	if result.CityId == "" || result.Population == 0 || result.CityName == "" {
+	if result.Population == 0 || result.CityName == "" {
 		t.Error("Expected city to not be in null state")
 	}
 }
@@ -27,7 +27,7 @@ func TestCityGetFail(t *testing.T) {
 	var result game.City
 	json.Unmarshal(response, &result)
 
-	if !(result.CityId == "" || result.Population == 0 || result.CityName == "") {
+	if !(result.Population == 0 || result.CityName == "") {
 		t.Error("Expected non-existent city to be in null state")
 	}
 }

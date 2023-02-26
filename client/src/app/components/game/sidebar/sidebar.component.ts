@@ -30,6 +30,12 @@ export class SidebarComponent {
         private dialog: MatDialog
     ) {}
 
+    cityOwner!: string;
+    cityName!: string;
+    playerBalance!: number;
+    population!: number;
+    populationCapacity!: number;
+
     buildingType!: string;
     buildingLevel!: number;
     buildingProduction!: number;
@@ -43,7 +49,6 @@ export class SidebarComponent {
     startUnix!: number;
     endUnix!: number;
     progress!: number;
-    interval: any;
     remaining!: number;
     dd!: number;
     hh!: number;
@@ -51,7 +56,7 @@ export class SidebarComponent {
     ss!: number;
 
     public ngOnInit(): void {
-        this.interval = setInterval(() => {
+        setInterval(() => {
             if (this.buildingType != '') this.clicked = true;
 
             let parameter = '';
@@ -95,6 +100,26 @@ export class SidebarComponent {
                 this.ss = Math.floor(this.ss);
             } else this.progBar = false;
         }, 100);
+
+        setInterval(() => {
+            let parameter = '';
+            let cityName = this.cookieService.get('cityName');
+            if (cityName != '') {
+                parameter = `?cityName=${encodeURIComponent(cityName)}`;
+            }
+
+            this.http
+                .get<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}${parameter}`
+                )
+                .subscribe((response) => {
+                    this.cityOwner = response.cityOwner;
+                    this.cityName = response.cityName;
+                    this.playerBalance = response.playerBalance;
+                    this.population = response.population;
+                    this.populationCapacity = response.populationCapacity;
+                });
+        }, 500);
     }
 
     public logOut(): void {
