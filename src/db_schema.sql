@@ -91,7 +91,7 @@ DELETE FROM Builds WHERE end_time <= NOW();
 CREATE EVENT Run_Production ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
 DO
-UPDATE Accounts SET balance = balance + (SELECT SUM(building_production) / 3600 FROM Buildings NATURAL JOIN Building_Info NATURAL JOIN Cities LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE start_time IS NULL);
+UPDATE Accounts SET balance = balance + (SELECT IF(SUM(building_production) IS NULL, 0, SUM(building_production/3600)) FROM Buildings NATURAL JOIN Building_Info NATURAL JOIN Cities LEFT JOIN Builds ON Buildings.city_id=Builds.city_id AND Buildings.city_row=Builds.city_row AND Buildings.city_column=Builds.city_column WHERE start_time IS NULL AND city_owner=player_id) WHERE username != 'Neutral';
 
 CREATE EVENT Run_Taxes ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
