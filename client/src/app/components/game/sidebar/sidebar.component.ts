@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,7 +7,8 @@ import { CookieService } from 'ngx-cookie-service';
 
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-
+import { ConstructableService } from '../../../services/constructable.service';
+import { Constructable } from 'src/app/services/constructable';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
@@ -21,6 +22,7 @@ export class SidebarComponent {
     @Input() column!: number;
     @Input() sessionId!: string;
     @Input() isOwner!: boolean;
+    @Output() buildBuilding: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(
         private http: HttpClient,
@@ -44,6 +46,8 @@ export class SidebarComponent {
     endTime!: string;
     clicked: boolean = false;
     progBar: boolean = false;
+    constructableBuildings: Constructable[] = [];
+    constructableService: ConstructableService = new ConstructableService;
 
     panelOpenState: boolean = false;
     startUnix!: number;
@@ -56,6 +60,9 @@ export class SidebarComponent {
     ss!: number;
 
     public ngOnInit(): void {
+        // TODO: replace with get request to constructable buildings from database
+        this.constructableBuildings = this.constructableService.constructables;
+
         setInterval(() => {
             if (this.buildingType != '') this.clicked = true;
 
@@ -182,6 +189,10 @@ export class SidebarComponent {
         // dialogRef.afterClosed().subscribe((result) => {
         // console.log(`Dialog result: ${result}`);
         // });
+    }
+
+    constructBuilding(buildingType: string): void {
+        this.buildBuilding.emit(buildingType);
     }
 }
 
