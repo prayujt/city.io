@@ -52,6 +52,7 @@ func HandleCityRoutes(r *mux.Router) {
 
 	r.HandleFunc("/cities/{session_id}/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/{session_id}/upgradeBuilding", upgradeBuilding).Methods("POST")
+	r.HandleFunc("/cities/{session_id}/updateName", updateName).Methods("POST")
 }
 
 func getCity(response http.ResponseWriter, request *http.Request) {
@@ -261,4 +262,37 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	}
 
 	status = true
+}
+
+func updateName(response http.ResponseWriter, request *http.Request) {
+	fmt.Println("Received request to /cities/updateName")
+	vars := mux.Vars(request)
+	sessionId := vars["session_id"]
+	status := false
+
+	defer func() {
+		json.NewEncoder(response).Encode(Status{Status: status})
+	}()
+
+	var newName string
+	err := json.NewDecoder(request.Body).Decode(&newName)
+
+	if err != nil {
+		return
+	}
+
+	query := fmt.Sprintf("UPDATE Cities SET city_name ='%s' FROM Sessions WHERE player_id=(SELECT player_id FROM Sessions NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s')", newName, sessionId)
+	result, err := database.Execute(query)
+
+	if err != nil {
+		fmt.Println("There is an error")
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		return
+	}
+
+	status = true
+
 }
