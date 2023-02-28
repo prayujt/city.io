@@ -6,6 +6,7 @@
             [column]="column"
             [sessionId]="sessionId"
             [isOwner]="isOwner"
+            (buildBuilding)="onBuildingClick($event)"
         ></game-sidebar>
     </mat-drawer>
 
@@ -27,18 +28,3 @@
         </div>
     </mat-drawer-content>
 </mat-drawer-container>
-<!-- <mat-tab-group class="bottom_menu">
-    <mat-tab label="Buildings">
-        <mat-grid-list cols="8" rowHeight="80px">
-            <mat-grid-tile class="menu_tiles">🏠</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏢</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏥</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏦</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏨</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏩</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏫</mat-grid-tile>
-            <mat-grid-tile class="menu_tiles">🏭</mat-grid-tile>
-        </mat-grid-list>
-    </mat-tab>
-    <mat-tab label="Unique Buildings"></mat-tab>
-</mat-tab-group> -->

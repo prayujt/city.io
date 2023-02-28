@@ -6,6 +6,9 @@ import { Building } from './building';
 })
 export class CityService {
     private buildings: Building[][] = [[]];
+    private availableBuildings: Building[] = [
+        new Building(-1, )
+    ];
     constructor() {}
 
     createCity(): CityService {
@@ -21,6 +24,10 @@ export class CityService {
 
     getBuildings(): Building[][] {
         return this.buildings;
+    }
+
+    getAvailableBuildings(): Building[] {
+        return this.availableBuildings;
     }
 
     setBuildings(
