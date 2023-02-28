@@ -13,6 +13,8 @@ export class Building {
         ['Apartment', '🏢'],
         ['Hospital', '🏥'],
         ['School', '🏫'],
+        ['Supermarket', '🏪'],
+        ['Barracks', '🎪']
     ]);
     row: number = 0;
     column: number = 0;

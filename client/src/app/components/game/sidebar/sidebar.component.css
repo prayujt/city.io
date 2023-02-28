@@ -28,7 +28,6 @@
 /* .scout-button:hover { */
 /* background-image: linear-gradient(rgb(0 0 0/10%) 0 0); */
 /* } */
-
 .city-information:hover {
     background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
 }
@@ -67,4 +66,8 @@
 
 .progress-bar {
     margin-top: 5%;
+}
+
+.constructable {
+    font-size: 1.25em;
 }

@@ -19,6 +19,7 @@ export class GameComponent {
         private http: HttpClient,
         private router: Router,
         private cookieService: CookieService,
+        private _snackBar: MatSnackBar,
         private cityService: CityService
     ) {
         this.createCity();
@@ -116,5 +117,35 @@ export class GameComponent {
 
         this.row = row;
         this.column = column;
+    }
+
+    onBuildingClick(buildingType: string): void {
+        this.http
+                .post<any>(
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/createBuilding`,
+                    {
+                        buildingType: buildingType,
+                        cityRow: this.row,
+                        cityColumn: this.column,
+                    }
+                ).subscribe((response) => {
+                    if (!response.status) {
+                        this._snackBar.open(
+                            'Building could not be constructed!',
+                            'Close',
+                            {
+                                duration: 2000,
+                            }
+                        );
+                    } else {
+                        this._snackBar.open(
+                            'Building constructed!',
+                            'Close',
+                            {
+                                duration: 2000,
+                            }
+                        );
+                    }
+                });
     }
 }
