@@ -122,11 +122,11 @@ export class GameComponent {
     onBuildingClick(buildingType: string): void {
         this.http
                 .post<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/{session_id}/createBuilding`,
+                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/createBuilding`,
                     {
                         buildingType: buildingType,
                         cityRow: this.row,
-                        cityColumn: this.column
+                        cityColumn: this.column,
                     }
                 ).subscribe((response) => {
                     if (!response.status) {
