@@ -56,6 +56,7 @@ export class LoginComponent {
                     }
                 )
                 .subscribe((response) => {
+                    console.log(response)
                     if (response.sessionId != '') {
                         this.router.navigate(['game']);
                         this.cookieService.set('sessionId', response.sessionId);
