@@ -197,13 +197,15 @@ export class SidebarComponent {
             height: '200px',
         });
 
+        console.log(this.cityName);
         dialogRef.afterClosed().subscribe((result) => {
+            console.log(this.cityName);
             if (result != '' && result != undefined) {
                 this.http
                     .post<any>(
                         `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/updateName`,
                         {
-                            cityNameOld: this.cityName,
+                            cityNameOriginal: this.cityName,
                             cityNameNew: result,
                         }
                     )
