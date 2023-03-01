@@ -303,8 +303,5 @@ export class VisitDialogComponent {
     templateUrl: './city-name-change-dialog.html',
 })
 export class CityNameChangeDialogComponent {
-    constructor(
-        public http: HttpClient,
-        private cookieService: CookieService
-    ) {}
+    constructor() {}
 }
