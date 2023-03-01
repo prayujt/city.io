@@ -12,6 +12,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { GameComponent } from './components/game/game.component';
 import {
+    CityNameChangeDialogComponent,
     SidebarComponent,
     VisitDialogComponent,
 } from './components/game/sidebar/sidebar.component';
@@ -28,6 +29,7 @@ import { CookieService } from 'ngx-cookie-service';
         GameComponent,
         SidebarComponent,
         VisitDialogComponent,
+        CityNameChangeDialogComponent,
     ],
     imports: [
         BrowserModule,

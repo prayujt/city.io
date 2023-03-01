@@ -47,7 +47,7 @@ export class SidebarComponent {
     clicked: boolean = false;
     progBar: boolean = false;
     constructableBuildings: Constructable[] = [];
-    constructableService: ConstructableService = new ConstructableService;
+    constructableService: ConstructableService = new ConstructableService();
 
     panelOpenState: boolean = false;
     startUnix!: number;
@@ -180,19 +180,51 @@ export class SidebarComponent {
             });
     }
 
-    public openDialog(): void {
+    public openCityDialog(): void {
         let dialogRef = this.dialog.open(VisitDialogComponent, {
             width: '1000px',
             height: '600px',
         });
-
-        // dialogRef.afterClosed().subscribe((result) => {
-        // console.log(`Dialog result: ${result}`);
-        // });
     }
 
-    constructBuilding(buildingType: string): void {
+    public constructBuilding(buildingType: string): void {
         this.buildBuilding.emit(buildingType);
+    }
+
+    public editCityName(): void {
+        let dialogRef = this.dialog.open(CityNameChangeDialogComponent, {
+            width: '400px',
+            height: '200px',
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result != '' && result != undefined) {
+                this.http
+                    .post<any>(
+                        `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/updateName`,
+                        {
+                            cityNameOld: this.cityName,
+                            cityNameNew: result,
+                        }
+                    )
+                    .subscribe((response) => {
+                        if (response.status) {
+                            this.cookieService.set('cityName', result);
+                            this._snackBar.open('City Name Changed!', 'Close', {
+                                duration: 2000,
+                            });
+                        } else {
+                            this._snackBar.open(
+                                'Error Changing City Name!',
+                                'Close',
+                                {
+                                    duration: 2000,
+                                }
+                            );
+                        }
+                    });
+            }
+        });
     }
 }
 
@@ -264,4 +296,12 @@ export class VisitDialogComponent {
     public visitCity(cityName: string) {
         this.cookieService.set('cityName', cityName);
     }
+}
+
+@Component({
+    selector: 'city-name-change-dialog',
+    templateUrl: './city-name-change-dialog.html',
+})
+export class CityNameChangeDialogComponent {
+    constructor() {}
 }
