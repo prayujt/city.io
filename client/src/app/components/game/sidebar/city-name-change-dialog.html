@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>City Name</h1>
+<div mat-dialog-content>
+    <mat-form-field class="example-full-width">
+        <mat-label>City</mat-label>
+        <input matInput placeholder="City Name" #cityName />
+    </mat-form-field>
+    <button mat-button color="primary" [mat-dialog-close]="cityName.value">
+        Change Name
+    </button>
+</div>

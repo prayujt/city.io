@@ -1,11 +1,14 @@
 <!-- SIDEBAR CONTENT -->
 <div class="sidebar-container">
-    <mat-card class="city-information" (click)="openDialog()">
+    <mat-card class="city-information">
         <mat-card-header>
             <mat-card-title>
-                {{ cityName }}
+                <a (click)="openCityDialog()">{{ cityName }}</a>
+                <a mat-button (click)="editCityName()"
+                    ><mat-icon fontIcon="edit"></mat-icon
+                ></a>
             </mat-card-title>
-            <mat-card-subtitle>
+            <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>
@@ -56,21 +59,45 @@
                 <br />
                 <br />
                 <mat-accordion>
-                    <mat-expansion-panel *ngFor="let building of constructableBuildings">
+                    <mat-expansion-panel
+                        *ngFor="let building of constructableBuildings"
+                    >
                         <mat-expansion-panel-header>
-                            <mat-panel-title class="constructable">{{ building.type }} {{ building.icon }}</mat-panel-title>
+                            <mat-panel-title class="constructable"
+                                >{{ building.type }}
+                                {{ building.icon }}</mat-panel-title
+                            >
                         </mat-expansion-panel-header>
                         <mat-list>
-                            <mat-list-item>Production 🪙: ${{ building.production }}/hr</mat-list-item>
-                            <mat-list-item>Happiness 🙂: {{ building.happiness_change }}</mat-list-item>
-                            <mat-list-item>Build Cost: {{ building.build_cost }}</mat-list-item>
-                            <mat-list-item>Build Time: {{ building.build_time }}</mat-list-item>
-                            <button mat-fab extended (click)="constructBuilding(building.type)">Build it!</button>
+                            <mat-list-item
+                                >Production 🪙: ${{
+                                    building.production
+                                }}/hr</mat-list-item
+                            >
+                            <mat-list-item
+                                >Happiness 🙂:
+                                {{ building.happiness_change }}</mat-list-item
+                            >
+                            <mat-list-item
+                                >Build Cost:
+                                {{ building.build_cost }}</mat-list-item
+                            >
+                            <mat-list-item
+                                >Build Time:
+                                {{ building.build_time }}</mat-list-item
+                            >
+                            <button
+                                mat-fab
+                                extended
+                                (click)="constructBuilding(building.type)"
+                            >
+                                Build it!
+                            </button>
                         </mat-list>
                     </mat-expansion-panel>
                 </mat-accordion>
             </mat-card-content>
-            
+
             <mat-card-content *ngIf="buildingType != ''">
                 <br />
                 <br />
