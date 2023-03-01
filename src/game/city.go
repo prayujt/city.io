@@ -21,6 +21,11 @@ type City struct {
 	CityOwner          string  `database:"username" json:"cityOwner"`
 }
 
+type CityNameChange struct {
+	CityNameOriginal string `json:"cityNameOriginal"`
+	CityNameNew      string `json:"cityNameNew"`
+}
+
 type Buildings struct {
 	IsOwner   bool       `json:"isOwner"`
 	Buildings []Building `json:"buildings"`
@@ -274,18 +279,25 @@ func updateName(response http.ResponseWriter, request *http.Request) {
 		json.NewEncoder(response).Encode(Status{Status: status})
 	}()
 
-	var newName string
-	err := json.NewDecoder(request.Body).Decode(&newName)
+	var city CityNameChange
+	err := json.NewDecoder(request.Body).Decode(&city)
 
 	if err != nil {
 		return
 	}
 
-	query := fmt.Sprintf("UPDATE Cities SET city_name ='%s' FROM Sessions WHERE player_id=(SELECT player_id FROM Sessions NATURAL JOIN Cities JOIN Sessions ON city_owner=player_id WHERE session_id='%s')", newName, sessionId)
+	var query string
+
+	if city.CityNameOriginal != "" {
+		query = fmt.Sprintf("UPDATE Cities SET city_name='%s' WHERE city_owner=(SELECT player_id FROM Sessions NATURAL JOIN Accounts WHERE session_id='%s') AND city_name='%s';", city.CityNameNew, sessionId, city.CityNameOriginal)
+	} else {
+		query = fmt.Sprintf("UPDATE Cities SET city_name='%s' WHERE city_owner=(SELECT player_id FROM Sessions NATURAL JOIN Accounts WHERE session_id='%s') AND town=0;", city.CityNameNew, sessionId)
+	}
+
 	result, err := database.Execute(query)
 
 	if err != nil {
-		fmt.Println("There is an error")
+		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
@@ -294,5 +306,4 @@ func updateName(response http.ResponseWriter, request *http.Request) {
 	}
 
 	status = true
-
 }
