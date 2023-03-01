@@ -34,7 +34,7 @@ export class SidebarComponent {
 
     cityOwner!: string;
     cityName!: string;
-    playerBalance!: number;
+    playerBalance: number = 0;
     population!: number;
     populationCapacity!: number;
 
