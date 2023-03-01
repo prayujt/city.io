@@ -21,6 +21,11 @@ type City struct {
 	CityOwner          string  `database:"username" json:"cityOwner"`
 }
 
+type CityNameChange struct {
+	CityNameOriginal string `json:"cityNameOriginal"`
+	CityNameNew      string `json:"cityNameNew"`
+}
+
 type Buildings struct {
 	IsOwner   bool       `json:"isOwner"`
 	Buildings []Building `json:"buildings"`
@@ -52,6 +57,7 @@ func HandleCityRoutes(r *mux.Router) {
 
 	r.HandleFunc("/cities/{session_id}/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/{session_id}/upgradeBuilding", upgradeBuilding).Methods("POST")
+	r.HandleFunc("/cities/{session_id}/updateName", updateName).Methods("POST")
 }
 
 func getCity(response http.ResponseWriter, request *http.Request) {
@@ -257,6 +263,45 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 		}
 		result, err = database.Execute(query)
 
+		return
+	}
+
+	status = true
+}
+
+func updateName(response http.ResponseWriter, request *http.Request) {
+	fmt.Println("Received request to /cities/updateName")
+	vars := mux.Vars(request)
+	sessionId := vars["session_id"]
+	status := false
+
+	defer func() {
+		json.NewEncoder(response).Encode(Status{Status: status})
+	}()
+
+	var city CityNameChange
+	err := json.NewDecoder(request.Body).Decode(&city)
+
+	if err != nil {
+		return
+	}
+
+	var query string
+
+	if city.CityNameOriginal != "" {
+		query = fmt.Sprintf("UPDATE Cities SET city_name='%s' WHERE city_owner=(SELECT player_id FROM Sessions NATURAL JOIN Accounts WHERE session_id='%s') AND city_name='%s';", city.CityNameNew, sessionId, city.CityNameOriginal)
+	} else {
+		query = fmt.Sprintf("UPDATE Cities SET city_name='%s' WHERE city_owner=(SELECT player_id FROM Sessions NATURAL JOIN Accounts WHERE session_id='%s') AND town=0;", city.CityNameNew, sessionId)
+	}
+
+	result, err := database.Execute(query)
+
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
 		return
 	}
 
