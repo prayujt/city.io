@@ -4,7 +4,7 @@
         <mat-card-header>
             <mat-card-title>
                 <a (click)="openCityDialog()">{{ cityName }}</a>
-                <a mat-button (click)="editCityName()"
+                <a *ngIf="isOwner" mat-button (click)="editCityName()"
                     ><mat-icon fontIcon="edit"></mat-icon
                 ></a>
             </mat-card-title>
@@ -45,17 +45,19 @@
             <mat-card-header>
                 <mat-card-title>
                     {{
-                        buildingType == ""
-                            ? "🚧 Buildings Available 🚧"
+                        buildingType === ""
+                            ? isOwner
+                                ? "🚧 Buildings Available 🚧"
+                                : "No building is selected"
                             : buildingType
                     }}
                 </mat-card-title>
                 <mat-card-subtitle>
-                    {{ buildingLevel == 0 ? "" : "Level " + buildingLevel }}
+                    {{ buildingLevel === 0 ? "" : "Level " + buildingLevel }}
                 </mat-card-subtitle>
             </mat-card-header>
 
-            <mat-card-content *ngIf="buildingType == ''">
+            <mat-card-content *ngIf="buildingType == '' && isOwner">
                 <br />
                 <br />
                 <mat-accordion>

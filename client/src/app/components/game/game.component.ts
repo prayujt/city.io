@@ -30,6 +30,7 @@ export class GameComponent {
     public isOwner!: boolean;
 
     public ngOnInit(): void {
+        this.cookieService.delete('cityName');
         this.sessionId = this.getID();
         if (this.sessionId != '') {
             this.http
@@ -121,31 +122,28 @@ export class GameComponent {
 
     onBuildingClick(buildingType: string): void {
         this.http
-                .post<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/createBuilding`,
-                    {
-                        buildingType: buildingType,
-                        cityRow: this.row,
-                        cityColumn: this.column,
-                    }
-                ).subscribe((response) => {
-                    if (!response.status) {
-                        this._snackBar.open(
-                            'Building could not be constructed!',
-                            'Close',
-                            {
-                                duration: 2000,
-                            }
-                        );
-                    } else {
-                        this._snackBar.open(
-                            'Building constructed!',
-                            'Close',
-                            {
-                                duration: 2000,
-                            }
-                        );
-                    }
-                });
+            .post<any>(
+                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/createBuilding`,
+                {
+                    buildingType: buildingType,
+                    cityRow: this.row,
+                    cityColumn: this.column,
+                }
+            )
+            .subscribe((response) => {
+                if (!response.status) {
+                    this._snackBar.open(
+                        'Building could not be constructed!',
+                        'Close',
+                        {
+                            duration: 2000,
+                        }
+                    );
+                } else {
+                    this._snackBar.open('Building constructed!', 'Close', {
+                        duration: 2000,
+                    });
+                }
+            });
     }
 }
