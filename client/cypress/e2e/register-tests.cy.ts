@@ -52,7 +52,7 @@ describe('Register tests', () => {
   })
 
   it('Valid Registration and Login', () => {
-    let username: string = "User20034"
+    let username: string = "User200"
     let password: string = "password123"
     cy.get("input[placeholder='Username']").type(username);
     cy.get("input[placeholder='Password']").type(password);
