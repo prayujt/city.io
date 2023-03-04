@@ -35,7 +35,7 @@ export class GameComponent {
         if (this.sessionId != '') {
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.sessionId}`
+                    `${environment.API_HOST}/sessions/${this.sessionId}`
                 )
                 .subscribe((response) => {
                     if (!response.status) {
@@ -51,7 +51,7 @@ export class GameComponent {
 
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings${parameter}`
+                    `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
@@ -66,7 +66,7 @@ export class GameComponent {
                 }
                 this.http
                     .get<any>(
-                        `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings${parameter}`
+                        `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
                     )
                     .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
@@ -123,7 +123,7 @@ export class GameComponent {
     onBuildingClick(buildingType: string): void {
         this.http
             .post<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/createBuilding`,
+                `${environment.API_HOST}/cities/${this.sessionId}/createBuilding`,
                 {
                     buildingType: buildingType,
                     cityRow: this.row,
