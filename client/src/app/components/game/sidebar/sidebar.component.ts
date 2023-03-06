@@ -47,7 +47,7 @@ export class SidebarComponent {
     clicked: boolean = false;
     progBar: boolean = false;
     constructableBuildings: Constructable[] = [];
-    constructableService: ConstructableService = new ConstructableService();
+    constructableService: ConstructableService = new ConstructableService(this.http);
 
     panelOpenState: boolean = false;
     startUnix!: number;
@@ -106,7 +106,7 @@ export class SidebarComponent {
                 this.ss %= 60;
                 this.ss = Math.floor(this.ss);
             } else this.progBar = false;
-        }, 100);
+        }, 200);
 
         setInterval(() => {
             let parameter = '';

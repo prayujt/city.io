@@ -2,6 +2,7 @@ export class Constructable {
     type: string = '';
     production: number = 0.0;
     happiness_change: number = 0.0;
+    population_change: number = 0;
     build_cost: number = 0.0;
     build_time: number = 0;
     icon: string = '';
@@ -22,13 +23,14 @@ export class Constructable {
     ]);
 
     constructor(
-        type: string = ''
+        type: string = '',
+        stats: number[] = []
     ) {
         if (type != '') {
             this.type = type;
-            let stats: number[] = this.stats.get(type) as number[];
             this.production = stats[0];
             this.happiness_change = stats[1];
+            this.population_change = stats[2];
             this.build_cost = stats[3];
             this.build_time = stats[4];
             this.icon = this.icons.get(type) as string;
