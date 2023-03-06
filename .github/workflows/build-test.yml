@@ -59,7 +59,7 @@ jobs:
         cd ../client
         
     - name: Cypress run
-      uses: cypress-io/github-action@v12.7.0
+      uses: cypress-io/github-action@latest
       with:
         build: npm run build
         start: npm start
