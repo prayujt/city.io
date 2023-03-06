@@ -34,7 +34,7 @@ export class SidebarComponent {
 
     cityOwner!: string;
     cityName!: string;
-    playerBalance!: number;
+    playerBalance: number = 0;
     population!: number;
     populationCapacity!: number;
 
@@ -74,7 +74,7 @@ export class SidebarComponent {
 
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings/${this.row}/${this.column}${parameter}`
+                    `${environment.API_HOST}/cities/${this.sessionId}/buildings/${this.row}/${this.column}${parameter}`
                 )
                 .subscribe((response) => {
                     this.buildingType = response.buildingType;
@@ -117,7 +117,7 @@ export class SidebarComponent {
 
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}${parameter}`
+                    `${environment.API_HOST}/cities/${this.sessionId}${parameter}`
                 )
                 .subscribe((response) => {
                     this.cityOwner = response.cityOwner;
@@ -132,7 +132,7 @@ export class SidebarComponent {
     public logOut(): void {
         this.http
             .post<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/sessions/logout`,
+                `${environment.API_HOST}/sessions/logout`,
                 {
                     sessionId: this.sessionId,
                 }
@@ -161,7 +161,7 @@ export class SidebarComponent {
 
         this.http
             .post<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/upgradeBuilding${parameter}`,
+                `${environment.API_HOST}/cities/${this.sessionId}/upgradeBuilding${parameter}`,
                 {
                     cityRow: this.row,
                     cityColumn: this.column,
@@ -203,7 +203,7 @@ export class SidebarComponent {
             if (result != '' && result != undefined) {
                 this.http
                     .post<any>(
-                        `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/updateName`,
+                        `${environment.API_HOST}/cities/${this.sessionId}/updateName`,
                         {
                             cityNameOriginal: this.cityName,
                             cityNameNew: result,
@@ -264,7 +264,7 @@ export class VisitDialogComponent {
     ngOnInit() {
         this.http
             .get<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/cities`
+                `${environment.API_HOST}/cities`
             )
             .subscribe((response) => {
                 this.cities = response;
@@ -272,7 +272,7 @@ export class VisitDialogComponent {
 
         this.http
             .get<any>(
-                `http://${environment.API_HOST}:${environment.API_PORT}/towns`
+                `${environment.API_HOST}/towns`
             )
             .subscribe((response) => {
                 this.towns = response;

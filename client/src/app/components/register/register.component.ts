@@ -23,7 +23,7 @@ export class RegisterComponent {
         if (ID != '') {
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${ID}`
+                    `${environment.API_HOST}/sessions/${ID}`
                 )
                 .subscribe((response) => {
                     if (response.status) {
@@ -56,7 +56,7 @@ export class RegisterComponent {
         } else {
             this.http
                 .post<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/login/createAccount`,
+                    `${environment.API_HOST}/login/createAccount`,
                     {
                         username: username,
                         password: password,

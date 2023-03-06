@@ -32,7 +32,7 @@
 ##### Response:
 ```
 {
-    status:         boolean
+    sessionId:      string
 }
 ```
 
@@ -69,12 +69,21 @@
 ## Game
 
 #### Get City for Account: `GET /cities/{session_id}`
+
+##### Query Parameters (optional):
+
+```
+-   cityName:               string
+```
+
 ##### Response:
 ```
 {
-    cityId:        string,
-    population:    int,
-    cityName:      string
+    username:               string,
+    balance:                double,
+    population:             int,
+    populationCapacity:     int,
+    cityName:               string
 }
 ```
 
@@ -84,20 +93,21 @@
 ##### Query Parameters (optional):
 
 ```
--   username:       string
+-   cityName:       string
 ```
 
 ##### Response:
 ```
 {
     isOwner:        boolean,
-    buildings:      [{
-                        buildingType:   string,
-                        buildingLevel:  int,
-                        cityRow:        int,
-                        cityColumn:     int
-                    },
-                    ...
+    buildings:      [
+                        {
+                            buildingType:   string,
+                            buildingLevel:  int,
+                            cityRow:        int,
+                            cityColumn:     int
+                        },
+                        ...
                     ]
 }
 ```
@@ -108,7 +118,7 @@
 ##### Query Parameters (optional):
 
 ```
--   username:       string
+-   cityName:           string
 ```
 
 ##### Response:
@@ -128,6 +138,13 @@
 
 
 #### Create Building in a City: `POST /cities/{session_id}/createBuilding`
+
+##### Query Parameters (optional):
+
+```
+-   cityName:       string
+```
+
 ##### Body:
 ```
 {
@@ -147,6 +164,13 @@
 </br>
 
 #### Upgrade Building in a City: `POST /cities/{session_id}/upgradeBuilding`
+
+##### Query Parameters (optional):
+
+```
+-   cityName:       string
+```
+
 ##### Body:
 ```
 {
@@ -162,6 +186,8 @@
 }
 ```
 
+</br>
+
 ## Visit
 
 #### Get City List: `GET /cities`
@@ -176,7 +202,24 @@
 ]
 ```
 
-#### Get Leaderboard: `GET /cities`
+</br>
+
+#### Get City List: `GET /cities`
+##### Response:
+```
+[
+    {
+        cityName:       string,
+        cityOwner:      string
+    },
+    ...
+]
+
+```
+
+</br>
+
+#### Get Leaderboard: `GET /leaderboard`
 ##### Response:
 ```
 [

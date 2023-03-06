@@ -24,7 +24,7 @@ export class LoginComponent {
         if (sessionId != '') {
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${sessionId}`
+                    `${environment.API_HOST}/sessions/${sessionId}`
                 )
                 .subscribe((response) => {
                     if (response.status) {
@@ -49,7 +49,7 @@ export class LoginComponent {
         } else {
             this.http
                 .post<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/login/createSession`,
+                    `${environment.API_HOST}/login/createSession`,
                     {
                         username: username,
                         password: password,
