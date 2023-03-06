@@ -41,7 +41,7 @@ describe('Login tests', () => {
                 if (res.body['sessionID'] != '')
                     throw new Error("should be invalid!");
         })})
-    })
+    })  
 
     it('Login invalid username/password', () => {
         cy.get("input[placeholder='Username']").type("jfioejflajslkfjkaef");
@@ -58,8 +58,8 @@ describe('Login tests', () => {
     })
   
     it('Valid Login', () => {
-        let username: string = "test"
-        let password: string = "pass"
+        let username: string = "username"
+        let password: string = "password"
         cy.get("input[placeholder='Username']").type(username);
         cy.get("input[placeholder='Password']").type(password);
         cy.get("button").contains("Log in").click();
@@ -68,9 +68,18 @@ describe('Login tests', () => {
             url: '/login/createSession'
         }, (req) => {
             req.on('response', (res) => {
-            if (res.body['sessionID'] != '')
+            if (res.body['sessionID'] == '')
                 throw new Error(res.body['status']);
         })})
+    })
+
+    it('Reveal password button works', () => {
+        let username: string = "username"
+        let password: string = "password"
+        cy.get("input[placeholder='Username']").type(username);
+        cy.get("input[placeholder='Password']").type(password);
+        cy.get("mat-icon[role='img']").click();
+        cy.get("input[placeholder='Password']").should('have.value', password);
     })
   })
   
