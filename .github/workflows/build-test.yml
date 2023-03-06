@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
+  
   build-test:
     runs-on: ubuntu-latest
       
@@ -56,4 +56,10 @@ jobs:
       run: |
         cd src
         go test -v api/tests
-        cd ..
+        cd ../client
+        
+    - name: Cypress run
+      uses: cypress-io/github-action@v12.7.0
+      with:
+        build: npm run build
+        start: npm start
