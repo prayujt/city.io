@@ -6,7 +6,7 @@ export class Constructable {
     build_cost: number = 0.0;
     build_time: number = 0;
     icon: string = '';
-    // production happiness_change population_change build_cost build_time
+    // production happiness_change population_change build_cost
     stats: Map<string, number[]> = new Map([
         ['Apartment', [0.0, 500.00, 2, 5000, 400000.00, 60]],
         ['Hospital', [1000.00, 5, 1000, 250000.00, 60]],
