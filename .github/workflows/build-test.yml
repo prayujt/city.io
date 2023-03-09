@@ -64,7 +64,7 @@ jobs:
         install: false
         working-directory: ./client
         start: npm run start
-        wait-on: 'http://localhost:4200'
+        wait-on: 'http://[::1]:4200'
         wait-on-timeout: 120
         project: ./client
         browser: chrome
