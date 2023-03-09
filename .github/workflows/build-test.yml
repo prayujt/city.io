@@ -61,6 +61,9 @@ jobs:
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
-        build: npm run build
-        start: npm start
+        install: false
+        start: npm run start
+        wait-on: 'http://localhost:4200'
+        wait-on-timeout: 120
+        project: ./client
         browser: chrome
