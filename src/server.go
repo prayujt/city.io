@@ -37,6 +37,7 @@ func main() {
 	login.HandleLoginRoutes(router)
 	game.HandleCityRoutes(router)
 	game.HandleVisitRoutes(router)
+	game.HandleArmyRoutes(router)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
