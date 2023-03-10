@@ -27,7 +27,6 @@ type March struct {
 	ArmySize     int    `database:"army_size" json:"armySize"`
 	TimeToTarget int    `database:"time_to_target" json:"timeToTarget"`
 	IsAttack     bool   `database:"attack" json:"attack"`
-	// WillConquer  bool   `database:"conquer" json:"conquer"`
 }
 
 func HandleArmyRoutes(r *mux.Router) {
@@ -87,7 +86,7 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"UPDATE Cities SET army_size=army_size-%d WHERE city_owner=(SELECT player_id FROM Sessions WHERE session_id='%s')", march.ArmySize, march.SessionId))
+			"UPDATE Cities SET army_size=army_size-%d WHERE city_name='%s' AND city_owner=(SELECT player_id FROM Sessions WHERE session_id='%s')", march.ArmySize, march.FromCity, march.SessionId))
 
 	if err != nil {
 		return

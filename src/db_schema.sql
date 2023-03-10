@@ -73,8 +73,8 @@ CREATE TABLE Builds (
 
 CREATE TABLE Marches (
     march_id VARCHAR(50) PRIMARY KEY,
-    from_city VARCHAR(50),
-    to_city VARCHAR(50),
+    from_city VARCHAR(50) NOT NULL,
+    to_city VARCHAR(50) NOT NULL,
     army_size VARCHAR(50),
     time_to_target INT,
     attack BOOLEAN,
