@@ -71,6 +71,7 @@ export class GameComponent {
                     )
                     .subscribe(async (response) => {
                         this.cityService.setBuildings(response.buildings);
+                        this.isOwner = false;
                         this.isOwner = await response.isOwner;
                         if (this.isOwner && this.cookieService.get('cityName') != '') {
                             this.homeCity = this.cookieService.get('cityName');
