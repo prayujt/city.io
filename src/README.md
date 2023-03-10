@@ -68,6 +68,26 @@
 
 ## Game
 
+### Cities
+
+#### Get Available Buildings: `GET /cities/buildings`
+
+##### Response:
+```
+[
+    {
+        buildingType:           string,
+        buildCost:              double,
+        buildTime:              int,
+        buildingProduction:     double,
+        happinessChange:        int
+    },
+    ...
+]
+```
+
+</br>
+
 #### Get City for Account: `GET /cities/{session_id}`
 
 ##### Query Parameters (optional):
@@ -188,7 +208,52 @@
 
 </br>
 
-## Visit
+### Armies
+
+#### Train Troops: `POST /armies/train`
+
+##### Body: 
+
+```
+{
+    sessionId:          string,
+    troopCount:         int
+}
+```
+
+##### Response:
+```
+{
+    status:             boolean
+}
+```
+
+</br>
+
+#### Move Troops: `POST /armies/move`
+
+##### Body: 
+
+```
+{
+    sessionId:          string,
+    armySize:           int,
+    fromCity:           string,
+    toCity:             string
+}
+```
+
+##### Response:
+```
+{
+    status:             boolean
+}
+```
+
+</br>
+
+
+### Visit
 
 #### Get City List: `GET /cities`
 ##### Response:
@@ -204,7 +269,7 @@
 
 </br>
 
-#### Get City List: `GET /cities`
+#### Get Town List: `GET /towns`
 ##### Response:
 ```
 [
