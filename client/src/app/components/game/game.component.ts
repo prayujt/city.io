@@ -34,13 +34,7 @@ export class GameComponent {
         this.sessionId = this.getID();
         if (this.sessionId != '') {
             this.http
-<<<<<<< Updated upstream
-                .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/sessions/${this.sessionId}`
-                )
-=======
                 .get<any>(`${environment.API_HOST}/sessions/${this.sessionId}`)
->>>>>>> Stashed changes
                 .subscribe((response) => {
                     if (!response.status) {
                         this.router.navigate(['login']);
@@ -55,7 +49,7 @@ export class GameComponent {
 
             this.http
                 .get<any>(
-                    `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings${parameter}`
+                    `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
@@ -70,7 +64,7 @@ export class GameComponent {
                 }
                 this.http
                     .get<any>(
-                        `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/buildings${parameter}`
+                        `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
                     )
                     .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
@@ -133,11 +127,7 @@ export class GameComponent {
 
         this.http
             .post<any>(
-<<<<<<< Updated upstream
-                `http://${environment.API_HOST}:${environment.API_PORT}/cities/${this.sessionId}/createBuilding`,
-=======
                 `${environment.API_HOST}/cities/${this.sessionId}/createBuilding${parameter}`,
->>>>>>> Stashed changes
                 {
                     buildingType: buildingType,
                     cityRow: this.row,

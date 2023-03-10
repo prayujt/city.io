@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
+  
   build-test:
     runs-on: ubuntu-latest
       
@@ -56,4 +56,14 @@ jobs:
       run: |
         cd src
         go test -v api/tests
-        cd ..
+        cd ../client
+        
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      with:
+        install: false
+        working-directory: ./client
+        start: npm run start
+        wait-on: 'http://[::1]:4200'
+        wait-on-timeout: 120
+        browser: chrome
