@@ -184,3 +184,13 @@ INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) 
 (uuid(), 'neutral', 10000, 10000, 1),
 (uuid(), 'neutral', 10000, 10000, 1),
 (uuid(), 'neutral', 25000, 25000, 1);
+
+DELIMITER &&
+CREATE PROCEDURE reset_tests ()
+BEGIN
+    DELETE FROM Buildings WHERE city_id=(SELECT city_id FROM Cities JOIN Accounts ON city_owner=player_id WHERE username='User200');
+    DELETE FROM Cities WHERE city_id=(SELECT city_id FROM (SELECT * FROM Cities) AS TempCities JOIN Accounts ON city_owner=player_id WHERE username='User200');
+    DELETE FROM Sessions WHERE player_id=(SELECT player_id FROM Accounts WHERE username='User200');
+    DELETE FROM Accounts WHERE username='User200';
+END &&
+DELIMITER ;
