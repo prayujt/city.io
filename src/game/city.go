@@ -41,9 +41,6 @@ type Building struct {
 	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
 	StartTime          string  `database:"start_time" json:"startTime"`
 	EndTime            string  `database:"end_time" json:"endTime"`
-	// BuildingName       string  `database:"building_name" json:"buildingName"`
-	// BuildCost          float64 `database:"build_cost"`
-	// BuildTime          int     `database:"build_time"`
 }
 
 type Status struct {
@@ -148,7 +145,6 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 }
 
 func createBuilding(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /cities/createBuilding")
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 	cityName := request.URL.Query()["cityName"]
@@ -201,7 +197,6 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 }
 
 func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /cities/upgradeBuilding")
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 	cityName := request.URL.Query()["cityName"]
@@ -270,7 +265,6 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 }
 
 func updateName(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /cities/updateName")
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 	status := false
