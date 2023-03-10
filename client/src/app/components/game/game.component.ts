@@ -34,9 +34,7 @@ export class GameComponent {
         this.sessionId = this.getID();
         if (this.sessionId != '') {
             this.http
-                .get<any>(
-                    `${environment.API_HOST}/sessions/${this.sessionId}`
-                )
+                .get<any>(`${environment.API_HOST}/sessions/${this.sessionId}`)
                 .subscribe((response) => {
                     if (!response.status) {
                         this.router.navigate(['login']);
@@ -121,9 +119,15 @@ export class GameComponent {
     }
 
     onBuildingClick(buildingType: string): void {
+        let parameter = '';
+        let cityName = this.cookieService.get('cityName');
+        if (cityName != '') {
+            parameter = `?cityName=${encodeURIComponent(cityName)}`;
+        }
+
         this.http
             .post<any>(
-                `${environment.API_HOST}/cities/${this.sessionId}/createBuilding`,
+                `${environment.API_HOST}/cities/${this.sessionId}/createBuilding${parameter}`,
                 {
                     buildingType: buildingType,
                     cityRow: this.row,
