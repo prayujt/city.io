@@ -5,7 +5,18 @@
 .logout-button {
     width: 15%;
     height: 30px;
-    margin-left: 85%;
+    margin-left: 80%;
+    margin-top: 2%;
+    background-color: red;
+    color: white;
+}
+
+.attack-button {
+    background-color: rgb(255, 166, 0);
+    color: white;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 4%;
 }
 
 .logout-button:hover {
