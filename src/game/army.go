@@ -4,6 +4,7 @@ import (
 	"api/database"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"net/http"
@@ -114,8 +115,12 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 }
 
 func handleMarches() {
+	var completedMarches []string = make([]string, 0)
 	defer func() {
-		database.Execute("DELETE FROM Marches WHERE time_to_target=0")
+		if len(completedMarches) > 0 {
+			completedMarchesSQL := "('" + strings.Join(completedMarches, `', '`) + `')`
+			database.Execute(fmt.Sprintf("DELETE FROM Marches WHERE time_to_target=0 AND march_id IN %s", completedMarchesSQL))
+		}
 		time.Sleep(time.Millisecond * 250)
 	}()
 
@@ -126,6 +131,7 @@ func handleMarches() {
 	for _, march := range marches {
 
 		if !march.IsAttack {
+			// runs if the player is moving between two cities that they own
 			result, err := database.Execute(
 				fmt.Sprintf(
 					"UPDATE Cities SET army_size=army_size+%d WHERE city_id='%s'", march.ArmySize, march.ToCity))
@@ -152,7 +158,9 @@ func handleMarches() {
 			database.Query(fmt.Sprintf("SELECT balance, army_size FROM Cities JOIN Accounts ON player_id=city_owner WHERE city_id='%s'", march.ToCity), &enemyPlayer)
 
 			if willConquer {
+				// runs if the player is attacking a town to conquer it
 				if enemyPlayer[0].ArmySize < march.ArmySize {
+					// if the player has won the battle, change ownership, set new army size to be remainder of attacking army
 					result, err := database.Execute(
 						fmt.Sprintf(
 							"UPDATE Cities SET city_owner=(SELECT city_owner FROM (SELECT * FROM Cities) AS TempCities WHERE city_id='%s'), army_size=%d-army_size WHERE city_id='%s'", march.FromCity, march.ArmySize, march.ToCity))
@@ -179,11 +187,13 @@ func handleMarches() {
 						return
 					}
 				}
-
 			} else {
+				// runs if the player is attacking a city to loot
 				if enemyPlayer[0].ArmySize < march.ArmySize {
+					// if the player has won the battle
 					change := enemyPlayer[0].Balance * PERCENTAGE_LOOTED
 
+					// remove city garrison army
 					result, err := database.Execute(
 						fmt.Sprintf(
 							"UPDATE Cities SET army_size=0 WHERE city_id='%s'", march.ToCity))
@@ -192,6 +202,7 @@ func handleMarches() {
 						return
 					}
 
+					// remove gold taken from owner of city
 					result, err = database.Execute(
 						fmt.Sprintf(
 							"UPDATE Accounts SET balance=balance-%v WHERE player_id=(SELECT city_owner FROM Cities WHERE city_id='%s')", change, march.ToCity))
@@ -205,6 +216,7 @@ func handleMarches() {
 						return
 					}
 
+					// give gold stolen to attacking player
 					result, err = database.Execute(
 						fmt.Sprintf(
 							"UPDATE Accounts SET balance=balance+%v WHERE player_id=(SELECT city_owner FROM Cities WHERE city_id='%s')", change, march.FromCity))
@@ -217,7 +229,23 @@ func handleMarches() {
 					if err != nil || rowsAffected == 0 {
 						return
 					}
+
+					// add march back for remaining troops
+					result, err = database.Execute(
+						fmt.Sprintf(
+							"INSERT INTO Marches(march_id, from_city, to_city, army_size, time_to_target, attack) VALUES (uuid(), '%s', '%s', %d, 30, 0)", march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize))
+
+					if err != nil {
+						return
+					}
+
+					rowsAffected, err = result.RowsAffected()
+					if err != nil || rowsAffected == 0 {
+						return
+					}
+
 				} else {
+					// set the new garrison size to be the remaining garrison
 					result, err := database.Execute(
 						fmt.Sprintf(
 							"UPDATE Cities SET army_size=%d WHERE city_id='%s'", enemyPlayer[0].ArmySize-march.ArmySize, march.ToCity))
@@ -233,6 +261,6 @@ func handleMarches() {
 				}
 			}
 		}
-
+		completedMarches = append(completedMarches, march.MarchId)
 	}
 }
