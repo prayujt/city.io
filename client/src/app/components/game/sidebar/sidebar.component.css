@@ -36,9 +36,6 @@
     font-weight: 300;
 }
 
-/* .scout-button:hover { */
-/* background-image: linear-gradient(rgb(0 0 0/10%) 0 0); */
-/* } */
 .city-information:hover {
     background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
 }
@@ -81,4 +78,11 @@
 
 .constructable {
     font-size: 1.25em;
+}
+
+.city-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
 }

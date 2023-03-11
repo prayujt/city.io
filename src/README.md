@@ -103,8 +103,25 @@
     balance:                double,
     population:             int,
     populationCapacity:     int,
+    armySize:               int, (-1 if you are visiting a territory that you do not own)
     cityName:               string
 }
+```
+
+</br>
+
+#### Get Territory for Account: `GET /cities/{session_id}/territory`
+
+##### Response:
+```
+[
+    {
+        cityName:               string,
+        cityProduction:         double,
+        armySize:               int,
+    },
+    ...
+]
 ```
 
 </br>

@@ -1,0 +1,71 @@
+<h1 mat-dialog-title>Attack</h1>
+<div mat-dialog-content>
+    <mat-stepper linear #stepper>
+        <mat-step
+            #citySelect
+            [completed]="false"
+            label="Select territory to send troops from"
+        >
+            <mat-form-field style="width: 100%" appearance="fill">
+                <mat-label>City Name</mat-label>
+                <input
+                    matInput
+                    aria-label="City"
+                    [formControl]="territoryCtrl"
+                />
+            </mat-form-field>
+            <mat-radio-group
+                class="city-radio-group"
+                [(ngModel)]="selectedTerritory"
+            >
+                <mat-radio-button
+                    *ngFor="let territory of filteredTerritory | async"
+                    [value]="territory"
+                    (click)="
+                        citySelect.completed = true; stepper.selectedIndex = 1
+                    "
+                >
+                    {{ territory.cityName }} - {{ territory.armySize }}
+                </mat-radio-button>
+            </mat-radio-group>
+        </mat-step>
+
+        <mat-step label="Select how many troops to send">
+            <mat-form-field style="width: 100%" appearance="fill">
+                <mat-label>Size</mat-label>
+                <input matInput type="number" [(ngModel)]="armySize" />
+            </mat-form-field>
+            <div>
+                <h3>Army Size</h3>
+                <label>{{ armySize }}</label>
+            </div>
+            <mat-slider
+                style="width: 100%"
+                [max]="
+                    selectedTerritory === undefined
+                        ? 0
+                        : selectedTerritory.armySize
+                "
+                [min]="selectedTerritory === undefined ? 0 : 1"
+                [step]="1"
+                [discrete]="true"
+            >
+                <input matSliderThumb [(ngModel)]="armySize" />
+            </mat-slider>
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>March</ng-template>
+            <p>Ready to send?</p>
+            <div>
+                <button mat-raised-button color="warn" (click)="march()">
+                    March!
+                </button>
+                <button mat-button matStepperPrevious>Back</button>
+            </div>
+        </mat-step>
+    </mat-stepper>
+</div>

@@ -13,12 +13,18 @@ import (
 )
 
 type City struct {
-	// CityId     string `database:"city_id" json:"cityId"`
 	CityName           string  `database:"city_name" json:"cityName"`
 	Population         int     `database:"population" json:"population"`
 	PopulationCapacity int     `database:"population_capacity" json:"populationCapacity"`
 	PlayerBalance      float64 `database:"balance" json:"playerBalance"`
 	CityOwner          string  `database:"username" json:"cityOwner"`
+	ArmySize           int     `database:"army_size" json:"armySize"`
+}
+
+type CityStats struct {
+	CityName       string `database:"city_name" json:"cityName"`
+	ArmySize       int    `database:"army_size" json:"armySize"`
+	CityProduction int    `database:"city_production" json:"cityProduction"`
 }
 
 type CityNameChange struct {
@@ -58,6 +64,7 @@ type Status struct {
 func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/buildings", getAllBuildings).Methods("GET")
 	r.HandleFunc("/cities/{session_id}", getCity).Methods("GET")
+	r.HandleFunc("/cities/{session_id}/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
 
@@ -91,15 +98,28 @@ func getCity(response http.ResponseWriter, request *http.Request) {
 	var result []City
 
 	if len(cityName) > 0 {
-		database.Query(fmt.Sprintf("SELECT username, balance, population, population_capacity, city_name FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_name='%s'", cityName[0]), &result)
+		database.Query(fmt.Sprintf("SELECT username, balance, population, population_capacity, IF(username IN (SELECT username FROM Sessions NATURAL JOIN Accounts WHERE session_id='%s'), army_size, -1) AS army_size, city_name FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_name='%s'", sessionId, cityName[0]), &result)
 	} else {
-		database.Query(fmt.Sprintf("SELECT username, balance, population, population_capacity, city_name FROM Cities JOIN Sessions NATURAL JOIN Accounts ON city_owner=player_id WHERE session_id='%s' AND town=0", sessionId), &result)
+		database.Query(fmt.Sprintf("SELECT username, balance, population, population_capacity, army_size, city_name FROM Cities JOIN Sessions NATURAL JOIN Accounts ON city_owner=player_id WHERE session_id='%s' AND town=0", sessionId), &result)
 	}
 
 	if len(result) > 0 {
 		result[0].PlayerBalance = math.Round(result[0].PlayerBalance*100) / 100
 		city = result[0]
 	}
+}
+
+func getTerritory(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	sessionId := vars["session_id"]
+
+	var territory []CityStats
+
+	defer func() {
+		json.NewEncoder(response).Encode(territory)
+	}()
+
+	database.Query(fmt.Sprintf("SELECT city_name, any_value(army_size) AS army_size, SUM(building_production) AS city_production FROM Cities NATURAL JOIN Buildings NATURAL JOIN Building_Info JOIN Sessions ON player_id=city_owner WHERE session_id='%s' GROUP BY city_name", sessionId), &territory)
 }
 
 func getBuildings(response http.ResponseWriter, request *http.Request) {
