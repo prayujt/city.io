@@ -27,7 +27,7 @@ export class GameComponent {
     public row: number = 0;
     public column: number = 0;
     public sessionId: string = '';
-    public isOwner!: boolean;
+    public isOwner: boolean = true;
 
     public ngOnInit(): void {
         this.cookieService.delete('cityName');
