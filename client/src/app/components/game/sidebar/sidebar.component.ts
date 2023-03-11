@@ -225,6 +225,10 @@ export class SidebarComponent {
             }
         });
     }
+
+    public goHome(): void {
+        this.cookieService.delete('cityName');
+    }
 }
 
 export interface City {

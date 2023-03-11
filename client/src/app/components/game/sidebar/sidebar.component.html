@@ -4,10 +4,13 @@
         <mat-card-header>
             <mat-card-title>
                 <a (click)="openCityDialog()">{{ cityName }}</a>
-                <a *ngIf="isOwner" mat-button (click)="editCityName()"
-                    ><mat-icon fontIcon="edit"></mat-icon
-                ></a>
             </mat-card-title>
+            <a *ngIf="isOwner" mat-button (click)="editCityName()"
+                ><mat-icon fontIcon="edit"></mat-icon
+            ></a>
+            <a *ngIf="!isOwner" mat-button (click)="goHome()"
+                ><mat-icon fontIcon="home"></mat-icon
+            ></a>
             <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
@@ -31,13 +34,10 @@
              >Scout</a
              > -->
         <a
+            *ngIf="!isOwner"
             mat-button
-            color="warn"
-            routerLink="login"
-            routerLinkActive="active"
-            class="logout-button"
-            (click)="logOut()"
-            >Log out</a
+            class="attack-button"
+            >Attack!⚔️</a
         >
     </div>
     <div *ngIf="clicked">
@@ -183,4 +183,12 @@
             </mat-card-footer>
         </mat-card>
     </div>
+    <a
+        mat-button
+        routerLink="login"
+        routerLinkActive="active"
+        class="logout-button"
+        (click)="logOut()"
+        >Log out</a
+    >
 </div>

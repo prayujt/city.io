@@ -68,6 +68,7 @@ export class GameComponent {
                     )
                     .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
+                        this.isOwner = false;
                         this.isOwner = response.isOwner;
                     });
             }, 250);

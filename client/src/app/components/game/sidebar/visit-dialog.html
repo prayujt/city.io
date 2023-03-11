@@ -9,6 +9,7 @@
             <mat-list role="list">
                 <button
                     mat-list-item
+                    mat-dialog-close
                     *ngFor="let city of filteredCities | async"
                     (click)="visitCity(city.cityName)"
                 >
