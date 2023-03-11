@@ -28,10 +28,9 @@ export class GameComponent {
     public column: number = 0;
     public sessionId: string = '';
     public isOwner!: boolean;
-    public homeCity!: string;
 
     public ngOnInit(): void {
-        // this.cookieService.delete('cityName');
+        this.cookieService.delete('cityName');
         this.sessionId = this.getID();
         if (this.sessionId != '') {
             this.http
@@ -67,14 +66,10 @@ export class GameComponent {
                     .get<any>(
                         `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
                     )
-                    .subscribe(async (response) => {
+                    .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
                         this.isOwner = false;
-                        this.isOwner = await response.isOwner;
-                        if (this.isOwner && this.cookieService.get('cityName') != '') {
-                            this.homeCity = this.cookieService.get('cityName');
-                            console.log('Home: ' + this.homeCity);
-                        }
+                        this.isOwner = response.isOwner;
                     });
             }, 250);
         } else {

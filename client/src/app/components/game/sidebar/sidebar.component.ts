@@ -22,7 +22,6 @@ export class SidebarComponent {
     @Input() column!: number;
     @Input() sessionId!: string;
     @Input() isOwner!: boolean;
-    @Input() homeCity!: string;
     @Output() buildBuilding: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(
@@ -228,7 +227,7 @@ export class SidebarComponent {
     }
 
     public goHome(): void {
-        this.cookieService.set('cityName', this.homeCity);
+        this.cookieService.delete('cityName');
     }
 }
 
