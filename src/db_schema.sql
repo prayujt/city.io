@@ -14,7 +14,9 @@ CREATE TABLE Cities (
     population INT DEFAULT 1000,
     population_capacity INT DEFAULT 1000,
     tax_rate DOUBLE DEFAULT 15.0,
+    army_size INT DEFAULT 0,
     town BOOLEAN DEFAULT FALSE,
+    CHECK (army_size >= 0),
     FOREIGN KEY(city_owner) REFERENCES Accounts(player_id)
 );
 
@@ -69,6 +71,26 @@ CREATE TABLE Builds (
     PRIMARY KEY(city_id, city_row, city_column)
 );
 
+CREATE TABLE Marches (
+    march_id VARCHAR(50) PRIMARY KEY,
+    from_city VARCHAR(50) NOT NULL,
+    to_city VARCHAR(50) NOT NULL,
+    army_size VARCHAR(50),
+    time_to_target INT,
+    attack BOOLEAN,
+    CHECK (time_to_target >= 0),
+    FOREIGN KEY(from_city) REFERENCES Cities(city_id),
+    FOREIGN KEY(to_city) REFERENCES Cities(city_id)
+);
+
+CREATE TABLE Training (
+    city_id VARCHAR(50) PRIMARY KEY,
+    army_size INT,
+    time_to_train INT,
+    CHECK (time_to_train >= 0),
+    FOREIGN KEY(city_id) REFERENCES Cities(city_id)
+);
+
 CREATE TRIGGER Start_Build
 AFTER INSERT ON Buildings
 FOR EACH ROW
@@ -82,6 +104,16 @@ FOR EACH ROW
 INSERT INTO Builds VALUES (
     NEW.city_id, NEW.city_row, NEW.city_column, NOW(), TIMESTAMPADD(SECOND, (SELECT build_time FROM Building_Info WHERE building_type=NEW.building_type AND building_level=NEW.building_level), NOW())
 );
+
+CREATE TRIGGER Buy_Troops
+BEFORE INSERT ON Training
+FOR EACH ROW
+UPDATE Accounts SET balance=balance-(NEW.army_size * 1000) WHERE player_id=(SELECT city_owner FROM Cities WHERE city_id=NEW.city_id);
+
+CREATE TRIGGER Train_Troops
+AFTER DELETE ON Training
+FOR EACH ROW
+UPDATE Cities SET army_size=army_size+OLD.army_size WHERE city_id=OLD.city_id;
 
 CREATE EVENT Delete_Finished_Builds ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
@@ -97,6 +129,21 @@ CREATE EVENT Run_Taxes ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
 DO
 UPDATE Accounts Set balance = balance + (SELECT SUM(population * tax_rate / 86400) FROM Cities WHERE city_owner=player_id) WHERE username != 'Neutral';
+
+CREATE EVENT Update_Marches ON SCHEDULE EVERY 1 SECOND
+STARTS '2023-01-01 00:00:00'
+DO
+UPDATE Marches SET time_to_target=time_to_target - 1 WHERE time_to_target > 0;
+
+CREATE EVENT Troop_Training ON SCHEDULE EVERY 1 SECOND
+STARTS '2023-01-01 00:00:00'
+DO
+UPDATE Training SET time_to_train=time_to_train - 1 WHERE time_to_train > 0;
+
+CREATE EVENT Finish_Troop_Training ON SCHEDULE EVERY 1 SECOND
+STARTS '2023-01-01 00:00:00'
+DO
+DELETE FROM Training WHERE time_to_train=0;
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
@@ -137,3 +184,13 @@ INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) 
 (uuid(), 'neutral', 10000, 10000, 1),
 (uuid(), 'neutral', 10000, 10000, 1),
 (uuid(), 'neutral', 25000, 25000, 1);
+
+DELIMITER &&
+CREATE PROCEDURE reset_tests ()
+BEGIN
+    DELETE FROM city_io.Buildings WHERE city_id=(SELECT city_id FROM city_io.Cities JOIN city_io.Accounts ON city_owner=player_id WHERE username='User200');
+    DELETE FROM city_io.Cities WHERE city_id=(SELECT city_id FROM (SELECT * FROM city_io.Cities) AS TempCities JOIN city_io.Accounts ON city_owner=player_id WHERE username='User200');
+    DELETE FROM city_io.Sessions WHERE player_id=(SELECT player_id FROM city_io.Accounts WHERE username='User200');
+    DELETE FROM city_io.Accounts WHERE username='User200';
+END &&
+DELIMITER ;

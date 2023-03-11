@@ -41,9 +41,14 @@ type Building struct {
 	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
 	StartTime          string  `database:"start_time" json:"startTime"`
 	EndTime            string  `database:"end_time" json:"endTime"`
-	// BuildingName       string  `database:"building_name" json:"buildingName"`
-	// BuildCost          float64 `database:"build_cost"`
-	// BuildTime          int     `database:"build_time"`
+}
+
+type NewBuilding struct {
+	BuildCost          float64 `database:"build_cost" json:"buildCost"`
+	BuildTime          int     `database:"build_time" json:"buildTime"`
+	BuildingType       string  `database:"building_type" json:"buildingType"`
+	BuildingProduction float64 `database:"building_production" json:"buildingProduction"`
+	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
 }
 
 type Status struct {
@@ -51,6 +56,7 @@ type Status struct {
 }
 
 func HandleCityRoutes(r *mux.Router) {
+	r.HandleFunc("/cities/buildings", getAllBuildings).Methods("GET")
 	r.HandleFunc("/cities/{session_id}", getCity).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
@@ -58,6 +64,16 @@ func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/{session_id}/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/{session_id}/upgradeBuilding", upgradeBuilding).Methods("POST")
 	r.HandleFunc("/cities/{session_id}/updateName", updateName).Methods("POST")
+}
+
+func getAllBuildings(response http.ResponseWriter, request *http.Request) {
+	var buildings []NewBuilding
+
+	defer func() {
+		json.NewEncoder(response).Encode(buildings)
+	}()
+
+	database.Query("SELECT building_type, build_cost, build_time, building_production, happiness_change FROM Building_Info WHERE building_level=1 AND building_type != 'Test'", &buildings)
 }
 
 func getCity(response http.ResponseWriter, request *http.Request) {
@@ -148,7 +164,6 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 }
 
 func createBuilding(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /cities/createBuilding")
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 	cityName := request.URL.Query()["cityName"]
@@ -201,7 +216,6 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 }
 
 func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /cities/upgradeBuilding")
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 	cityName := request.URL.Query()["cityName"]
@@ -270,7 +284,6 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 }
 
 func updateName(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Received request to /cities/updateName")
 	vars := mux.Vars(request)
 	sessionId := vars["session_id"]
 	status := false

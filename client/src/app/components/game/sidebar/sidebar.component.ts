@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ConstructableService } from '../../../services/constructable.service';
 import { Constructable } from 'src/app/services/constructable';
@@ -132,12 +132,9 @@ export class SidebarComponent {
 
     public logOut(): void {
         this.http
-            .post<any>(
-                `${environment.API_HOST}/sessions/logout`,
-                {
-                    sessionId: this.sessionId,
-                }
-            )
+            .post<any>(`${environment.API_HOST}/sessions/logout`, {
+                sessionId: this.sessionId,
+            })
             .subscribe((response) => {
                 if (response.status) {
                     this._snackBar.open('Log out successful!', 'Close', {
@@ -254,49 +251,49 @@ export class VisitDialogComponent {
     filteredTowns!: Observable<City[]>;
 
     constructor(public http: HttpClient, private cookieService: CookieService) {
-        this.filteredCities = this.cityCtrl.valueChanges.pipe(
-            startWith(''),
-            map((city) =>
-                city ? this._filterCities(city) : this.cities.slice()
-            )
-        );
-
-        this.filteredTowns = this.townCtrl.valueChanges.pipe(
-            startWith(''),
-            map((town) => (town ? this._filterTowns(town) : this.towns.slice()))
-        );
-    }
-    ngOnInit() {
         this.http
-            .get<any>(
-                `${environment.API_HOST}/cities`
-            )
+            .get<any>(`${environment.API_HOST}/cities`)
             .subscribe((response) => {
                 this.cities = response;
+                this.filteredCities = of(this.cities);
+                this.filteredCities = this.cityCtrl.valueChanges.pipe(
+                    startWith(''),
+                    map((city) =>
+                        city ? this._filterCities(city) : this.cities.slice()
+                    )
+                );
             });
 
         this.http
-            .get<any>(
-                `${environment.API_HOST}/towns`
-            )
+            .get<any>(`${environment.API_HOST}/towns`)
             .subscribe((response) => {
                 this.towns = response;
+                this.filteredTowns = of(this.towns);
+                this.filteredTowns = this.townCtrl.valueChanges.pipe(
+                    startWith(''),
+                    map((town) =>
+                        town ? this._filterTowns(town) : this.towns.slice()
+                    )
+                );
             });
     }
-
     private _filterCities(value: string): any[] {
         const filterValue = value.toLowerCase();
 
-        return this.cities.filter((city) =>
-            city.cityOwner.toLowerCase().includes(filterValue)
+        return this.cities.filter(
+            (city) =>
+                city.cityOwner.toLowerCase().includes(filterValue) ||
+                city.cityName.toLowerCase().includes(filterValue)
         );
     }
 
     private _filterTowns(value: string): any[] {
         const filterValue = value.toLowerCase();
 
-        return this.towns.filter((town) =>
-            town.cityOwner.toLowerCase().includes(filterValue)
+        return this.towns.filter(
+            (town) =>
+                town.cityOwner.toLowerCase().includes(filterValue) ||
+                town.cityName.toLowerCase().includes(filterValue)
         );
     }
 

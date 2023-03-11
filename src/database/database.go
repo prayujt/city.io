@@ -95,4 +95,9 @@ func Reset() {
 	if err != nil {
 		panic(err)
 	}
+
+	_, err = Execute("CALL reset_tests")
+	if err != nil {
+		panic(err)
+	}
 }
