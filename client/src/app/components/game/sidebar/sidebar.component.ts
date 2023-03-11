@@ -1,5 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Input, Inject, Output, EventEmitter } from '@angular/core';
+
+import {
+    MatDialog,
+    MatDialogRef,
+    MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl } from '@angular/forms';
@@ -37,6 +42,7 @@ export class SidebarComponent {
     playerBalance: number = 0;
     population!: number;
     populationCapacity!: number;
+    armySize: number = 0;
 
     buildingType!: string;
     buildingLevel!: number;
@@ -125,6 +131,7 @@ export class SidebarComponent {
                     this.playerBalance = response.playerBalance;
                     this.population = response.population;
                     this.populationCapacity = response.populationCapacity;
+                    this.armySize = response.armySize;
                 });
         }, 500);
     }
@@ -178,9 +185,17 @@ export class SidebarComponent {
     }
 
     public openCityDialog(): void {
-        let dialogRef = this.dialog.open(VisitDialogComponent, {
+        this.dialog.open(VisitDialogComponent, {
             width: '1000px',
             height: '600px',
+        });
+    }
+
+    public openAttackDialog(): void {
+        this.dialog.open(AttackDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: { cityName: this.cityName },
         });
     }
 
@@ -194,15 +209,14 @@ export class SidebarComponent {
             height: '200px',
         });
 
-        console.log(this.cityName);
         dialogRef.afterClosed().subscribe((result) => {
-            console.log(this.cityName);
             if (result != '' && result != undefined) {
                 this.http
                     .post<any>(
                         `${environment.API_HOST}/cities/${this.sessionId}/updateName`,
                         {
-                            cityNameOriginal: this.cityName,
+                            cityNameOriginal:
+                                this.cookieService.get('cityName'),
                             cityNameNew: result,
                         }
                     )
@@ -234,6 +248,11 @@ export class SidebarComponent {
 export interface City {
     cityOwner: string;
     cityName: string;
+}
+
+export interface CityArmy {
+    cityName: string;
+    armySize: number;
 }
 
 @Component({
@@ -298,6 +317,75 @@ export class VisitDialogComponent {
 
     public visitCity(cityName: string) {
         this.cookieService.set('cityName', cityName);
+    }
+}
+
+@Component({
+    selector: 'attack-dialog',
+    templateUrl: './attack-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class AttackDialogComponent {
+    ownedTerritory: CityArmy[] = [];
+    territoryCtrl = new FormControl('');
+    filteredTerritory!: Observable<CityArmy[]>;
+
+    selectedTerritory!: CityArmy;
+    selected: boolean = false;
+
+    armySize: number = 1;
+
+    constructor(
+        public dialogRef: MatDialogRef<AttackDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
+    ) {
+        this.http
+            .get<any>(
+                `${environment.API_HOST}/cities/${this.cookieService.get(
+                    'sessionId'
+                )}/territory`
+            )
+            .subscribe((response) => {
+                this.ownedTerritory = response;
+
+                this.filteredTerritory = of(this.ownedTerritory);
+                this.filteredTerritory = this.territoryCtrl.valueChanges.pipe(
+                    startWith(''),
+                    map((territory) =>
+                        territory
+                            ? this._filterCities(territory)
+                            : this.ownedTerritory.slice()
+                    )
+                );
+            });
+    }
+
+    public saveCityInfo(selectedTerritory: CityArmy) {
+        this.selected = true;
+        this.selectedTerritory = selectedTerritory;
+    }
+
+    public march() {
+        this.http
+            .post<any>(`${environment.API_HOST}/armies/move`, {
+                sessionId: this.cookieService.get('sessionId'),
+                armySize: this.armySize,
+                fromCity: this.selectedTerritory.cityName,
+                toCity: this.data.cityName,
+            })
+            .subscribe((response) => {
+                if (response.status === true) this.dialogRef.close('');
+            });
+    }
+
+    private _filterCities(value: string): any[] {
+        const filterValue = value.toLowerCase();
+
+        return this.ownedTerritory.filter((territory) =>
+            territory.cityName.toLowerCase().includes(filterValue)
+        );
     }
 }
 
