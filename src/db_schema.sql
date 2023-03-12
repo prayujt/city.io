@@ -76,9 +76,9 @@ CREATE TABLE Marches (
     from_city VARCHAR(50) NOT NULL,
     to_city VARCHAR(50) NOT NULL,
     army_size VARCHAR(50),
-    time_to_target INT,
     attack BOOLEAN,
-    CHECK (time_to_target >= 0),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
     FOREIGN KEY(from_city) REFERENCES Cities(city_id),
     FOREIGN KEY(to_city) REFERENCES Cities(city_id)
 );
@@ -86,8 +86,8 @@ CREATE TABLE Marches (
 CREATE TABLE Training (
     city_id VARCHAR(50) PRIMARY KEY,
     army_size INT,
-    time_to_train INT,
-    CHECK (time_to_train >= 0),
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
     FOREIGN KEY(city_id) REFERENCES Cities(city_id)
 );
 
@@ -130,20 +130,10 @@ STARTS '2023-01-01 00:00:00'
 DO
 UPDATE Accounts Set balance = balance + (SELECT SUM(population * tax_rate / 86400) FROM Cities WHERE city_owner=player_id) WHERE username != 'Neutral';
 
-CREATE EVENT Update_Marches ON SCHEDULE EVERY 1 SECOND
-STARTS '2023-01-01 00:00:00'
-DO
-UPDATE Marches SET time_to_target=time_to_target - 1 WHERE time_to_target > 0;
-
-CREATE EVENT Troop_Training ON SCHEDULE EVERY 1 SECOND
-STARTS '2023-01-01 00:00:00'
-DO
-UPDATE Training SET time_to_train=time_to_train - 1 WHERE time_to_train > 0;
-
 CREATE EVENT Finish_Troop_Training ON SCHEDULE EVERY 1 SECOND
 STARTS '2023-01-01 00:00:00'
 DO
-DELETE FROM Training WHERE time_to_train=0;
+DELETE FROM Training WHERE end_time <= NOW();
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),

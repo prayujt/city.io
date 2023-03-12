@@ -28,6 +28,7 @@
             <mat-list role="list">
                 <button
                     mat-list-item
+                    mat-dialog-close
                     *ngFor="let town of filteredTowns | async"
                     (click)="visitCity(town.cityName)"
                 >

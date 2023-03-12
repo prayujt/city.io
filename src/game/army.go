@@ -14,6 +14,7 @@ import (
 
 const TIME_TO_TRAIN int = 5
 const PERCENTAGE_LOOTED float64 = 0.99
+const MARCH_TIME int = 30
 
 type Train struct {
 	SessionId  string `database:"session_id" json:"sessionId"`
@@ -21,13 +22,12 @@ type Train struct {
 }
 
 type March struct {
-	MarchId      string `database:"march_id" json:"marchId"`
-	SessionId    string `database:"session_id" json:"sessionId"`
-	FromCity     string `database:"from_city" json:"fromCity"`
-	ToCity       string `database:"to_city" json:"toCity"`
-	ArmySize     int    `database:"army_size" json:"armySize"`
-	TimeToTarget int    `database:"time_to_target" json:"timeToTarget"`
-	IsAttack     bool   `database:"attack" json:"attack"`
+	MarchId   string `database:"march_id" json:"marchId"`
+	SessionId string `database:"session_id" json:"sessionId"`
+	FromCity  string `database:"from_city" json:"fromCity"`
+	ToCity    string `database:"to_city" json:"toCity"`
+	ArmySize  int    `database:"army_size" json:"armySize"`
+	IsAttack  bool   `database:"attack" json:"attack"`
 }
 
 func HandleArmyRoutes(r *mux.Router) {
@@ -57,7 +57,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 
 	result, err := database.Execute(
 		fmt.Sprintf(
-			"INSERT INTO Training VALUES((SELECT city_id FROM Cities JOIN Sessions ON player_id=city_owner WHERE session_id='%s'), %d, %d)", train.SessionId, train.TroopCount, train.TroopCount*TIME_TO_TRAIN))
+			"INSERT INTO Training VALUES((SELECT city_id FROM Cities JOIN Sessions ON player_id=city_owner WHERE session_id='%s'), %d, NOW(), TIMESTAMPADD(SECOND, %d, NOW()))", train.SessionId, train.TroopCount, train.TroopCount*TIME_TO_TRAIN))
 
 	if err != nil {
 		return
@@ -100,7 +100,7 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 
 	result, err = database.Execute(
 		fmt.Sprintf(
-			"INSERT INTO Marches(march_id, from_city, to_city, army_size, time_to_target, attack) VALUES(uuid(), (SELECT city_id FROM Cities JOIN Sessions ON player_id=city_owner WHERE city_name='%s' AND session_id='%s'), (SELECT city_id FROM Cities WHERE city_name='%s'), %d, 30, (SELECT city_owner FROM Cities WHERE city_name='%s')!=(SELECT city_owner FROM Cities WHERE city_name='%s'))", march.FromCity, march.SessionId, march.ToCity, march.ArmySize, march.FromCity, march.ToCity))
+			"INSERT INTO Marches(march_id, from_city, to_city, army_size, attack, start_time, end_time) VALUES(uuid(), (SELECT city_id FROM Cities JOIN Sessions ON player_id=city_owner WHERE city_name='%s' AND session_id='%s'), (SELECT city_id FROM Cities WHERE city_name='%s'), %d, (SELECT city_owner FROM Cities WHERE city_name='%s')!=(SELECT city_owner FROM Cities WHERE city_name='%s'), NOW(), TIMESTAMPADD(SECOND, %d, NOW()))", march.FromCity, march.SessionId, march.ToCity, march.ArmySize, march.FromCity, march.ToCity, MARCH_TIME))
 
 	if err != nil {
 		return
@@ -119,14 +119,14 @@ func handleMarches() {
 	defer func() {
 		if len(completedMarches) > 0 {
 			completedMarchesSQL := "('" + strings.Join(completedMarches, `', '`) + `')`
-			database.Execute(fmt.Sprintf("DELETE FROM Marches WHERE time_to_target=0 AND march_id IN %s", completedMarchesSQL))
+			database.Execute(fmt.Sprintf("DELETE FROM Marches WHERE end_time <= NOW() AND march_id IN %s", completedMarchesSQL))
 		}
 		time.Sleep(time.Millisecond * 250)
 	}()
 
 	var marches []March
 
-	database.Query("SELECT * FROM Marches WHERE time_to_target=0", &marches)
+	database.Query("SELECT * FROM Marches WHERE end_time <= NOW()", &marches)
 
 	for _, march := range marches {
 
@@ -233,7 +233,7 @@ func handleMarches() {
 					// add march back for remaining troops
 					result, err = database.Execute(
 						fmt.Sprintf(
-							"INSERT INTO Marches(march_id, from_city, to_city, army_size, time_to_target, attack) VALUES (uuid(), '%s', '%s', %d, 30, 0)", march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize))
+							"INSERT INTO Marches(march_id, from_city, to_city, army_size, attack, start_time, end_time) VALUES (uuid(), '%s', '%s', %d, 0, NOW(), TIMESTAMPADD(SECOND, %d, NOW()))", march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize, MARCH_TIME))
 
 					if err != nil {
 						return
