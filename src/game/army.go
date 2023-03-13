@@ -28,6 +28,8 @@ type March struct {
 	ToCity    string `database:"to_city" json:"toCity"`
 	ArmySize  int    `database:"army_size" json:"armySize"`
 	IsAttack  bool   `database:"attack" json:"attack"`
+	StartTime string `database:"start_time" json:"startTime"`
+	EndTime   string `database:"end_time" json:"endTime"`
 }
 
 func HandleArmyRoutes(r *mux.Router) {
@@ -157,6 +159,8 @@ func handleMarches() {
 			var enemyPlayer []EnemyPlayer
 			database.Query(fmt.Sprintf("SELECT balance, army_size FROM Cities JOIN Accounts ON player_id=city_owner WHERE city_id='%s'", march.ToCity), &enemyPlayer)
 
+			change := 0.0
+
 			if willConquer {
 				// runs if the player is attacking a town to conquer it
 				if enemyPlayer[0].ArmySize < march.ArmySize {
@@ -187,11 +191,12 @@ func handleMarches() {
 						return
 					}
 				}
+
 			} else {
 				// runs if the player is attacking a city to loot
 				if enemyPlayer[0].ArmySize < march.ArmySize {
 					// if the player has won the battle
-					change := enemyPlayer[0].Balance * PERCENTAGE_LOOTED
+					change = enemyPlayer[0].Balance * PERCENTAGE_LOOTED
 
 					// remove city garrison army
 					result, err := database.Execute(
@@ -259,6 +264,18 @@ func handleMarches() {
 						return
 					}
 				}
+
+			}
+			result, err := database.Execute(fmt.Sprintf(
+				"INSERT INTO Battles VALUES(uuid(), '%s', '%s', '%s', '%d', '%d', %v, %v)", march.FromCity, march.ToCity, march.EndTime, march.ArmySize, enemyPlayer[0].ArmySize, enemyPlayer[0].ArmySize < march.ArmySize, change))
+
+			if err != nil {
+				return
+			}
+
+			rowsAffected, err := result.RowsAffected()
+			if err != nil || rowsAffected == 0 {
+				return
 			}
 		}
 		completedMarches = append(completedMarches, march.MarchId)
