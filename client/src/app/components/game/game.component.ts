@@ -31,7 +31,7 @@ export class GameComponent {
 
     public ngOnInit(): void {
         this.cookieService.delete('cityName');
-        this.jwtToken = this.getID();
+        this.jwtToken = this.cookieService.get('jwtToken');
         if (this.jwtToken != '') {
             let headers = new HttpHeaders();
             headers = headers.append('Token', this.jwtToken);
@@ -82,11 +82,7 @@ export class GameComponent {
         }
     }
 
-    public getID(): string {
-        return this.cookieService.get('jwtToken');
-    }
-
-    createCity(): GameComponent {
+    public createCity(): GameComponent {
         this.cityService.createCity();
         return this;
     }

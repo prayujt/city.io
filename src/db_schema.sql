@@ -107,7 +107,10 @@ CREATE TABLE Battles (
 CREATE VIEW Building_Ownership
 AS
 SELECT *
-FROM Cities NATURAL JOIN Buildings NATURAL JOIN Building_Info JOIN Accounts ON city_owner=player_id;
+FROM Cities
+     NATURAL JOIN Buildings
+     NATURAL JOIN Building_Info
+     JOIN Accounts ON city_owner=player_id;
 
 CREATE TRIGGER Start_Build
 AFTER INSERT ON Buildings

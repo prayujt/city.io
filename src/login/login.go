@@ -100,7 +100,7 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 
 	if err != nil {
 		log.Println(err)
-		response.WriteHeader(500)
+		response.WriteHeader(400)
 		return
 	}
 }

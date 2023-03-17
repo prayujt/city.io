@@ -196,7 +196,7 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 		query = fmt.Sprintf(
 			`
 			SELECT building_type, building_level, city_row, city_column
-			FROM Building_Ownership
+			FROM Buildings NATURAL JOIN Cities
 			WHERE city_name='%s'
 			`,
 			cityName[0])
@@ -204,8 +204,8 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 		query = fmt.Sprintf(
 			`
 			SELECT building_type, building_level, city_row, city_column
-			FROM Building_Ownership
-			WHERE player_id='%s'
+			FROM Buildings NATURAL JOIN Cities
+			WHERE city_owner='%s'
 			`,
 			claims["playerId"])
 	}
@@ -218,8 +218,8 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 		database.QueryValue(
 			fmt.Sprintf(
 				`
-				SELECT player_id='%s'
-				FROM Building_Ownership
+				SELECT city_owner='%s'
+				FROM Cities
 				WHERE city_name='%s'
 				`,
 				claims["playerId"], cityName[0]),
@@ -328,7 +328,7 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&building)
 
 	if err != nil {
-		response.WriteHeader(500)
+		response.WriteHeader(400)
 		return
 	}
 
@@ -421,7 +421,7 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&building)
 
 	if err != nil {
-		response.WriteHeader(500)
+		response.WriteHeader(400)
 		return
 	}
 
@@ -738,7 +738,7 @@ func updateName(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&city)
 
 	if err != nil {
-		response.WriteHeader(500)
+		response.WriteHeader(400)
 		return
 	}
 
