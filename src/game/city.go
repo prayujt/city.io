@@ -63,7 +63,7 @@ type Status struct {
 
 func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/buildings", getAllBuildings).Methods("GET")
-	r.HandleFunc("/cities/{session_id}", getCity).Methods("GET")
+	r.HandleFunc("/cities", getCity).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/{session_id}/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")

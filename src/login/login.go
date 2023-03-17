@@ -1,15 +1,16 @@
 package login
 
 import (
+	"api/auth"
 	"api/database"
 
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 
 	"github.com/gorilla/mux"
-	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 type Account struct {
@@ -17,8 +18,8 @@ type Account struct {
 	Password string `json:"password"`
 }
 
-type Session struct {
-	SessionId string `json:"sessionId"`
+type JWT struct {
+	Token string `json:"token"`
 }
 
 type Status struct {
@@ -29,13 +30,10 @@ func HandleLoginRoutes(r *mux.Router) {
 	r.HandleFunc("/login/createAccount", createAccount).Methods("POST")
 	r.HandleFunc("/login/createSession", createSession).Methods("POST")
 
-	r.HandleFunc("/sessions/{session_id}", getSession).Methods("GET")
-	r.HandleFunc("/sessions/logout", exitSession).Methods("POST")
+	r.HandleFunc("/sessions/validate", validateSession).Methods("GET")
 }
 
 func createAccount(response http.ResponseWriter, request *http.Request) {
-	log.Println("Received request to /login/createAccount")
-
 	status := false
 	defer func() {
 		json.NewEncoder(response).Encode(Status{Status: status})
@@ -52,7 +50,6 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		return
 	}
-
 	result, err := database.Execute(
 		fmt.Sprintf(
 			"INSERT INTO Buildings (building_type, building_level, city_id, city_row, city_column) SELECT 'City Hall', 1, city_id, 4, 6 FROM Cities WHERE city_owner=(SELECT player_id FROM Accounts where username='%s');", acc.Username))
@@ -70,74 +67,61 @@ func createAccount(response http.ResponseWriter, request *http.Request) {
 }
 
 func createSession(response http.ResponseWriter, request *http.Request) {
-	log.Println("Received request to /login/createSession")
-
-	status := false
-	sessionId, err := gonanoid.New()
+	var token string
 
 	defer func() {
-		if !status {
-			sessionId = ""
-		}
-		json.NewEncoder(response).Encode(Session{SessionId: sessionId})
+		json.NewEncoder(response).Encode(JWT{Token: token})
 	}()
-
-	if err != nil {
-		return
-	}
 
 	var acc Account
-	err = json.NewDecoder(request.Body).Decode(&acc)
+	err := json.NewDecoder(request.Body).Decode(&acc)
 
 	if err != nil {
+		log.Println(err)
+		response.WriteHeader(400)
 		return
 	}
 
-	result, err := database.Execute(
-		fmt.Sprintf(
-			"INSERT INTO Sessions (session_id, player_id, expires_on) SELECT '%s', player_id, DATE_ADD(NOW(), INTERVAL 24 HOUR) FROM Accounts WHERE username='%s' AND password=SHA2('%s', 256);", sessionId, acc.Username, acc.Password))
+	type Player struct {
+		PlayerId   string `database:"player_id"`
+		Authorized bool   `database:"authorized"`
+	}
+
+	var player []Player
+
+	database.Query(
+		fmt.Sprintf("SELECT player_id, password=SHA2('%s', 256) AS authorized FROM Accounts WHERE username='%s'", acc.Password, acc.Username), &player)
+
+	if !player[0].Authorized {
+		response.WriteHeader(401)
+		return
+	}
+
+	token, err = auth.GenerateJWT(acc.Username, player[0].PlayerId)
 
 	if err != nil {
+		log.Println(err)
+		response.WriteHeader(500)
 		return
 	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil || rowsAffected == 0 {
-		return
-	}
-
-	status = true
 }
 
-func getSession(response http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	expired := true
+func validateSession(response http.ResponseWriter, request *http.Request) {
+	var valid bool = false
 
 	defer func() {
-		json.NewEncoder(response).Encode(Status{Status: !expired})
+		json.NewEncoder(response).Encode(Status{Status: valid})
 	}()
 
-	_ = database.QueryValue(fmt.Sprintf("SELECT expires_on < NOW() FROM Sessions WHERE session_id='%s'", vars["session_id"]), &expired)
-}
+	if request.Header["Token"] != nil {
+		claims, err := auth.ParseJWT(request.Header["Token"][0])
 
-func exitSession(response http.ResponseWriter, request *http.Request) {
-	log.Println("Received request to /sessions/logout")
-	var session Session
-	status := false
-
-	defer func() {
-		json.NewEncoder(response).Encode(Status{Status: status})
-	}()
-
-	err := json.NewDecoder(request.Body).Decode(&session)
-
-	if err != nil {
-		return
-	}
-
-	_, err = database.Execute(fmt.Sprintf("DELETE FROM Sessions WHERE session_id='%s'", session.SessionId))
-
-	if err == nil {
-		status = true
+		if err != nil {
+			response.WriteHeader(400)
+			return
+		}
+		if reflect.TypeOf(claims["authorized"]).Name() == "bool" {
+			valid = claims["authorized"].(bool)
+		}
 	}
 }
