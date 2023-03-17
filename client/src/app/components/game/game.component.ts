@@ -29,6 +29,8 @@ export class GameComponent {
     public jwtToken: string = '';
     public isOwner: boolean = true;
 
+    public interval!: ReturnType<typeof setInterval>;
+
     public ngOnInit(): void {
         this.cookieService.delete('cityName');
         this.jwtToken = this.cookieService.get('jwtToken');
@@ -58,9 +60,10 @@ export class GameComponent {
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
+                    this.isOwner = response.isOwner;
                 });
 
-            setInterval(() => {
+            this.interval = setInterval(() => {
                 let parameter = '';
                 if (this.cookieService.get('cityName') != '') {
                     parameter = `?cityName=${encodeURIComponent(
@@ -80,6 +83,10 @@ export class GameComponent {
         } else {
             this.router.navigate(['login']);
         }
+    }
+
+    public ngOnDestroy(): void {
+        clearInterval(this.interval);
     }
 
     public createCity(): GameComponent {
@@ -103,7 +110,6 @@ export class GameComponent {
     startUnix!: number;
     endUnix!: number;
     progress!: number;
-    interval: any;
     remaining!: number;
     hh!: number;
     mm!: number;

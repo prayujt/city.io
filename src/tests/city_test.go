@@ -166,7 +166,6 @@ func TestUpgradeBuilding(t *testing.T) {
 
 	var buildingUpgrade game.Buildings
 	json.Unmarshal(response, &buildingUpgrade)
-	fmt.Println(buildingUpgrade)
 
 	if !buildingUpgrade.IsOwner {
 		t.Error("Expected city to be owned by player")

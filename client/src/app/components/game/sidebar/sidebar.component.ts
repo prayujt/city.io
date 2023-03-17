@@ -65,11 +65,14 @@ export class SidebarComponent {
     mm!: number;
     ss!: number;
 
+    interval1!: ReturnType<typeof setInterval>;
+    interval2!: ReturnType<typeof setInterval>;
+
     public ngOnInit(): void {
         // TODO: replace with get request to constructable buildings from database
         this.constructableBuildings = this.constructableService.constructables;
 
-        setInterval(() => {
+        this.interval1 = setInterval(() => {
             if (this.buildingType != '') this.clicked = true;
 
             let parameter = '';
@@ -117,7 +120,7 @@ export class SidebarComponent {
             } else this.progBar = false;
         }, 100);
 
-        setInterval(() => {
+        this.interval2 = setInterval(() => {
             let parameter = '';
             let cityName = this.cookieService.get('cityName');
             if (cityName != '') {
@@ -139,6 +142,11 @@ export class SidebarComponent {
                     this.armySize = response.armySize;
                 });
         }, 500);
+    }
+
+    public ngOnDestroy(): void {
+        clearInterval(this.interval1);
+        clearInterval(this.interval2);
     }
 
     public logOut(): void {
