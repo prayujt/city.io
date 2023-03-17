@@ -19,7 +19,7 @@ import (
 )
 
 var URL string
-var sessionId string
+var jwtToken string
 
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../../.env")
@@ -52,15 +52,15 @@ func TestMain(m *testing.M) {
 
 	response := Post("/login/createSession", acc)
 
-	var session login.Session
+	var session login.JWT
 	json.Unmarshal(response, &session)
 
-	if session.SessionId == "" {
-		fmt.Println("Failed to initialize session for tests")
+	if session.Token == "" {
+		fmt.Println("Failed to initialize token for tests")
 		return
 	}
 
-	sessionId = session.SessionId
+	jwtToken = session.Token
 
 	acc2 := login.Account{
 		Username: "player1",
@@ -72,34 +72,58 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func Post(endpoint string, reqBody any) []byte {
+func Post(endpoint string, reqBody any, token ...string) []byte {
 	var buf bytes.Buffer
 	err := json.NewEncoder(&buf).Encode(reqBody)
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := http.Post(URL+endpoint, "application/json", &buf)
+	client := &http.Client{}
+
+	req, err := http.NewRequest("POST", URL+endpoint, &buf)
+
 	if err != nil {
 		panic(err)
 	}
 
+	if len(token) > 0 {
+		req.Header.Set("Token", token[0])
+	} else if jwtToken != "" {
+		req.Header.Set("Token", jwtToken)
+	}
+
+	res, err := client.Do(req)
 	resBody, err := ioutil.ReadAll(res.Body)
+
 	if err != nil {
 		panic(err)
 	}
+
 	return resBody
 }
 
-func Get(endpoint string) []byte {
-	res, err := http.Get(URL + endpoint)
+func Get(endpoint string, token ...string) []byte {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", URL+endpoint, nil)
+
 	if err != nil {
 		panic(err)
 	}
 
+	if len(token) > 0 {
+		req.Header.Set("Token", token[0])
+	} else if jwtToken != "" {
+		req.Header.Set("Token", jwtToken)
+	}
+
+	res, err := client.Do(req)
 	resBody, err := ioutil.ReadAll(res.Body)
+
 	if err != nil {
 		panic(err)
 	}
+
 	return resBody
 }

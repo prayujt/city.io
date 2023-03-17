@@ -4,7 +4,6 @@ import (
 	"api/login"
 
 	"encoding/json"
-	"fmt"
 	"testing"
 )
 
@@ -48,10 +47,10 @@ func TestAccountLogin(t *testing.T) {
 
 	response := Post("/login/createSession", acc)
 
-	var session login.Session
-	json.Unmarshal(response, &session)
+	var jwt login.JWT
+	json.Unmarshal(response, &jwt)
 
-	if session.SessionId == "" {
+	if jwt.Token == "" {
 		t.Error("Expected session creation to return true, instead got false")
 	}
 }
@@ -64,10 +63,10 @@ func TestIncorrectUsername(t *testing.T) {
 
 	response := Post("/login/createSession", acc)
 
-	var session login.Session
-	json.Unmarshal(response, &session)
+	var jwt login.JWT
+	json.Unmarshal(response, &jwt)
 
-	if session.SessionId != "" {
+	if jwt.Token != "" {
 		t.Error("Expected session creation with incorrect username to return false, instead got true")
 	}
 }
@@ -80,10 +79,10 @@ func TestIncorrectPassword(t *testing.T) {
 
 	response := Post("/login/createSession", acc)
 
-	var session login.Session
-	json.Unmarshal(response, &session)
+	var jwt login.JWT
+	json.Unmarshal(response, &jwt)
 
-	if session.SessionId != "" {
+	if jwt.Token != "" {
 		t.Error("Expected session creation with incorrect password to return false, instead got true")
 	}
 }
@@ -96,16 +95,16 @@ func TestIncorrectUsernamePassword(t *testing.T) {
 
 	response := Post("/login/createSession", acc)
 
-	var session login.Session
-	json.Unmarshal(response, &session)
+	var jwt login.JWT
+	json.Unmarshal(response, &jwt)
 
-	if session.SessionId != "" {
+	if jwt.Token != "" {
 		t.Error("Expected session creation with incorrect username and password to return false, instead got true")
 	}
 }
 
 func TestSessionStatus(t *testing.T) {
-	response := Get(fmt.Sprintf("/sessions/%s", sessionId))
+	response := Get("/sessions/validate")
 
 	var result login.Status
 	json.Unmarshal(response, &result)
@@ -116,7 +115,7 @@ func TestSessionStatus(t *testing.T) {
 }
 
 func TestInvalidSession(t *testing.T) {
-	response := Get("/sessions/abcdefghijklmnop")
+	response := Get("/sessions/validate", "abcdefghijklmnop")
 
 	var result login.Status
 	json.Unmarshal(response, &result)
@@ -124,46 +123,4 @@ func TestInvalidSession(t *testing.T) {
 	if result.Status != false {
 		t.Error("Expected to fail to validate session, instead succeeded")
 	}
-}
-
-func TestSessionRemove(t *testing.T) {
-	session := login.Session{
-		SessionId: sessionId,
-	}
-
-	response := Post("/sessions/logout", session)
-
-	var result login.Status
-	json.Unmarshal(response, &result)
-
-	if result.Status != true {
-		t.Error("Expected to succeed in logout, instead failed")
-	}
-}
-
-func TestSessionStatusAfterLogout(t *testing.T) {
-	response := Get(fmt.Sprintf("/sessions/%s", sessionId))
-
-	var result login.Status
-	json.Unmarshal(response, &result)
-
-	if result.Status != false {
-		t.Error("Expected to fail to validate deleted session, instead succeeded")
-	}
-
-	acc := login.Account{
-		Username: "root",
-		Password: "root",
-	}
-
-	response = Post("/login/createSession", acc)
-
-	session := login.Session{}
-	json.Unmarshal(response, &session)
-
-	if session.SessionId == "" {
-		t.Error("Error in recreating deleted session")
-	}
-	sessionId = session.SessionId
-
 }

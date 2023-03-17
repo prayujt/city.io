@@ -435,7 +435,7 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 					WHERE building_type=
 						(
 						SELECT building_type
-						FROM Building_Ownership
+						FROM (SELECT * FROM Building_Ownership) AS TempTable1
 						WHERE
 							city_name='%s'
 							AND
@@ -447,7 +447,7 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 					building_level=
 						(
 						SELECT building_level+1
-						FROM Building_Ownership
+						FROM (SELECT * FROM Building_Ownership) AS TempTable2
 						WHERE
 							city_name='%s'
 							AND
@@ -469,7 +469,7 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 				WHERE building_type=
 					(
 					SELECT building_type
-					FROM Building_Ownership
+					FROM (SELECT * FROM Building_Ownership) AS TempTable1
 					WHERE
 						player_id='%s'
 						AND
@@ -483,7 +483,7 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 				building_level=
 					(
 					SELECT building_level+1
-					FROM Building_Ownership
+					FROM (SELECT * FROM Building_Ownership) AS TempTable2
 					WHERE
 						player_id='%s'
 						AND
