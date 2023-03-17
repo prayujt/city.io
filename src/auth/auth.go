@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"reflect"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -35,5 +36,22 @@ func ParseJWT(_token string) (jwt.MapClaims, error) {
 	if (err != nil && err.Error() != "signature is invalid") || len(claims) == 0 {
 		return claims, errors.New("internal error")
 	}
+
+	if claims["authorized"] != nil && reflect.TypeOf(claims["authorized"]).Name() != "bool" {
+		return claims, errors.New("invalid JWT authorization")
+	}
+
+	if claims["authorized"].(bool) != true {
+		return claims, errors.New("not authorized")
+	}
+
+	if claims["username"] != nil && reflect.TypeOf(claims["username"]).Name() != "string" {
+		return claims, errors.New("invalid JWT username")
+	}
+
+	if claims["playerId"] != nil && reflect.TypeOf(claims["playerId"]).Name() != "string" {
+		return claims, errors.New("invalid JWT playerId")
+	}
+
 	return claims, nil
 }

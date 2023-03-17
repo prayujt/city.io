@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -12,20 +12,24 @@ import { CookieService } from 'ngx-cookie-service';
     styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-    public cookieValue: string = '';
+    public showPassword: boolean = false;
+
     constructor(
         private http: HttpClient,
         private _snackBar: MatSnackBar,
         private router: Router,
         private cookieService: CookieService
     ) {}
+
     public ngOnInit(): void {
-        let sessionId: string = this.cookieService.get('sessionId');
-        if (sessionId != '') {
+        let jwtToken: string = this.cookieService.get('jwtToken');
+        if (jwtToken != '') {
+            let headers = new HttpHeaders();
+            headers = headers.append('Token', jwtToken);
             this.http
-                .get<any>(
-                    `${environment.API_HOST}/sessions/${sessionId}`
-                )
+                .get<any>(`${environment.API_HOST}/sessions/validate`, {
+                    headers,
+                })
                 .subscribe((response) => {
                     if (response.status) {
                         this.router.navigate(['game']);
@@ -33,10 +37,11 @@ export class LoginComponent {
                 });
         }
     }
-    public showPassword: boolean = false;
+
     public toggleVisibility(): void {
         this.showPassword = !this.showPassword;
     }
+
     public getData(username: string, password: string): void {
         if (username.length == 0) {
             this._snackBar.open('Input a valid username!', 'Close', {
@@ -48,19 +53,14 @@ export class LoginComponent {
             });
         } else {
             this.http
-                .post<any>(
-                    `${environment.API_HOST}/login/createSession`,
-                    {
-                        username: username,
-                        password: password,
-                    }
-                )
+                .post<any>(`${environment.API_HOST}/login/createSession`, {
+                    username: username,
+                    password: password,
+                })
                 .subscribe((response) => {
-                    console.log(response)
-                    if (response.sessionId != '') {
+                    if (response.token != '') {
                         this.router.navigate(['game']);
-                        this.cookieService.set('sessionId', response.sessionId);
-                        this.cookieValue = this.cookieService.get('sessionId');
+                        this.cookieService.set('jwtToken', response.token);
                     } else {
                         this._snackBar.open(
                             'Invalid username or password!',

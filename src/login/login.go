@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 
 	"github.com/gorilla/mux"
 )
@@ -114,14 +113,12 @@ func validateSession(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] != nil {
-		claims, err := auth.ParseJWT(request.Header["Token"][0])
+		_, err := auth.ParseJWT(request.Header["Token"][0])
 
 		if err != nil {
 			response.WriteHeader(400)
 			return
 		}
-		if reflect.TypeOf(claims["authorized"]).Name() == "bool" {
-			valid = claims["authorized"].(bool)
-		}
+		valid = true
 	}
 }
