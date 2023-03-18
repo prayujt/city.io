@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/auth"
 	"api/database"
 	"api/game"
 	"api/login"
@@ -30,7 +31,9 @@ func main() {
 		os.Getenv("MYSQL_DB_NAME"))
 	database.InitDatabase(dbUrl)
 
-	log.Println(fmt.Sprintf("Serving at %s:%s...", os.Getenv("API_HOST"), os.Getenv("API_PORT")))
+	auth.SecretKey = []byte(os.Getenv("SECRET_KEY"))
+
+	log.Println(fmt.Sprintf("Serving at 0.0.0.0:%s...", os.Getenv("API_PORT")))
 	router := mux.NewRouter()
 
 	// include other file routes here, passing in the router
@@ -42,6 +45,7 @@ func main() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"*"},
 	})
 
 	handler := c.Handler(router)

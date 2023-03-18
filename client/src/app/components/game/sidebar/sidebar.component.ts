@@ -14,7 +14,7 @@ import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ConstructableService } from '../../../services/constructable.service';
 import { Constructable } from 'src/app/services/constructable';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -25,7 +25,7 @@ import { environment } from '../../../../environments/environment';
 export class SidebarComponent {
     @Input() row!: number;
     @Input() column!: number;
-    @Input() sessionId!: string;
+    @Input() jwtToken!: string;
     @Input() isOwner!: boolean;
     @Output() buildBuilding: EventEmitter<string> = new EventEmitter<string>();
 
@@ -65,11 +65,14 @@ export class SidebarComponent {
     mm!: number;
     ss!: number;
 
+    interval1!: ReturnType<typeof setInterval>;
+    interval2!: ReturnType<typeof setInterval>;
+
     public ngOnInit(): void {
         // TODO: replace with get request to constructable buildings from database
         this.constructableBuildings = this.constructableService.constructables;
 
-        setInterval(() => {
+        this.interval1 = setInterval(() => {
             if (this.buildingType != '') this.clicked = true;
 
             let parameter = '';
@@ -78,9 +81,12 @@ export class SidebarComponent {
                 parameter = `?cityName=${encodeURIComponent(cityName)}`;
             }
 
+            let headers = new HttpHeaders();
+            headers = headers.append('Token', this.jwtToken);
             this.http
                 .get<any>(
-                    `${environment.API_HOST}/cities/${this.sessionId}/buildings/${this.row}/${this.column}${parameter}`
+                    `${environment.API_HOST}/cities/buildings/${this.row}/${this.column}${parameter}`,
+                    { headers }
                 )
                 .subscribe((response) => {
                     this.buildingType = response.buildingType;
@@ -114,17 +120,19 @@ export class SidebarComponent {
             } else this.progBar = false;
         }, 100);
 
-        setInterval(() => {
+        this.interval2 = setInterval(() => {
             let parameter = '';
             let cityName = this.cookieService.get('cityName');
             if (cityName != '') {
                 parameter = `?cityName=${encodeURIComponent(cityName)}`;
             }
 
+            let headers = new HttpHeaders();
+            headers = headers.append('Token', this.jwtToken);
             this.http
-                .get<any>(
-                    `${environment.API_HOST}/cities/${this.sessionId}${parameter}`
-                )
+                .get<any>(`${environment.API_HOST}/cities/stats${parameter}`, {
+                    headers,
+                })
                 .subscribe((response) => {
                     this.cityOwner = response.cityOwner;
                     this.cityName = response.cityName;
@@ -136,24 +144,17 @@ export class SidebarComponent {
         }, 500);
     }
 
+    public ngOnDestroy(): void {
+        clearInterval(this.interval1);
+        clearInterval(this.interval2);
+    }
+
     public logOut(): void {
-        this.http
-            .post<any>(`${environment.API_HOST}/sessions/logout`, {
-                sessionId: this.sessionId,
-            })
-            .subscribe((response) => {
-                if (response.status) {
-                    this._snackBar.open('Log out successful!', 'Close', {
-                        duration: 2000,
-                    });
-                    this.router.navigate(['login']);
-                    this.cookieService.delete('sessionId');
-                } else {
-                    this._snackBar.open('Could not log out!', 'Close', {
-                        duration: 2000,
-                    });
-                }
-            });
+        this._snackBar.open('Log out successful!', 'Close', {
+            duration: 2000,
+        });
+        this.router.navigate(['login']);
+        this.cookieService.delete('jwtToken');
     }
 
     public upgrade(): void {
@@ -163,13 +164,16 @@ export class SidebarComponent {
             parameter = `?cityName=${encodeURIComponent(cityName)}`;
         }
 
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.jwtToken);
         this.http
             .post<any>(
-                `${environment.API_HOST}/cities/${this.sessionId}/upgradeBuilding${parameter}`,
+                `${environment.API_HOST}/cities/upgradeBuilding${parameter}`,
                 {
                     cityRow: this.row,
                     cityColumn: this.column,
-                }
+                },
+                { headers }
             )
             .subscribe((response) => {
                 if (response.status) {
@@ -211,14 +215,17 @@ export class SidebarComponent {
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result != '' && result != undefined) {
+                let headers = new HttpHeaders();
+                headers = headers.append('Token', this.jwtToken);
                 this.http
                     .post<any>(
-                        `${environment.API_HOST}/cities/${this.sessionId}/updateName`,
+                        `${environment.API_HOST}/cities/updateName`,
                         {
                             cityNameOriginal:
                                 this.cookieService.get('cityName'),
                             cityNameNew: result,
-                        }
+                        },
+                        { headers }
                     )
                     .subscribe((response) => {
                         if (response.status) {
@@ -341,12 +348,10 @@ export class AttackDialogComponent {
         private cookieService: CookieService,
         @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
     ) {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
-            .get<any>(
-                `${environment.API_HOST}/cities/${this.cookieService.get(
-                    'sessionId'
-                )}/territory`
-            )
+            .get<any>(`${environment.API_HOST}/cities/territory`, { headers })
             .subscribe((response) => {
                 this.ownedTerritory = response;
 
@@ -368,13 +373,18 @@ export class AttackDialogComponent {
     }
 
     public march() {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
-            .post<any>(`${environment.API_HOST}/armies/move`, {
-                sessionId: this.cookieService.get('sessionId'),
-                armySize: this.armySize,
-                fromCity: this.selectedTerritory.cityName,
-                toCity: this.data.cityName,
-            })
+            .post<any>(
+                `${environment.API_HOST}/armies/move`,
+                {
+                    armySize: this.armySize,
+                    fromCity: this.selectedTerritory.cityName,
+                    toCity: this.data.cityName,
+                },
+                { headers }
+            )
             .subscribe((response) => {
                 if (response.status === true) this.dialogRef.close('');
             });

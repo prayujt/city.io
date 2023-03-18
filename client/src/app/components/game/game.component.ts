@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -26,15 +26,21 @@ export class GameComponent {
     }
     public row: number = 0;
     public column: number = 0;
-    public sessionId: string = '';
+    public jwtToken: string = '';
     public isOwner: boolean = true;
+
+    public interval!: ReturnType<typeof setInterval>;
 
     public ngOnInit(): void {
         this.cookieService.delete('cityName');
-        this.sessionId = this.getID();
-        if (this.sessionId != '') {
+        this.jwtToken = this.cookieService.get('jwtToken');
+        if (this.jwtToken != '') {
+            let headers = new HttpHeaders();
+            headers = headers.append('Token', this.jwtToken);
             this.http
-                .get<any>(`${environment.API_HOST}/sessions/${this.sessionId}`)
+                .get<any>(`${environment.API_HOST}/sessions/validate`, {
+                    headers,
+                })
                 .subscribe((response) => {
                     if (!response.status) {
                         this.router.navigate(['login']);
@@ -49,13 +55,15 @@ export class GameComponent {
 
             this.http
                 .get<any>(
-                    `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
+                    `${environment.API_HOST}/cities/buildings${parameter}`,
+                    { headers }
                 )
                 .subscribe((response) => {
                     this.cityService.setBuildings(response.buildings);
+                    this.isOwner = response.isOwner;
                 });
 
-            setInterval(() => {
+            this.interval = setInterval(() => {
                 let parameter = '';
                 if (this.cookieService.get('cityName') != '') {
                     parameter = `?cityName=${encodeURIComponent(
@@ -64,11 +72,11 @@ export class GameComponent {
                 }
                 this.http
                     .get<any>(
-                        `${environment.API_HOST}/cities/${this.sessionId}/buildings${parameter}`
+                        `${environment.API_HOST}/cities/buildings${parameter}`,
+                        { headers }
                     )
                     .subscribe((response) => {
                         this.cityService.setBuildings(response.buildings);
-                        this.isOwner = false;
                         this.isOwner = response.isOwner;
                     });
             }, 250);
@@ -77,11 +85,11 @@ export class GameComponent {
         }
     }
 
-    public getID(): string {
-        return this.cookieService.get('sessionId');
+    public ngOnDestroy(): void {
+        clearInterval(this.interval);
     }
 
-    createCity(): GameComponent {
+    public createCity(): GameComponent {
         this.cityService.createCity();
         return this;
     }
@@ -102,14 +110,12 @@ export class GameComponent {
     startUnix!: number;
     endUnix!: number;
     progress!: number;
-    interval: any;
     remaining!: number;
     hh!: number;
     mm!: number;
     ss!: number;
 
     onTileClick(row: number, column: number) {
-        // change CSS for selected tile
         const tiles = Array.from(document.querySelectorAll('.tile'));
         tiles.forEach((tile) => tile.classList.remove('selected'));
         const tile = document.querySelector(`td[id="${row} ${column}"]`);
@@ -126,14 +132,18 @@ export class GameComponent {
             parameter = `?cityName=${encodeURIComponent(cityName)}`;
         }
 
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.jwtToken);
+
         this.http
             .post<any>(
-                `${environment.API_HOST}/cities/${this.sessionId}/createBuilding${parameter}`,
+                `${environment.API_HOST}/cities/createBuilding${parameter}`,
                 {
                     buildingType: buildingType,
                     cityRow: this.row,
                     cityColumn: this.column,
-                }
+                },
+                { headers }
             )
             .subscribe((response) => {
                 if (!response.status) {

@@ -36,6 +36,7 @@ jobs:
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
+        echo SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} >> .env
         
     - name: Install dependencies
       run: |

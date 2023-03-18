@@ -102,7 +102,15 @@ CREATE TABLE Battles (
     amount_looted DOUBLE,
     FOREIGN KEY(from_city) REFERENCES Cities(city_id),
     FOREIGN KEY(to_city) REFERENCES Cities(city_id)
-)
+);
+
+CREATE VIEW Building_Ownership
+AS
+SELECT *
+FROM Cities
+     NATURAL JOIN Buildings
+     NATURAL JOIN Building_Info
+     JOIN Accounts ON city_owner=player_id;
 
 CREATE TRIGGER Start_Build
 AFTER INSERT ON Buildings

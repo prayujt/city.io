@@ -10,3 +10,5 @@ require (
 	github.com/rs/cors v1.8.3
 	gophers.dev/pkgs/ignore v0.3.1
 )
+
+require github.com/golang-jwt/jwt v3.2.2+incompatible

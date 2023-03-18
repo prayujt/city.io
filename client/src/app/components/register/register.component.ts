@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -18,13 +18,16 @@ export class RegisterComponent {
         private router: Router,
         private cookieService: CookieService
     ) {}
-    ngOnInit() {
-        let ID: string = this.cookieService.get('sessionId');
-        if (ID != '') {
+
+    public ngOnInit(): void {
+        let jwtToken: string = this.cookieService.get('jwtToken');
+        if (jwtToken != '') {
+            let headers = new HttpHeaders();
+            headers = headers.append('Token', jwtToken);
             this.http
-                .get<any>(
-                    `${environment.API_HOST}/sessions/${ID}`
-                )
+                .get<any>(`${environment.API_HOST}/sessions/validate`, {
+                    headers,
+                })
                 .subscribe((response) => {
                     if (response.status) {
                         this.router.navigate(['game']);
@@ -55,13 +58,10 @@ export class RegisterComponent {
             });
         } else {
             this.http
-                .post<any>(
-                    `${environment.API_HOST}/login/createAccount`,
-                    {
-                        username: username,
-                        password: password,
-                    }
-                )
+                .post<any>(`${environment.API_HOST}/login/createAccount`, {
+                    username: username,
+                    password: password,
+                })
                 .subscribe((response) => {
                     if (!response.status) {
                         this._snackBar.open(
