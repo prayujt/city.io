@@ -151,7 +151,11 @@
     buildingProduction: double,
     happinessChange:    int,
     startTime:          string,
-    endTime:            string
+    endTime:            string,
+    upgradeCost:        double,
+    upgradedProduction: double,
+    upgradeTime:        int,
+    upgradedHappiness:  int
 }
 ```
 

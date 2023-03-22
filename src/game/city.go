@@ -45,13 +45,13 @@ type Building struct {
 	CityRow            int     `database:"city_row" json:"cityRow"`
 	CityColumn         int     `database:"city_column" json:"cityColumn"`
 	BuildingProduction float64 `database:"building_production" json:"buildingProduction"`
-	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
+	HappinessChange    int     `database:"happiness_change" json:"happinessChange"`
 	StartTime          string  `database:"start_time" json:"startTime"`
 	EndTime            string  `database:"end_time" json:"endTime"`
 	UpgradeCost        float64 `json:"upgradeCost"`
 	UpgradedProduction float64 `json:"upgradedProduction"`
 	UpgradeTime        int     `json:"upgradeTime"`
-	UpgradedHappiness  float64 `json:"upgradeHappniess"`
+	UpgradedHappiness  int     `json:"upgradeHappniess"`
 }
 
 type NewBuilding struct {
@@ -59,7 +59,7 @@ type NewBuilding struct {
 	BuildTime          int     `database:"build_time" json:"buildTime"`
 	BuildingType       string  `database:"building_type" json:"buildingType"`
 	BuildingProduction float64 `database:"building_production" json:"buildingProduction"`
-	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
+	HappinessChange    int     `database:"happiness_change" json:"happinessChange"`
 }
 
 type Status struct {
