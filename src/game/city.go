@@ -102,14 +102,12 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -153,14 +151,12 @@ func getTerritory(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -182,14 +178,12 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -252,14 +246,12 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -333,14 +325,12 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -348,7 +338,6 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&building)
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -363,13 +352,11 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 			building.BuildingType, claims["playerId"]))
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -395,7 +382,6 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 	result, err = database.Execute(query)
 
 	if err != nil {
-		response.WriteHeader(400)
 		result, _ = database.Execute(
 			fmt.Sprintf(
 				`
@@ -410,7 +396,6 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 
 	rowsAffected, err = result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -426,14 +411,12 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(400)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -441,7 +424,6 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&building)
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -520,13 +502,11 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	result, err := database.Execute(query)
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -568,7 +548,6 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 	result, err = database.Execute(query)
 
 	if err != nil {
-		response.WriteHeader(400)
 		if len(cityName) > 0 {
 			query = fmt.Sprintf(
 				`
@@ -651,7 +630,6 @@ func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
 
 	rowsAffected, err = result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		response.WriteHeader(400)
 		if len(cityName) > 0 {
 			query = fmt.Sprintf(
 				`
@@ -743,14 +721,12 @@ func updateName(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -758,7 +734,6 @@ func updateName(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&city)
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
@@ -791,13 +766,11 @@ func updateName(response http.ResponseWriter, request *http.Request) {
 	result, err := database.Execute(query)
 
 	if err != nil {
-		response.WriteHeader(400)
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		response.WriteHeader(400)
 		return
 	}
 
