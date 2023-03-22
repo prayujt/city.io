@@ -77,7 +77,6 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 
 	if err != nil {
 		log.Println(err)
-		response.WriteHeader(400)
 		return
 	}
 
@@ -92,12 +91,10 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 		fmt.Sprintf("SELECT player_id, password=SHA2('%s', 256) AS authorized FROM Accounts WHERE username='%s'", acc.Password, acc.Username), &player)
 
 	if len(player) == 0 {
-		response.WriteHeader(401)
 		return
 	}
 
 	if !player[0].Authorized {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -105,7 +102,6 @@ func createSession(response http.ResponseWriter, request *http.Request) {
 
 	if err != nil {
 		log.Println(err)
-		response.WriteHeader(400)
 		return
 	}
 }
@@ -121,7 +117,6 @@ func validateSession(response http.ResponseWriter, request *http.Request) {
 		_, err := auth.ParseJWT(request.Header["Token"][0])
 
 		if err != nil {
-			response.WriteHeader(400)
 			return
 		}
 		valid = true

@@ -38,7 +38,7 @@
 
 </br>
 
-#### Get Session: `GET /session/{session_id}`
+#### Get Session: `GET /session/`
 ##### Response:
 
 ```
@@ -49,22 +49,6 @@
 
 </br>
 
-#### Post Logout: `POST /sessions/logout`
-##### Body:
-```
-{
-    sessionId:      string
-}
-```
-
-##### Response:
-```
-{
-    status:         boolean
-}
-```
-
-</br>
 
 ## Game
 
@@ -88,7 +72,7 @@
 
 </br>
 
-#### Get City for Account: `GET /cities/{session_id}`
+#### Get City for Account: `GET /cities`
 
 ##### Query Parameters (optional):
 
@@ -110,7 +94,7 @@
 
 </br>
 
-#### Get Territory for Account: `GET /cities/{session_id}/territory`
+#### Get Territory for Account: `GET /cities/territory`
 
 ##### Response:
 ```
@@ -126,7 +110,7 @@
 
 </br>
 
-#### Get Buildings for City: `GET /cities/{session_id}/buildings`
+#### Get Buildings for City: `GET /cities/buildings`
 ##### Query Parameters (optional):
 
 ```
@@ -151,7 +135,7 @@
 
 </br>
 
-#### Get Building for City: `GET /cities/{session_id}/buildings/{city_row}/{city_column}`
+#### Get Building for City: `GET /cities/buildings/{city_row}/{city_column}`
 ##### Query Parameters (optional):
 
 ```
@@ -174,7 +158,7 @@
 </br>
 
 
-#### Create Building in a City: `POST /cities/{session_id}/createBuilding`
+#### Create Building in a City: `POST /cities/createBuilding`
 
 ##### Query Parameters (optional):
 
@@ -200,7 +184,7 @@
 
 </br>
 
-#### Upgrade Building in a City: `POST /cities/{session_id}/upgradeBuilding`
+#### Upgrade Building in a City: `POST /cities/upgradeBuilding`
 
 ##### Query Parameters (optional):
 

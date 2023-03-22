@@ -51,14 +51,12 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
@@ -105,14 +103,12 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		response.WriteHeader(401)
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		response.WriteHeader(401)
 		return
 	}
 
