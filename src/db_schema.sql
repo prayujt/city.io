@@ -32,13 +32,6 @@ BEFORE INSERT ON Cities
 FOR EACH ROW
 SET NEW.city_name=CONCAT(IF(NEW.town=0, 'City ', 'Town '), NEW.city_id);
 
-CREATE TABLE Sessions (
-    session_id VARCHAR(50) PRIMARY KEY,
-    player_id VARCHAR(50),
-    expires_on TIMESTAMP,
-    FOREIGN KEY(player_id) REFERENCES Accounts(player_id)
-);
-
 CREATE TABLE Building_Info (
     building_type VARCHAR(50),
     building_level INT,

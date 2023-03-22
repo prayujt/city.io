@@ -48,6 +48,10 @@ type Building struct {
 	HappinessChange    float64 `database:"happiness_change" json:"happinessChange"`
 	StartTime          string  `database:"start_time" json:"startTime"`
 	EndTime            string  `database:"end_time" json:"endTime"`
+	UpgradeCost        float64 `json:"upgradeCost"`
+	UpgradedProduction float64 `json:"upgradedProduction"`
+	UpgradeTime        int     `json:"upgradeTime"`
+	UpgradedHappiness  float64 `json:"upgradeHappniess"`
 }
 
 type NewBuilding struct {
@@ -302,6 +306,22 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 	}
 
 	database.Query(query, &building)
+
+	var upgradeBuilding []NewBuilding
+
+	database.Query(
+		fmt.Sprintf(
+			`
+			SELECT build_cost, build_time, building_production, happiness_change, population_capacity_change 
+			FROM Building_Info WHERE building_type='%s' AND building_level=%d
+			`,
+			building[0].BuildingType, building[0].BuildingLevel+1),
+		&upgradeBuilding)
+
+	building[0].UpgradeCost = upgradeBuilding[0].BuildCost
+	building[0].UpgradedProduction = upgradeBuilding[0].BuildingProduction
+	building[0].UpgradedHappiness = upgradeBuilding[0].HappinessChange
+	building[0].UpgradeTime = upgradeBuilding[0].BuildTime
 }
 
 func createBuilding(response http.ResponseWriter, request *http.Request) {
