@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Constructable } from './constructable';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { CookieService } from 'ngx-cookie-service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,14 +12,20 @@ export class ConstructableService {
   public sessionId: string = '';
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private cookieService: CookieService
   ) {
-    http
-      .get<any>(
-        `${environment.API_HOST}/sessions/cities/buildings`
-      ).subscribe((response) => {
-        this.constructables = this.setConstructables(response.buildings);
-      });
+    this.cookieService.delete('cityName');
+    let jwtToken = this.cookieService.get('jwtToken');
+    if (jwtToken != '') {
+      let headers = new HttpHeaders();
+      this.http
+      .get<any>(`${environment.API_HOST}/cities/buildings`, {
+                    headers,
+                }).subscribe((response) => {
+                  this.setConstructables(response);
+              });
+    }
   }
 
   setConstructables(buildings: Map<string, number[]>): Constructable[] {

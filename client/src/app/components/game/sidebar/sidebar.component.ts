@@ -47,7 +47,7 @@ export class SidebarComponent {
     clicked: boolean = false;
     progBar: boolean = false;
     constructableBuildings: Constructable[] = [];
-    constructableService: ConstructableService = new ConstructableService(this.http);
+    constructableService: ConstructableService = new ConstructableService(this.http, this.cookieService);
 
     panelOpenState: boolean = false;
     startUnix!: number;
