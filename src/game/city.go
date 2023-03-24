@@ -301,7 +301,7 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 
 	var upgradeBuilding []NewBuilding
 
-	if building[0].BuildingType == "" {
+	if len(building) == 0 {
 		return
 	}
 
