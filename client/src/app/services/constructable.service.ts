@@ -4,6 +4,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 
+interface building {
+  buildingType: string;
+  buildCost: number;
+  buildTime: number;
+  buildingProduction: number;
+  happinessChange: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +28,7 @@ export class ConstructableService {
     if (jwtToken != '') {
       let headers = new HttpHeaders();
       this.http
-      .get<any>(`${environment.API_HOST}/cities/buildings`, {
+      .get<any>(`${environment.API_HOST}/cities/buildings/available`, {
                     headers,
                 }).subscribe((response) => {
                   this.setConstructables(response);
@@ -28,13 +36,16 @@ export class ConstructableService {
     }
   }
 
-  setConstructables(buildings: Map<string, number[]>): Constructable[] {
+  setConstructables(buildings: Array<building>) {
     let i = 0;
     let constructables: Constructable[] = [];
-    buildings.forEach(function(value, key) {
-      constructables[i] = new Constructable(key, value);
-      i++;
-    });
-    return constructables;
+    for (let i = 0; i < buildings.length; i++) {
+      constructables[i] = new Constructable(buildings[i]);
+    }
+    this.constructables = constructables;
+  }
+
+  getConstructables(): Constructable[] {
+    return this.constructables;
   }
 }
