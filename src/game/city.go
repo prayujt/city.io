@@ -301,6 +301,10 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 
 	var upgradeBuilding []NewBuilding
 
+	if building[0].BuildingType == "" {
+		return
+	}
+
 	database.Query(
 		fmt.Sprintf(
 			`
