@@ -4,40 +4,37 @@
         <mat-card-header>
             <mat-card-title>
                 <a (click)="openCityDialog()">{{ cityName }}</a>
-                <a *ngIf="isOwner" mat-button (click)="editCityName()"
-                    ><mat-icon fontIcon="edit"></mat-icon
-                ></a>
             </mat-card-title>
+            <a *ngIf="isOwner" mat-button (click)="editCityName()"
+                ><mat-icon fontIcon="edit"></mat-icon
+            ></a>
+            <a *ngIf="!isOwner" mat-button (click)="goHome()"
+                ><mat-icon fontIcon="home"></mat-icon
+            ></a>
             <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content>
+        <mat-card-content class="city-properties">
             <p class="player-balance">
                 {{
-                    cityOwner == "Neutral"
+                    cityOwner === "Neutral"
                         ? ""
                         : "$" + playerBalance.toLocaleString("en-US")
                 }}
             </p>
+            <p *ngIf="isOwner || armySize != -1">
+                {{ armySize === -1 ? "" : armySize }}
+            </p>
         </mat-card-content>
     </mat-card>
     <div class="sidebar-buttons">
-        <!-- <a
-             mat-raised-button
-             color="primary"
-             class="scout-button"
-             (click)="openDialog()"
-             >Scout</a
-             > -->
         <a
+            *ngIf="!isOwner"
+            (click)="openAttackDialog()"
             mat-button
-            color="warn"
-            routerLink="login"
-            routerLinkActive="active"
-            class="logout-button"
-            (click)="logOut()"
-            >Log out</a
+            class="attack-button"
+            >Attack!⚔️</a
         >
     </div>
     <div *ngIf="clicked">
@@ -183,4 +180,12 @@
             </mat-card-footer>
         </mat-card>
     </div>
+    <a
+        mat-button
+        routerLink="login"
+        routerLinkActive="active"
+        class="logout-button"
+        (click)="logOut()"
+        >Log out</a
+    >
 </div>

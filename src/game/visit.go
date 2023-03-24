@@ -27,18 +27,35 @@ func HandleVisitRoutes(r *mux.Router) {
 
 func getCityList(response http.ResponseWriter, request *http.Request) {
 	var list []Ownership
-	database.Query("SELECT city_name, username FROM Cities JOIN Accounts ON city_owner=player_id WHERE town=0;", &list)
+	database.Query(
+		`
+		SELECT city_name, username
+		FROM Cities JOIN Accounts ON city_owner=player_id
+		WHERE town=0
+		`,
+		&list)
 	json.NewEncoder(response).Encode(list)
 }
 
 func getTownList(response http.ResponseWriter, request *http.Request) {
 	var list []Ownership
-	database.Query("SELECT city_name, username FROM Cities JOIN Accounts ON city_owner=player_id WHERE town=1;", &list)
+	database.Query(
+		`
+		SELECT city_name, username
+		FROM Cities JOIN Accounts ON city_owner=player_id
+		WHERE town=1
+		`,
+		&list)
 	json.NewEncoder(response).Encode(list)
 }
 
 func getLeaderBoard(response http.ResponseWriter, request *http.Request) {
 	var list []Player
-	database.Query("SELECT username, balance FROM Accounts ORDER BY balance DESC;", &list)
+	database.Query(
+		`
+		SELECT username, balance
+		FROM Accounts ORDER BY balance DESC
+		`,
+		&list)
 	json.NewEncoder(response).Encode(list)
 }

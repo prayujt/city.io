@@ -38,7 +38,7 @@
 
 </br>
 
-#### Get Session: `GET /session/{session_id}`
+#### Get Session: `GET /session/`
 ##### Response:
 
 ```
@@ -49,26 +49,30 @@
 
 </br>
 
-#### Post Logout: `POST /sessions/logout`
-##### Body:
-```
-{
-    sessionId:      string
-}
-```
-
-##### Response:
-```
-{
-    status:         boolean
-}
-```
-
-</br>
 
 ## Game
 
-#### Get City for Account: `GET /cities/{session_id}`
+### Cities
+
+#### Get Available Buildings: `GET /cities/buildings`
+
+##### Response:
+```
+[
+    {
+        buildingType:           string,
+        buildCost:              double,
+        buildTime:              int,
+        buildingProduction:     double,
+        happinessChange:        int
+    },
+    ...
+]
+```
+
+</br>
+
+#### Get City for Account: `GET /cities`
 
 ##### Query Parameters (optional):
 
@@ -83,13 +87,30 @@
     balance:                double,
     population:             int,
     populationCapacity:     int,
+    armySize:               int, (-1 if you are visiting a territory that you do not own)
     cityName:               string
 }
 ```
 
 </br>
 
-#### Get Buildings for City: `GET /cities/{session_id}/buildings`
+#### Get Territory for Account: `GET /cities/territory`
+
+##### Response:
+```
+[
+    {
+        cityName:               string,
+        cityProduction:         double,
+        armySize:               int,
+    },
+    ...
+]
+```
+
+</br>
+
+#### Get Buildings for City: `GET /cities/buildings`
 ##### Query Parameters (optional):
 
 ```
@@ -114,7 +135,7 @@
 
 </br>
 
-#### Get Building for City: `GET /cities/{session_id}/buildings/{city_row}/{city_column}`
+#### Get Building for City: `GET /cities/buildings/{city_row}/{city_column}`
 ##### Query Parameters (optional):
 
 ```
@@ -130,14 +151,18 @@
     buildingProduction: double,
     happinessChange:    int,
     startTime:          string,
-    endTime:            string
+    endTime:            string,
+    upgradeCost:        double,
+    upgradedProduction: double,
+    upgradeTime:        int,
+    upgradedHappiness:  int
 }
 ```
 
 </br>
 
 
-#### Create Building in a City: `POST /cities/{session_id}/createBuilding`
+#### Create Building in a City: `POST /cities/createBuilding`
 
 ##### Query Parameters (optional):
 
@@ -163,7 +188,7 @@
 
 </br>
 
-#### Upgrade Building in a City: `POST /cities/{session_id}/upgradeBuilding`
+#### Upgrade Building in a City: `POST /cities/upgradeBuilding`
 
 ##### Query Parameters (optional):
 
@@ -188,7 +213,52 @@
 
 </br>
 
-## Visit
+### Armies
+
+#### Train Troops: `POST /armies/train`
+
+##### Body: 
+
+```
+{
+    sessionId:          string,
+    troopCount:         int
+}
+```
+
+##### Response:
+```
+{
+    status:             boolean
+}
+```
+
+</br>
+
+#### Move Troops: `POST /armies/move`
+
+##### Body: 
+
+```
+{
+    sessionId:          string,
+    armySize:           int,
+    fromCity:           string,
+    toCity:             string
+}
+```
+
+##### Response:
+```
+{
+    status:             boolean
+}
+```
+
+</br>
+
+
+### Visit
 
 #### Get City List: `GET /cities`
 ##### Response:
@@ -204,7 +274,7 @@
 
 </br>
 
-#### Get City List: `GET /cities`
+#### Get Town List: `GET /towns`
 ##### Response:
 ```
 [

@@ -13,6 +13,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { GameComponent } from './components/game/game.component';
 import {
+    AttackDialogComponent,
     CityNameChangeDialogComponent,
     SidebarComponent,
     VisitDialogComponent,
@@ -31,6 +32,7 @@ import { CookieService } from 'ngx-cookie-service';
         SidebarComponent,
         VisitDialogComponent,
         CityNameChangeDialogComponent,
+        AttackDialogComponent,
     ],
     imports: [
         BrowserModule,
@@ -42,9 +44,15 @@ import { CookieService } from 'ngx-cookie-service';
         FlexLayoutModule,
         FormsModule,
         ReactiveFormsModule,
-        HttpClientModule
+        HttpClientModule,
     ],
-    providers: [CookieService, Title, RouterModule, HttpClientModule, MatSnackBar],
+    providers: [
+        CookieService,
+        Title,
+        RouterModule,
+        HttpClientModule,
+        MatSnackBar,
+    ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

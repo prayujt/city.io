@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
+  
   build-test:
     runs-on: ubuntu-latest
       
@@ -36,6 +36,7 @@ jobs:
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
         echo API_PORT=${{ secrets.API_PORT }} >> .env
         echo API_HOST=${{ secrets.API_HOST }} >> .env
+        echo SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} >> .env
         
     - name: Install dependencies
       run: |
@@ -56,4 +57,14 @@ jobs:
       run: |
         cd src
         go test -v api/tests
-        cd ..
+        cd ../client
+        
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      with:
+        install: false
+        working-directory: ./client
+        start: npm run start
+        wait-on: 'http://[::1]:4200'
+        wait-on-timeout: 120
+        browser: chrome

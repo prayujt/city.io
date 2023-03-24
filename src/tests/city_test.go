@@ -11,7 +11,7 @@ import (
 )
 
 func TestCityGet(t *testing.T) {
-	response := Get(fmt.Sprintf("/cities/%s", sessionId))
+	response := Get(fmt.Sprintf("/cities/stats"))
 
 	var result game.City
 	json.Unmarshal(response, &result)
@@ -22,7 +22,7 @@ func TestCityGet(t *testing.T) {
 }
 
 func TestCityGetFail(t *testing.T) {
-	response := Get("/cities/abcdefghijklmnop")
+	response := Get("/cities/stats", "abcdefghijklmnop")
 
 	var result game.City
 	json.Unmarshal(response, &result)
@@ -33,7 +33,7 @@ func TestCityGetFail(t *testing.T) {
 }
 
 func TestBuildingOwnedGet(t *testing.T) {
-	response := Get(fmt.Sprintf("/cities/%s/buildings", sessionId))
+	response := Get("/cities/buildings")
 
 	var result game.Buildings
 	json.Unmarshal(response, &result)
@@ -48,7 +48,7 @@ func TestBuildingOwnedGet(t *testing.T) {
 }
 
 func TestBuildingNotOwnedGet(t *testing.T) {
-	response := Get(fmt.Sprintf("/cities"))
+	response := Get("/cities")
 
 	var cities []game.Ownership
 	json.Unmarshal(response, &cities)
@@ -60,7 +60,7 @@ func TestBuildingNotOwnedGet(t *testing.T) {
 		}
 	}
 
-	response = Get(fmt.Sprintf("/cities/%s/buildings?cityName=%s", sessionId, strings.ReplaceAll(unownedCity, " ", "+")))
+	response = Get(fmt.Sprintf("/cities/buildings?cityName=%s", strings.ReplaceAll(unownedCity, " ", "+")))
 
 	var result game.Buildings
 	json.Unmarshal(response, &result)
@@ -82,7 +82,7 @@ func TestBuildingCreate(t *testing.T) {
 		CityColumn:    0,
 	}
 
-	response := Post(fmt.Sprintf("/cities/%s/createBuilding", sessionId), building)
+	response := Post("/cities/createBuilding", building)
 	var result game.Status
 	json.Unmarshal(response, &result)
 
@@ -90,7 +90,7 @@ func TestBuildingCreate(t *testing.T) {
 		t.Error("Expected to succeed in creating building")
 	}
 
-	response = Get(fmt.Sprintf("/cities/%s/buildings", sessionId))
+	response = Get("/cities/buildings")
 
 	var buildingsResult game.Buildings
 	json.Unmarshal(response, &buildingsResult)
@@ -112,7 +112,7 @@ func TestBuildingCreateDuplicate(t *testing.T) {
 		CityColumn:    0,
 	}
 
-	response := Post(fmt.Sprintf("/cities/%s/createBuilding", sessionId), building)
+	response := Post("/cities/createBuilding", building)
 	var result game.Status
 	json.Unmarshal(response, &result)
 
@@ -120,7 +120,7 @@ func TestBuildingCreateDuplicate(t *testing.T) {
 		t.Error("Expected to fail in creating duplicate building")
 	}
 
-	response = Get(fmt.Sprintf("/cities/%s/buildings", sessionId))
+	response = Get("/cities/buildings")
 
 	var buildingsResult game.Buildings
 	json.Unmarshal(response, &buildingsResult)
@@ -144,7 +144,7 @@ func TestUpgradeBuilding(t *testing.T) {
 		CityColumn:    1,
 	}
 
-	response := Post(fmt.Sprintf("/cities/%s/createBuilding", sessionId), building)
+	response := Post("/cities/createBuilding", building)
 	var result game.Status
 	json.Unmarshal(response, &result)
 
@@ -154,7 +154,7 @@ func TestUpgradeBuilding(t *testing.T) {
 
 	time.Sleep(time.Second * 2)
 
-	response = Post(fmt.Sprintf("/cities/%s/upgradeBuilding", sessionId), building)
+	response = Post("/cities/upgradeBuilding", building)
 	var result2 game.Status
 	json.Unmarshal(response, &result2)
 
@@ -162,7 +162,7 @@ func TestUpgradeBuilding(t *testing.T) {
 		t.Error("Expected to pass in upgrading")
 	}
 
-	response = Get(fmt.Sprintf("/cities/%s/buildings", sessionId))
+	response = Get("/cities/buildings")
 
 	var buildingUpgrade game.Buildings
 	json.Unmarshal(response, &buildingUpgrade)

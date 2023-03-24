@@ -3,9 +3,20 @@
 }
 
 .logout-button {
-    width: 15%;
+    width: 20%;
     height: 30px;
-    margin-left: 85%;
+    margin-left: 75%;
+    margin-top: 2%;
+    background-color: red;
+    color: white;
+}
+
+.attack-button {
+    background-color: rgb(255, 166, 0);
+    color: white;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 4%;
 }
 
 .logout-button:hover {
@@ -25,9 +36,6 @@
     font-weight: 300;
 }
 
-/* .scout-button:hover { */
-/* background-image: linear-gradient(rgb(0 0 0/10%) 0 0); */
-/* } */
 .city-information:hover {
     background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
 }
@@ -70,4 +78,11 @@
 
 .constructable {
     font-size: 1.25em;
+}
+
+.city-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
 }
