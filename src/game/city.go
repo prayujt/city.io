@@ -305,6 +305,10 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if building[0].BuildingType == "City Hall" || building[0].BuildingLevel == 10 {
+		return
+	}
+
 	database.Query(
 		fmt.Sprintf(
 			`
