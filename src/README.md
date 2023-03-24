@@ -54,7 +54,7 @@
 
 ### Cities
 
-#### Get Available Buildings: `GET /cities/buildings`
+#### Get Available Buildings: `GET /cities/buildings/available`
 
 ##### Response:
 ```

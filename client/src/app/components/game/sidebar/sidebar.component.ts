@@ -52,8 +52,8 @@ export class SidebarComponent {
     endTime!: string;
     clicked: boolean = false;
     progBar: boolean = false;
+    constructableService: ConstructableService = new ConstructableService(this.http, this.cookieService);
     constructableBuildings: Constructable[] = [];
-    constructableService: ConstructableService = new ConstructableService();
 
     panelOpenState: boolean = false;
     startUnix!: number;
@@ -69,10 +69,8 @@ export class SidebarComponent {
     interval2!: ReturnType<typeof setInterval>;
 
     public ngOnInit(): void {
-        // TODO: replace with get request to constructable buildings from database
-        this.constructableBuildings = this.constructableService.constructables;
-
         this.interval1 = setInterval(() => {
+            this.constructableBuildings = this.constructableService.getConstructables();
             if (this.buildingType != '') this.clicked = true;
 
             let parameter = '';
@@ -118,7 +116,7 @@ export class SidebarComponent {
                 this.ss %= 60;
                 this.ss = Math.floor(this.ss);
             } else this.progBar = false;
-        }, 100);
+        }, 200);
 
         this.interval2 = setInterval(() => {
             let parameter = '';

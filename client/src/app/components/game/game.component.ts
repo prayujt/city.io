@@ -7,7 +7,6 @@ import { environment } from '../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 import { Building } from '../../services/building';
 import { CityService } from '../../services/city.service';
-import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
     selector: 'app-game',

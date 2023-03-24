@@ -89,7 +89,7 @@ func getAllBuildings(response http.ResponseWriter, request *http.Request) {
 		`
 		SELECT building_type, build_cost, build_time, building_production, happiness_change
 		FROM Building_Info
-		WHERE building_level=1 AND building_type != 'Test'
+		WHERE building_level=1 AND building_type != 'Test' AND building_type != 'City Hall'
 		`,
 		&buildings)
 }
