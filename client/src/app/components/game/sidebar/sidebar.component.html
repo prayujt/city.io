@@ -16,7 +16,7 @@
                 class="train-button"
                 mat-flat-button
             >
-                
+                Train Troops
             </button>
             <button
                 *ngIf="isOwner"
@@ -25,6 +25,9 @@
             >
                 Scout
             </button>
+            <a *ngIf="isOwner" mat-button (click)="editCityName()" matTooltip="Edit City Name"
+                ><mat-icon fontIcon="edit"></mat-icon
+            ></a>
             <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
