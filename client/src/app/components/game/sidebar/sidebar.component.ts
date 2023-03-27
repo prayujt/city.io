@@ -205,6 +205,7 @@ export class SidebarComponent {
         this.dialog.open(MarchesDialogComponent, {
             width: '1000px',
             height: '600px',
+            data: { cityOwner: this.cityOwner }
         });
     }
 
@@ -430,15 +431,18 @@ export interface March {
 })
 export class MarchesDialogComponent {
     marches: March[] = [];
-    marchesCtrl = new FormControl('');
-    filteredMarches!: Observable<March[]>;
+    cityOwner: string = "";
 
-    constructor(public http: HttpClient, private cookieService: CookieService) {
+    constructor(public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { cityOwner: string }
+        ) {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
-            .get<any>(`${environment.API_HOST}/armies/marches`)
+            .get<any>(`${environment.API_HOST}/armies/marches`, { headers })
             .subscribe((response) => {
                 this.marches = response;
-                console.log(response);
             });
     }
 }
