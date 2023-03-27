@@ -25,8 +25,8 @@
             >
                 Scout
             </button>
-            <a *ngIf="isOwner" mat-button (click)="editCityName()" matTooltip="Edit City Name"
-                ><mat-icon fontIcon="edit"></mat-icon
+            <a *ngIf="isOwner" mat-button (click)="openMarchesDialog()" matTooltip="View Marches"
+                ><mat-icon fontIcon="directions_walk"></mat-icon
             ></a>
             <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}

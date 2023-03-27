@@ -201,6 +201,13 @@ export class SidebarComponent {
         });
     }
 
+    public openMarchesDialog(): void {
+        this.dialog.open(MarchesDialogComponent, {
+            width: '1000px',
+            height: '600px',
+        });
+    }
+
     public constructBuilding(buildingType: string): void {
         this.buildBuilding.emit(buildingType);
     }
@@ -262,7 +269,7 @@ export interface CityArmy {
 
 @Component({
     selector: 'visit-dialog',
-    templateUrl: './visit-dialog.html',
+    templateUrl: './visit-dialog.html'
 })
 export class VisitDialogComponent {
     cities: City[] = [];
@@ -399,8 +406,39 @@ export class AttackDialogComponent {
 
 @Component({
     selector: 'city-name-change-dialog',
-    templateUrl: './city-name-change-dialog.html',
+    templateUrl: './city-name-change-dialog.html'
 })
 export class CityNameChangeDialogComponent {
     constructor() {}
+}
+
+export interface March {
+    fromCityName: string;
+    fromCityOwner: string; // check if fromCityOwner or toCityOwner is you, then determine color
+    toCityName: string;
+    toCityOwner: string;
+    returning: boolean; // true if attacking another city and army is returning
+    armySize: number;
+    startTime: string;
+    endTime: string;
+    attack: boolean; // if you are attacking someone, then attack is true
+}
+
+@Component({
+    selector: 'marches-dialog',
+    templateUrl: './marches-dialog.html'
+})
+export class MarchesDialogComponent {
+    marches: March[] = [];
+    marchesCtrl = new FormControl('');
+    filteredMarches!: Observable<March[]>;
+
+    constructor(public http: HttpClient, private cookieService: CookieService) {
+        this.http
+            .get<any>(`${environment.API_HOST}/armies/marches`)
+            .subscribe((response) => {
+                this.marches = response;
+                console.log(response);
+            });
+    }
 }

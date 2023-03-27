@@ -17,6 +17,7 @@ import {
     CityNameChangeDialogComponent,
     SidebarComponent,
     VisitDialogComponent,
+    MarchesDialogComponent
 } from './components/game/sidebar/sidebar.component';
 
 import { AngularMaterialModule } from './angular-material.module';
@@ -33,6 +34,7 @@ import { CookieService } from 'ngx-cookie-service';
         VisitDialogComponent,
         CityNameChangeDialogComponent,
         AttackDialogComponent,
+        MarchesDialogComponent
     ],
     imports: [
         BrowserModule,
