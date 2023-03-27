@@ -15,26 +15,42 @@ import (
 
 const TIME_TO_TRAIN int = 5
 const PERCENTAGE_LOOTED float64 = 0.99
-const MARCH_TIME int = 30
+const MARCH_TIME int = 180
 
 type Train struct {
-	SessionId  string `database:"session_id" json:"sessionId"`
+	CityName   string `database:"city_name" json:"cityName"`
 	TroopCount int    `database:"troop_count" json:"troopCount"`
 }
 
-type March struct {
-	MarchId   string `database:"march_id" json:"marchId"`
-	FromCity  string `database:"from_city" json:"fromCity"`
-	ToCity    string `database:"to_city" json:"toCity"`
+type Training struct {
+	CityName  string `database:"city_name" json:"cityName"`
 	ArmySize  int    `database:"army_size" json:"armySize"`
-	IsAttack  bool   `database:"attack" json:"attack"`
 	StartTime string `database:"start_time" json:"startTime"`
 	EndTime   string `database:"end_time" json:"endTime"`
+}
+
+type March struct {
+	MarchId       string `database:"march_id" json:"marchId"`
+	FromCity      string `database:"from_city" json:"fromCity"`
+	ToCity        string `database:"to_city" json:"toCity"`
+	FromCityName  string `database:"from_city_name" json:"fromCityName"`
+	ToCityName    string `database:"to_city_name" json:"toCityName"`
+	FromCityOwner string `database:"from_city_owner" json:"fromCityOwner"`
+	ToCityOwner   string `database:"to_city_owner" json:"toCityOwner"`
+	ArmySize      int    `database:"army_size" json:"armySize"`
+	IsReturn      bool   `database:"returning" json:"returning"`
+	IsAttack      bool   `database:"attack" json:"attack"`
+	StartTime     string `database:"start_time" json:"startTime"`
+	EndTime       string `database:"end_time" json:"endTime"`
 }
 
 func HandleArmyRoutes(r *mux.Router) {
 	r.HandleFunc("/armies/train", armyTrain).Methods("POST")
 	r.HandleFunc("/armies/move", armyMove).Methods("POST")
+
+	r.HandleFunc("/armies/marches", getMarches).Methods("GET")
+	r.HandleFunc("/armies/training/global", getGlobalTraining).Methods("GET")
+	r.HandleFunc("/armies/training", getTraining).Methods("GET")
 
 	go func() {
 		for {
@@ -67,21 +83,41 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err := database.Execute(
-		fmt.Sprintf(
+	var query string
+
+	if len(train.CityName) > 0 {
+		query = fmt.Sprintf(
 			`
 			INSERT INTO Training VALUES(
 				(
 					SELECT city_id
 					FROM Cities
-					WHERE city_owner='%s'
+					WHERE city_name='%s'
 				),
 				%d,
 				NOW(),
 				TIMESTAMPADD(SECOND, %d, NOW())
 			)
 			`,
-			claims["playerId"], train.TroopCount, train.TroopCount*TIME_TO_TRAIN))
+			train.CityName, train.TroopCount, train.TroopCount*TIME_TO_TRAIN)
+	} else {
+		query = fmt.Sprintf(
+			`
+			INSERT INTO Training VALUES(
+				(
+					SELECT city_id
+					FROM Cities
+					WHERE city_owner='%s' AND town=0
+				),
+				%d,
+				NOW(),
+				TIMESTAMPADD(SECOND, %d, NOW())
+			)
+			`,
+			claims["playerId"], train.TroopCount, train.TroopCount*TIME_TO_TRAIN)
+	}
+
+	result, err := database.Execute(query)
 
 	if err != nil {
 		return
@@ -428,4 +464,113 @@ func handleMarches() {
 		}
 		completedMarches = append(completedMarches, march.MarchId)
 	}
+}
+
+func getMarches(response http.ResponseWriter, request *http.Request) {
+	var result []March
+	defer func() {
+		json.NewEncoder(response).Encode(result)
+	}()
+
+	if request.Header["Token"] == nil {
+		return
+	}
+
+	claims, err := auth.ParseJWT(request.Header["Token"][0])
+
+	if err != nil {
+		return
+	}
+
+	database.Query(
+		fmt.Sprintf(
+			`
+			SELECT 
+			(SELECT city_name FROM Cities WHERE city_id=from_city) AS from_city_name,
+			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=from_city) AS from_city_owner, 
+			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
+			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=to_city) AS to_city_owner, 
+			(SELECT 
+				(SELECT city_owner FROM Cities WHERE city_id=from_city)!=
+				(SELECT city_owner FROM Cities WHERE city_id=to_city)
+				AND attack=0
+			) AS returning,
+			army_size, start_time, end_time, attack 
+			FROM Marches
+			WHERE 
+			from_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
+			OR
+			to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
+			`,
+			claims["playerId"], claims["playerId"]),
+		&result)
+}
+
+func getGlobalTraining(response http.ResponseWriter, request *http.Request) {
+	var result []Training
+	defer func() {
+		json.NewEncoder(response).Encode(result)
+	}()
+
+	if request.Header["Token"] == nil {
+		return
+	}
+
+	claims, err := auth.ParseJWT(request.Header["Token"][0])
+
+	if err != nil {
+		return
+	}
+
+	database.Query(
+		fmt.Sprintf(
+			`
+			SELECT city_name, Training.army_size, start_time, end_time
+			FROM Training JOIN Cities ON Training.city_id=Cities.city_id
+			WHERE city_owner='%s'
+			`,
+			claims["playerId"]),
+		&result)
+}
+
+func getTraining(response http.ResponseWriter, request *http.Request) {
+	var result []Training
+
+	defer func() {
+		json.NewEncoder(response).Encode(result[0])
+	}()
+
+	if request.Header["Token"] == nil {
+		return
+	}
+
+	claims, err := auth.ParseJWT(request.Header["Token"][0])
+
+	if err != nil {
+		return
+	}
+
+	var query string
+
+	cityName := request.URL.Query()["cityName"]
+
+	if len(cityName) > 0 {
+		query = fmt.Sprintf(
+			`
+			SELECT city_name, Training.army_size, start_time, end_time
+			FROM Training JOIN Cities ON Training.city_id=Cities.city_id
+			WHERE city_name='%s'
+			`,
+			cityName[0])
+	} else {
+		query = fmt.Sprintf(
+			`
+			SELECT Training.army_size, start_time, end_time
+			FROM Training JOIN Cities ON Training.city_id=Cities.city_id
+			WHERE city_owner='%s' AND town=0
+			`,
+			claims["playerId"])
+	}
+
+	database.Query(query, &result)
 }
