@@ -36,7 +36,10 @@
             >
                 <mat-icon fontIcon="search"></mat-icon>
             </button>
-            <mat-card-subtitle>
+            <a *ngIf="isOwner" mat-button (click)="openMarchesDialog()" matTooltip="View Marches"
+                ><mat-icon fontIcon="directions_walk"></mat-icon
+            ></a>
+            <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>

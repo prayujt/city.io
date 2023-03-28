@@ -204,6 +204,14 @@ export class SidebarComponent {
             data: { cityName: this.cityName },
         });
     }
+    
+    public openMarchesDialog(): void {
+        this.dialog.open(MarchesDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: { cityOwner: this.cityOwner },
+        });
+    }
 
     public openTrainDialog(): void {
         this.dialog.open(TrainDialogComponent, {
@@ -274,7 +282,7 @@ export interface CityArmy {
 
 @Component({
     selector: 'visit-dialog',
-    templateUrl: './visit-dialog.html',
+    templateUrl: './visit-dialog.html'
 })
 export class VisitDialogComponent {
     cities: City[] = [];
@@ -411,10 +419,54 @@ export class AttackDialogComponent {
 
 @Component({
     selector: 'city-name-change-dialog',
-    templateUrl: './city-name-change-dialog.html',
+    templateUrl: './city-name-change-dialog.html'
 })
 export class CityNameChangeDialogComponent {
     constructor() {}
+}
+
+class March {
+    fromCityName!: string;
+    fromCityOwner!: string; // check if fromCityOwner or toCityOwner is you, then determine color
+    toCityName!: string;
+    toCityOwner!: string;
+    returning!: boolean; // true if attacking another city and army is returning
+    armySize!: number;
+    startTime!: string;
+    endTime!: string;
+    attack!: boolean; // if you are attacking someone, then attack is true
+    returningText: string = "";
+}
+
+@Component({
+    selector: 'marches-dialog',
+    templateUrl: './marches-dialog.html'
+})
+export class MarchesDialogComponent {
+    marches: March[] = [];
+    cityOwner: string = "";
+
+    constructor(public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { cityOwner: string }
+        ) {
+        this.cityOwner = data.cityOwner;
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+            .get<any>(`${environment.API_HOST}/armies/marches`, { headers })
+            .subscribe((response) => {
+                this.marches = response;
+                for (let i = 0; i < this.marches.length; i++) {
+                    if (this.marches[i].returning) {
+                        this.marches[i].returningText = "Departing";
+                    }
+                    else {
+                        this.marches[i].returningText = "Returning";
+                    }
+                }
+            });
+    }
 }
 
 @Component({
