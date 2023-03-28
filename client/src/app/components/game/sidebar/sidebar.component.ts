@@ -458,7 +458,7 @@ export class MarchesDialogComponent {
             .subscribe((response) => {
                 this.marches = response;
                 for (let i = 0; i < this.marches.length; i++) {
-                    if (this.marches[i].returning) {
+                    if (!this.marches[i].returning) {
                         this.marches[i].returningText = "Departing";
                     }
                     else {
