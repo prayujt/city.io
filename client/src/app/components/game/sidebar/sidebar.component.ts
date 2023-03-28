@@ -204,7 +204,7 @@ export class SidebarComponent {
             data: { cityName: this.cityName },
         });
     }
-    
+
     public openMarchesDialog(): void {
         this.dialog.open(MarchesDialogComponent, {
             width: '1000px',
@@ -282,7 +282,7 @@ export interface CityArmy {
 
 @Component({
     selector: 'visit-dialog',
-    templateUrl: './visit-dialog.html'
+    templateUrl: './visit-dialog.html',
 })
 export class VisitDialogComponent {
     cities: City[] = [];
@@ -419,7 +419,7 @@ export class AttackDialogComponent {
 
 @Component({
     selector: 'city-name-change-dialog',
-    templateUrl: './city-name-change-dialog.html'
+    templateUrl: './city-name-change-dialog.html',
 })
 export class CityNameChangeDialogComponent {
     constructor() {}
@@ -435,37 +435,145 @@ class March {
     startTime!: string;
     endTime!: string;
     attack!: boolean; // if you are attacking someone, then attack is true
-    returningText: string = "";
+    text: string = '';
+    ss!: number;
+    dd!: number;
+    hh!: number;
+    mm!: number;
+    progress!: number;
+    color!: string;
 }
 
 @Component({
     selector: 'marches-dialog',
-    templateUrl: './marches-dialog.html'
+    templateUrl: './marches-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
 })
 export class MarchesDialogComponent {
     marches: March[] = [];
-    cityOwner: string = "";
+    cityOwner: string = '';
 
-    constructor(public http: HttpClient,
+    marchTimeInterval!: ReturnType<typeof setInterval>;
+    getMarchInterval!: ReturnType<typeof setInterval>;
+
+    constructor(
+        public http: HttpClient,
         private cookieService: CookieService,
         @Inject(MAT_DIALOG_DATA) public data: { cityOwner: string }
-        ) {
+    ) {
         this.cityOwner = data.cityOwner;
         let headers = new HttpHeaders();
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
             .get<any>(`${environment.API_HOST}/armies/marches`, { headers })
             .subscribe((response) => {
-                this.marches = response;
+                this.marches = response ? response : [];
                 for (let i = 0; i < this.marches.length; i++) {
-                    if (!this.marches[i].returning) {
-                        this.marches[i].returningText = "Departing";
+                    let march = this.marches[i];
+                    march.color = 'green';
+                    if (march.returning) {
+                        march.text = 'Returning';
+                    } else if (march.attack) {
+                        march.text = 'Attacking';
+                        march.color =
+                            march.toCityOwner == this.data.cityOwner
+                                ? 'red'
+                                : 'green';
+                    } else {
+                        march.text = 'Moving';
                     }
-                    else {
-                        this.marches[i].returningText = "Returning";
+                    if (march.startTime != '' && march.endTime != '') {
+                        let startUnix = Date.parse(march.startTime);
+                        let endUnix = Date.parse(march.endTime);
+                        let time: number = Date.now();
+                        march.progress =
+                            ((time - startUnix) / (endUnix - startUnix)) * 100;
+
+                        let remaining = endUnix - time;
+                        march.ss = remaining / 1000;
+                        march.dd = Math.floor(march.ss / 86400);
+                        march.ss %= 86400;
+                        march.hh = Math.floor(march.ss / 3600);
+                        march.ss %= 3600;
+                        march.mm = Math.floor(march.ss / 60);
+                        march.ss %= 60;
+                        march.ss = Math.floor(march.ss);
                     }
                 }
             });
+
+        this.marchTimeInterval = setInterval(() => {
+            for (let i = 0; i < this.marches.length; i++) {
+                let march = this.marches[i];
+                if (march.startTime != '' && march.endTime != '') {
+                    let startUnix = Date.parse(march.startTime);
+                    let endUnix = Date.parse(march.endTime);
+                    let time: number = Date.now();
+                    march.progress =
+                        ((time - startUnix) / (endUnix - startUnix)) * 100;
+
+                    let remaining = endUnix - time;
+                    march.ss = remaining / 1000;
+                    march.dd = Math.floor(march.ss / 86400);
+                    march.ss %= 86400;
+                    march.hh = Math.floor(march.ss / 3600);
+                    march.ss %= 3600;
+                    march.mm = Math.floor(march.ss / 60);
+                    march.ss %= 60;
+                    march.ss = Math.floor(march.ss);
+                }
+            }
+        }, 500);
+
+        this.getMarchInterval = setInterval(() => {
+            let headers = new HttpHeaders();
+            headers = headers.append(
+                'Token',
+                this.cookieService.get('jwtToken')
+            );
+            this.http
+                .get<any>(`${environment.API_HOST}/armies/marches`, { headers })
+                .subscribe((response) => {
+                    this.marches = response ? response : [];
+                    for (let i = 0; i < this.marches.length; i++) {
+                        let march = this.marches[i];
+                        march.color = 'green';
+                        if (march.returning) {
+                            march.text = 'Returning';
+                        } else if (march.attack) {
+                            march.text = 'Attacking';
+                            march.color =
+                                march.toCityOwner == this.data.cityOwner
+                                    ? 'red'
+                                    : 'green';
+                        } else {
+                            march.text = 'Moving';
+                        }
+                        if (march.startTime != '' && march.endTime != '') {
+                            let startUnix = Date.parse(march.startTime);
+                            let endUnix = Date.parse(march.endTime);
+                            let time: number = Date.now();
+                            march.progress =
+                                ((time - startUnix) / (endUnix - startUnix)) *
+                                100;
+
+                            let remaining = endUnix - time;
+                            march.ss = remaining / 1000;
+                            march.dd = Math.floor(march.ss / 86400);
+                            march.ss %= 86400;
+                            march.hh = Math.floor(march.ss / 3600);
+                            march.ss %= 3600;
+                            march.mm = Math.floor(march.ss / 60);
+                            march.ss %= 60;
+                            march.ss = Math.floor(march.ss);
+                        }
+                    }
+                });
+        }, 2500);
+    }
+
+    public ngOnDestroy(): void {
+        clearInterval(this.marchTimeInterval);
     }
 }
 

@@ -37,7 +37,9 @@
                 <mat-icon fontIcon="search"></mat-icon>
             </button>
             <a
-             mat-button (click)="openMarchesDialog()" matTooltip="View Marches"
+                mat-button
+                (click)="openMarchesDialog()"
+                matTooltip="View Marches"
                 ><mat-icon fontIcon="directions_walk"></mat-icon
             ></a>
             <mat-card-subtitle (click)="openCityDialog()">
@@ -53,7 +55,7 @@
                 }}
             </p>
             <p *ngIf="isOwner || armySize != -1" matTooltip="Army Size">
-                {{ armySize === -1 ? "" : armySize }}
+                {{ armySize === -1 ? "" : armySize.toLocaleString("en-US") }}
             </p>
         </mat-card-content>
     </mat-card>

@@ -1,15 +1,88 @@
 <h1 mat-dialog-title>Marches</h1>
 <div mat-dialog-content>
-    <mat-list role="list" *ngFor="let march of marches">
-        <mat-list-item role="listitem"
-        style="background-color: #90ee90; text-align: center; border: 2px solid #dbdbdb;"
-        *ngIf="!(march.toCityOwner == this.data.cityOwner && march.attack == true)">
-            {{ march.fromCityName }} Attacking {{ march.toCityName }} With {{ march.armySize }} - Currently {{ march.returningText }}
-        </mat-list-item>
-        <mat-list-item role="listitem"
-        style="background-color: red; text-align: center; border: 2px solid #dbdbdb;"
-        *ngIf="march.toCityOwner == this.data.cityOwner && march.attack == true">
-            {{ march.fromCityName }} Attacking {{ march.toCityName }} With {{ march.armySize }} - Currently {{ march.returningText }}
-        </mat-list-item>
-    </mat-list>
+    <div role="list" *ngFor="let march of marches">
+        <mat-card
+            *ngIf="
+                march.dd >= 0 || march.hh >= 0 || march.mm >= 0 || march.ss >= 0
+            "
+        >
+            <mat-card-header>
+                <mat-card-title style="color: {{ march.color }}">
+                    {{ march.text }}
+                </mat-card-title>
+                <mat-card-subtitle>
+                    {{ march.armySize.toLocaleString("en-US") }} troops
+                </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+                <p>
+                    {{ march.fromCityName }}
+                    <mat-icon fontIcon="east"></mat-icon>
+                    {{ march.toCityName }}
+                </p>
+                <p>
+                    {{ march.fromCityOwner }}
+                    <mat-icon fontIcon="east"></mat-icon>
+                    {{ march.toCityOwner }}
+                </p>
+            </mat-card-content>
+            <mat-card-footer class="progress-bar">
+                <mat-progress-bar
+                    mode="determinate"
+                    [value]="march.progress"
+                ></mat-progress-bar>
+                <br />
+                <h3 class="timer" style="text-align: center">
+                    <div *ngIf="march.dd != 0" class="timer-container">
+                        <span id="days"> {{ march.dd }} </span>Day(s)
+                    </div>
+                    <div
+                        *ngIf="
+                            march.hh != 0 || (march.dd != 0 && march.hh == 0)
+                        "
+                        class="timer-container"
+                    >
+                        <span id="hours"> {{ march.hh }} </span>Hrs
+                    </div>
+                    <div
+                        *ngIf="
+                            march.mm != 0 || (march.hh != 0 && march.mm == 0)
+                        "
+                        class="timer-container"
+                    >
+                        <span id="minutes"> {{ march.mm }} </span>Min
+                    </div>
+                    <div
+                        *ngIf="
+                            march.ss != 0 || (march.mm != 0 && march.ss == 0)
+                        "
+                        class="timer-container"
+                    >
+                        <span id="seconds"> {{ march.ss }} </span>S
+                    </div>
+                </h3>
+            </mat-card-footer>
+        </mat-card>
+
+        <!-- <div
+             *ngIf="
+             !(
+             march.toCityOwner == this.data.cityOwner &&
+             march.attack == true
+             )
+             "
+             >
+             {{ march.fromCityName }} Attacking {{ march.toCityName }} With
+             {{ march.armySize }} - Currently {{ march.returningText }}
+             </div>
+             <div
+             *ngIf="
+             march.toCityOwner == this.data.cityOwner && march.attack == true
+             "
+             >
+             {{ march.fromCityName }} Attacking {{ march.toCityName }} With
+             {{ march.armySize }} - Currently {{ march.returningText }}
+             </div> -->
+    </div>
 </div>
