@@ -201,6 +201,14 @@ export class SidebarComponent {
         });
     }
 
+    public openTrainDialog(): void {
+        this.dialog.open(TrainDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: { cityName: this.cityName },
+        })
+    }
+
     public constructBuilding(buildingType: string): void {
         this.buildBuilding.emit(buildingType);
     }
@@ -403,4 +411,40 @@ export class AttackDialogComponent {
 })
 export class CityNameChangeDialogComponent {
     constructor() {}
+}
+
+@Component({
+    selector: 'train-dialog',
+    templateUrl: './train-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class TrainDialogComponent {
+    constructor(
+        public dialogRef: MatDialogRef<AttackDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
+    ) {}
+    maxCap: number = 1000;
+    armySize: number = 1;
+
+    public train() {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+            .post<any>(`${environment.API_HOST}/armies/train`, 
+                {
+                    TroopCount: this.armySize,
+                    CityName: this.data.cityName,
+                },
+                { headers }
+            )
+            .subscribe((response) => {
+                if (response.status) {
+                    console.log('training successful');
+                } else {
+                    console.log('unsuccessful');
+                }
+            });
+    }
 }

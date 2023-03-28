@@ -15,22 +15,23 @@
                 *ngIf="isOwner"
                 class="train-button"
                 mat-flat-button
-            >
-                
+                matTooltip="Train Troops"
+                (click)="openTrainDialog()"
+            ><mat-icon fontIcon="group_add"></mat-icon>
             </button>
             <button
                 *ngIf="isOwner"
                 class="scout-button"
                 mat-flat-button
-            >
-                Scout
+                matTooltip="Scout"
+            ><mat-icon fontIcon="search"></mat-icon>
             </button>
             <mat-card-subtitle (click)="openCityDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="city-properties">
-            <p class="player-balance" matTooltip="Gold">
+            <p class="player-balance" matTooltip="DobraCoins">
                 {{
                     cityOwner === "Neutral"
                         ? ""

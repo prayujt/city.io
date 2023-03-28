@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Train Troops</h1>
+<div mat-dialog-content>
+    <div>
+        <h3>Enter number of troops to train:</h3>
+        <label>{{ armySize }}</label>
+    </div>
+    <mat-slider
+        style="width: 95%"
+        [max]="1000"
+        [min]="1"
+        [step]="1"
+        [discrete]="true"
+    >
+        <input matSliderThumb [(ngModel)]="armySize" />
+    </mat-slider>
+    <a mat-button color="accent" class="train-button-2" (click)="train()">
+        Train
+    </a>
+</div>
