@@ -35,7 +35,7 @@ import { CookieService } from 'ngx-cookie-service';
         VisitDialogComponent,
         CityNameChangeDialogComponent,
         AttackDialogComponent,
-        MarchesDialogComponent
+        MarchesDialogComponent,
         TrainDialogComponent
     ],
     imports: [
