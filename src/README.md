@@ -1,6 +1,19 @@
 # REST API
 
-## Login
+There are protected and unprotected endpoints in the API. To make a request to a protected endpoint, you need to be authorized with a token. This is done by passing in the following header to the HTTP request: </br>
+`Token: <JWT TOKEN>`
+</br>
+</br>
+
+Endpoints that require authorization are marked with an `*`
+</br>
+GET endpoints that do not require this additional header, but will only give read access without authorization are marked with `**`
+
+<details>
+
+<summary>
+Login
+</summary>
 
 #### Create Account: `POST /login/createAccount`
 ##### Body:
@@ -38,7 +51,7 @@
 
 </br>
 
-#### Get Session: `GET /session/`
+#### Get Session: `GET /session` *
 ##### Response:
 
 ```
@@ -49,10 +62,18 @@
 
 </br>
 
+</details>
 
-## Game
+<details>
 
-### Cities
+<summary>
+Game
+</summary>
+
+<details>
+<summary>
+Cities
+</summary>
 
 #### Get Available Buildings: `GET /cities/buildings/available`
 
@@ -72,7 +93,7 @@
 
 </br>
 
-#### Get City for Account: `GET /cities`
+#### Get City for Account: `GET /cities` **
 
 ##### Query Parameters (optional):
 
@@ -94,7 +115,7 @@
 
 </br>
 
-#### Get Territory for Account: `GET /cities/territory`
+#### Get Territory for Account: `GET /cities/territory` *
 
 ##### Response:
 ```
@@ -110,7 +131,7 @@
 
 </br>
 
-#### Get Buildings for City: `GET /cities/buildings`
+#### Get Buildings for City: `GET /cities/buildings` **
 ##### Query Parameters (optional):
 
 ```
@@ -135,7 +156,7 @@
 
 </br>
 
-#### Get Building for City: `GET /cities/buildings/{city_row}/{city_column}`
+#### Get Building for City: `GET /cities/buildings/{city_row}/{city_column}` **
 ##### Query Parameters (optional):
 
 ```
@@ -162,7 +183,7 @@
 </br>
 
 
-#### Create Building in a City: `POST /cities/createBuilding`
+#### Create Building in a City: `POST /cities/createBuilding` *
 
 ##### Query Parameters (optional):
 
@@ -188,7 +209,7 @@
 
 </br>
 
-#### Upgrade Building in a City: `POST /cities/upgradeBuilding`
+#### Upgrade Building in a City: `POST /cities/upgradeBuilding` *
 
 ##### Query Parameters (optional):
 
@@ -213,16 +234,21 @@
 
 </br>
 
-### Armies
+</details>
 
-#### Train Troops: `POST /armies/train`
+<details>
+<summary>
+Armies
+</summary>
+
+#### Train Troops: `POST /armies/train` *
 
 ##### Body: 
 
 ```
 {
-    sessionId:          string,
     troopCount:         int
+    cityName:           string (optional, if not given defaults to home city)
 }
 ```
 
@@ -235,13 +261,12 @@
 
 </br>
 
-#### Move Troops: `POST /armies/move`
+#### Move Troops: `POST /armies/move` *
 
 ##### Body: 
 
 ```
 {
-    sessionId:          string,
     armySize:           int,
     fromCity:           string,
     toCity:             string
@@ -257,8 +282,67 @@
 
 </br>
 
+#### Get Marches: `GET /armies/marches` *
 
-### Visit
+##### Response:
+```
+{
+    fromCityName:       string,
+    fromCityOwner:      string,
+    toCityName:         string,
+    toCityOwner:        string,
+    armySize:           int,
+    returning:          bool,
+    attack:             bool,
+    startTime:          string,
+    endTime:            string
+}
+```
+
+</br>
+
+#### Get Single City Training: `GET /armies/training` *
+
+##### Query Parameters (optional):
+
+```
+-   cityName:       string
+```
+
+##### Response:
+```
+{
+    armySize:           int,
+    startTime:          string,
+    endTime:            string
+}
+```
+
+</br>
+
+#### Get Global Training: `GET /armies/training/global` *
+
+##### Response:
+```
+[
+    {
+        cityName:           string,
+        armySize:           int,
+        startTime:          string,
+        endTime:            string
+    }
+]
+```
+
+</br>
+
+
+</details>
+
+<details>
+<summary>
+Visit
+</summary>
 
 #### Get City List: `GET /cities`
 ##### Response:
@@ -300,5 +384,5 @@
     ...
 ]
 ```
-
+</details>
 
