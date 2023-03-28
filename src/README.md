@@ -7,7 +7,7 @@ There are protected and unprotected endpoints in the API. To make a request to a
 
 Endpoints that require authorization are marked with an `*`
 </br>
-GET endpoints that do not require this additional header, but will only give read access without authorization are marked with `**`
+GET endpoints that do not require this additional header, but will only provide restricted information without authorization are marked with `**`
 
 <details>
 
