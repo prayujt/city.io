@@ -16,6 +16,7 @@ import {
     AttackDialogComponent,
     CityNameChangeDialogComponent,
     SidebarComponent,
+    TrainDialogComponent,
     VisitDialogComponent,
 } from './components/game/sidebar/sidebar.component';
 
@@ -33,6 +34,7 @@ import { CookieService } from 'ngx-cookie-service';
         VisitDialogComponent,
         CityNameChangeDialogComponent,
         AttackDialogComponent,
+        TrainDialogComponent
     ],
     imports: [
         BrowserModule,

@@ -5,25 +5,50 @@
             <mat-card-title>
                 <a (click)="openCityDialog()">{{ cityName }}</a>
             </mat-card-title>
-            <a *ngIf="isOwner" mat-button (click)="editCityName()"
+            <a
+                *ngIf="isOwner"
+                mat-button
+                (click)="editCityName()"
+                matTooltip="Edit City Name"
                 ><mat-icon fontIcon="edit"></mat-icon
             ></a>
-            <a *ngIf="!isOwner" mat-button (click)="goHome()"
+            <a
+                *ngIf="!isOwner"
+                mat-button
+                (click)="goHome()"
+                matTooltip="Return Home"
                 ><mat-icon fontIcon="home"></mat-icon
             ></a>
-            <mat-card-subtitle (click)="openCityDialog()">
+            <button
+                *ngIf="isOwner"
+                class="train-button"
+                mat-flat-button
+                matTooltip="Train Troops"
+                (click)="openTrainDialog()"
+            >
+                <mat-icon fontIcon="group_add"></mat-icon>
+            </button>
+            <button
+                class="scout-button"
+                mat-flat-button
+                matTooltip="Scout"
+                (click)="openCityDialog()"
+            >
+                <mat-icon fontIcon="search"></mat-icon>
+            </button>
+            <mat-card-subtitle>
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="city-properties">
-            <p class="player-balance">
+            <p class="player-balance" matTooltip="DobraCoins">
                 {{
                     cityOwner === "Neutral"
                         ? ""
-                        : "$" + playerBalance.toLocaleString("en-US")
+                        : "🪙" + playerBalance.toLocaleString("en-US")
                 }}
             </p>
-            <p *ngIf="isOwner || armySize != -1">
+            <p *ngIf="isOwner || armySize != -1" matTooltip="Army Size">
                 {{ armySize === -1 ? "" : armySize }}
             </p>
         </mat-card-content>

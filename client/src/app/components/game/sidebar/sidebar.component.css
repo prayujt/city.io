@@ -24,9 +24,12 @@
 }
 
 .scout-button {
-    height: 100px;
-    width: 80%;
-    font-size: 45px;
+    margin-top: 5%;
+    margin-left: 0%;
+    width: 50%;
+    height: 50px;
+    color: white;
+    background-color: rgb(109, 214, 29);
 }
 
 .player-balance {
@@ -47,6 +50,19 @@
     margin: auto;
     margin-top: 5%;
     background-color: rgb(255, 255, 255);
+}
+
+.train-button {
+    margin-top: 5%;
+    margin-left: 0%;
+    width: 50%;
+    height: 50px;
+    color: white;
+    background-color: orange;
+}
+
+.train-button-2 {
+    margin-left: 90%;
 }
 
 .upgrade-button {
