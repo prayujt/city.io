@@ -484,6 +484,63 @@ export class TrainDialogComponent {
     ) {}
     maxCap: number = 1000;
     armySize: number = 1;
+    progBar: boolean = false;
+
+    startTime!: string;
+    endTime!: string;   
+    startUnix!: number;
+    endUnix!: number;
+    progress!: number;
+    remaining!: number;
+    dd!: number;
+    hh!: number;
+    mm!: number;
+    ss!: number;
+
+    interval!: ReturnType<typeof setInterval>;
+
+    public ngOnInit(): void{
+        this.interval = setInterval(() => {
+            let headers = new HttpHeaders();
+            headers = headers.append('Token', this.cookieService.get('jwtToken'));
+            this.http
+                .get<any>(
+                    `${environment.API_HOST}/armies/training`,
+                    { headers }
+                )
+                .subscribe((response) => {
+                    this.armySize = response.armySize;
+                    this.startTime = response.startTime;
+                    this.endTime = response.endTime;
+                });
+
+            if (this.startTime != '' && this.endTime != '') {
+                console.log('aaaa')
+                this.progBar = true;
+                this.startUnix = Date.parse(this.startTime);
+                this.endUnix = Date.parse(this.endTime);
+                if (Number.isNaN(this.startUnix) || Number.isNaN(this.endUnix)) {
+                    this.progBar = false;
+                }
+                let time: number = Date.now();
+                this.progress =
+                    ((time - this.startUnix) /
+                        (this.endUnix - this.startUnix)) *
+                    100;
+                if (this.progress > 100) this.progBar = false;
+
+                this.remaining = this.endUnix - time;
+                this.ss = this.remaining / 1000;
+                this.dd = Math.floor(this.ss / 86400);
+                this.ss %= 86400;
+                this.hh = Math.floor(this.ss / 3600);
+                this.ss %= 3600;
+                this.mm = Math.floor(this.ss / 60);
+                this.ss %= 60;
+                this.ss = Math.floor(this.ss);
+            } else this.progBar = false;
+        }, 200);
+    }
 
     public train() {
         let headers = new HttpHeaders();
