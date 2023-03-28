@@ -52,7 +52,10 @@ export class SidebarComponent {
     endTime!: string;
     clicked: boolean = false;
     progBar: boolean = false;
-    constructableService: ConstructableService = new ConstructableService(this.http, this.cookieService);
+    constructableService: ConstructableService = new ConstructableService(
+        this.http,
+        this.cookieService
+    );
     constructableBuildings: Constructable[] = [];
 
     panelOpenState: boolean = false;
@@ -70,7 +73,8 @@ export class SidebarComponent {
 
     public ngOnInit(): void {
         this.interval1 = setInterval(() => {
-            this.constructableBuildings = this.constructableService.getConstructables();
+            this.constructableBuildings =
+                this.constructableService.getConstructables();
             if (this.buildingType != '') this.clicked = true;
 
             let parameter = '';
@@ -206,7 +210,7 @@ export class SidebarComponent {
             width: '1000px',
             height: '600px',
             data: { cityName: this.cityName },
-        })
+        });
     }
 
     public constructBuilding(buildingType: string): void {
@@ -420,9 +424,10 @@ export class CityNameChangeDialogComponent {
 })
 export class TrainDialogComponent {
     constructor(
-        public dialogRef: MatDialogRef<AttackDialogComponent>,
+        public dialogRef: MatDialogRef<TrainDialogComponent>,
         public http: HttpClient,
         private cookieService: CookieService,
+        private _snackBar: MatSnackBar,
         @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
     ) {}
     maxCap: number = 1000;
@@ -432,18 +437,22 @@ export class TrainDialogComponent {
         let headers = new HttpHeaders();
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
-            .post<any>(`${environment.API_HOST}/armies/train`, 
+            .post<any>(
+                `${environment.API_HOST}/armies/train`,
                 {
-                    TroopCount: this.armySize,
-                    CityName: this.data.cityName,
+                    troopCount: this.armySize,
+                    cityName: this.data.cityName,
                 },
                 { headers }
             )
             .subscribe((response) => {
+                console.log(response);
                 if (response.status) {
-                    console.log('training successful');
+                    this.dialogRef.close('');
                 } else {
-                    console.log('unsuccessful');
+                    this._snackBar.open('Error Training Troops!', 'Close', {
+                        duration: 2000,
+                    });
                 }
             });
     }

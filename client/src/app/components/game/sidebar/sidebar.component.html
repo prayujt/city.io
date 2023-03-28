@@ -5,10 +5,18 @@
             <mat-card-title>
                 <a (click)="openCityDialog()">{{ cityName }}</a>
             </mat-card-title>
-            <a *ngIf="isOwner" mat-button (click)="editCityName()" matTooltip="Edit City Name"
+            <a
+                *ngIf="isOwner"
+                mat-button
+                (click)="editCityName()"
+                matTooltip="Edit City Name"
                 ><mat-icon fontIcon="edit"></mat-icon
             ></a>
-            <a *ngIf="!isOwner" mat-button (click)="goHome()" matTooltip="Return Home"
+            <a
+                *ngIf="!isOwner"
+                mat-button
+                (click)="goHome()"
+                matTooltip="Return Home"
                 ><mat-icon fontIcon="home"></mat-icon
             ></a>
             <button
@@ -17,16 +25,18 @@
                 mat-flat-button
                 matTooltip="Train Troops"
                 (click)="openTrainDialog()"
-            ><mat-icon fontIcon="group_add"></mat-icon>
+            >
+                <mat-icon fontIcon="group_add"></mat-icon>
             </button>
             <button
-                *ngIf="isOwner"
                 class="scout-button"
                 mat-flat-button
                 matTooltip="Scout"
-            ><mat-icon fontIcon="search"></mat-icon>
+                (click)="openCityDialog()"
+            >
+                <mat-icon fontIcon="search"></mat-icon>
             </button>
-            <mat-card-subtitle (click)="openCityDialog()">
+            <mat-card-subtitle>
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>
