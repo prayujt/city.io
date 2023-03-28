@@ -1,11 +1,15 @@
 <h1 mat-dialog-title>Marches</h1>
 <div mat-dialog-content>
     <mat-list role="list" *ngFor="let march of marches">
-        <mat-list-item *ngIf="march.fromCityOwner == this.data.cityOwner">
-            {{ march.fromCityName }} -> {{ march.toCityName }} {{ march.returning }} Reinforcements?
+        <mat-list-item role="listitem"
+        style="background-color: #90ee90; text-align: center; border: 2px solid #dbdbdb;"
+        *ngIf="march.fromCityOwner == this.data.cityOwner">
+            {{ march.fromCityName }} Attacking {{ march.toCityName }} - Currently {{ march.returningText }}
         </mat-list-item>
-        <mat-list-item *ngIf="march.fromCityOwner == this.data.cityOwner">
-            {{ march.fromCityName }} -> {{ march.toCityName }} {{ march.returning }} Reinforcements?
+        <mat-list-item role="listitem"
+        style="background-color: red; text-align: center; border: 2px solid #dbdbdb;"
+        *ngIf="march.toCityOwner == this.data.cityOwner">
+            {{ march.fromCityName }} Attacking {{ march.toCityName }} - Currently {{ march.returningText }}
         </mat-list-item>
     </mat-list>
 </div>

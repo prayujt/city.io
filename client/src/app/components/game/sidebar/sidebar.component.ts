@@ -413,16 +413,17 @@ export class CityNameChangeDialogComponent {
     constructor() {}
 }
 
-export interface March {
-    fromCityName: string;
-    fromCityOwner: string; // check if fromCityOwner or toCityOwner is you, then determine color
-    toCityName: string;
-    toCityOwner: string;
-    returning: boolean; // true if attacking another city and army is returning
-    armySize: number;
-    startTime: string;
-    endTime: string;
-    attack: boolean; // if you are attacking someone, then attack is true
+class March {
+    fromCityName!: string;
+    fromCityOwner!: string; // check if fromCityOwner or toCityOwner is you, then determine color
+    toCityName!: string;
+    toCityOwner!: string;
+    returning!: boolean; // true if attacking another city and army is returning
+    armySize!: number;
+    startTime!: string;
+    endTime!: string;
+    attack!: boolean; // if you are attacking someone, then attack is true
+    returningText: string = "";
 }
 
 @Component({
@@ -437,12 +438,21 @@ export class MarchesDialogComponent {
         private cookieService: CookieService,
         @Inject(MAT_DIALOG_DATA) public data: { cityOwner: string }
         ) {
+        this.cityOwner = data.cityOwner;
         let headers = new HttpHeaders();
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
             .get<any>(`${environment.API_HOST}/armies/marches`, { headers })
             .subscribe((response) => {
                 this.marches = response;
+                for (let i = 0; i < this.marches.length; i++) {
+                    if (this.marches[i].returning) {
+                        this.marches[i].returningText = "Departing";
+                    }
+                    else {
+                        this.marches[i].returningText = "Returning";
+                    }
+                }
             });
     }
 }
