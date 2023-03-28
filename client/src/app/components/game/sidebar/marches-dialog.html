@@ -3,12 +3,12 @@
     <mat-list role="list" *ngFor="let march of marches">
         <mat-list-item role="listitem"
         style="background-color: #90ee90; text-align: center; border: 2px solid #dbdbdb;"
-        *ngIf="march.fromCityOwner == this.data.cityOwner">
+        *ngIf="!(march.toCityOwner == this.data.cityOwner && march.attack == true)">
             {{ march.fromCityName }} Attacking {{ march.toCityName }} With {{ march.armySize }} - Currently {{ march.returningText }}
         </mat-list-item>
         <mat-list-item role="listitem"
         style="background-color: red; text-align: center; border: 2px solid #dbdbdb;"
-        *ngIf="march.toCityOwner == this.data.cityOwner">
+        *ngIf="march.toCityOwner == this.data.cityOwner && march.attack == true">
             {{ march.fromCityName }} Attacking {{ march.toCityName }} With {{ march.armySize }} - Currently {{ march.returningText }}
         </mat-list-item>
     </mat-list>
