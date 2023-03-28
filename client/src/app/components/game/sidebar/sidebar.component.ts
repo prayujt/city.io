@@ -52,7 +52,10 @@ export class SidebarComponent {
     endTime!: string;
     clicked: boolean = false;
     progBar: boolean = false;
-    constructableService: ConstructableService = new ConstructableService(this.http, this.cookieService);
+    constructableService: ConstructableService = new ConstructableService(
+        this.http,
+        this.cookieService
+    );
     constructableBuildings: Constructable[] = [];
 
     panelOpenState: boolean = false;
@@ -70,7 +73,8 @@ export class SidebarComponent {
 
     public ngOnInit(): void {
         this.interval1 = setInterval(() => {
-            this.constructableBuildings = this.constructableService.getConstructables();
+            this.constructableBuildings =
+                this.constructableService.getConstructables();
             if (this.buildingType != '') this.clicked = true;
 
             let parameter = '';
@@ -200,12 +204,20 @@ export class SidebarComponent {
             data: { cityName: this.cityName },
         });
     }
-
+    
     public openMarchesDialog(): void {
         this.dialog.open(MarchesDialogComponent, {
             width: '1000px',
             height: '600px',
-            data: { cityOwner: this.cityOwner }
+            data: { cityOwner: this.cityOwner },
+        });
+    }
+
+    public openTrainDialog(): void {
+        this.dialog.open(TrainDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: { cityName: this.cityName },
         });
     }
 
@@ -452,6 +464,47 @@ export class MarchesDialogComponent {
                     else {
                         this.marches[i].returningText = "Returning";
                     }
+                }
+            });
+    }
+}
+
+@Component({
+    selector: 'train-dialog',
+    templateUrl: './train-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class TrainDialogComponent {
+    constructor(
+        public dialogRef: MatDialogRef<TrainDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        private _snackBar: MatSnackBar,
+        @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
+    ) {}
+    maxCap: number = 1000;
+    armySize: number = 1;
+
+    public train() {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+            .post<any>(
+                `${environment.API_HOST}/armies/train`,
+                {
+                    troopCount: this.armySize,
+                    cityName: this.data.cityName,
+                },
+                { headers }
+            )
+            .subscribe((response) => {
+                console.log(response);
+                if (response.status) {
+                    this.dialogRef.close('');
+                } else {
+                    this._snackBar.open('Error Training Troops!', 'Close', {
+                        duration: 2000,
+                    });
                 }
             });
     }

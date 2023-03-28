@@ -5,25 +5,36 @@
             <mat-card-title>
                 <a (click)="openCityDialog()">{{ cityName }}</a>
             </mat-card-title>
-            <a *ngIf="isOwner" mat-button (click)="editCityName()" matTooltip="Edit City Name"
+            <a
+                *ngIf="isOwner"
+                mat-button
+                (click)="editCityName()"
+                matTooltip="Edit City Name"
                 ><mat-icon fontIcon="edit"></mat-icon
             ></a>
-            <a *ngIf="!isOwner" mat-button (click)="goHome()" matTooltip="Return Home"
+            <a
+                *ngIf="!isOwner"
+                mat-button
+                (click)="goHome()"
+                matTooltip="Return Home"
                 ><mat-icon fontIcon="home"></mat-icon
             ></a>
             <button
                 *ngIf="isOwner"
                 class="train-button"
                 mat-flat-button
+                matTooltip="Train Troops"
+                (click)="openTrainDialog()"
             >
-                Train Troops
+                <mat-icon fontIcon="group_add"></mat-icon>
             </button>
             <button
-                *ngIf="isOwner"
                 class="scout-button"
                 mat-flat-button
+                matTooltip="Scout"
+                (click)="openCityDialog()"
             >
-                Scout
+                <mat-icon fontIcon="search"></mat-icon>
             </button>
             <a *ngIf="isOwner" mat-button (click)="openMarchesDialog()" matTooltip="View Marches"
                 ><mat-icon fontIcon="directions_walk"></mat-icon
@@ -33,7 +44,7 @@
             </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="city-properties">
-            <p class="player-balance" matTooltip="Gold">
+            <p class="player-balance" matTooltip="DobraCoins">
                 {{
                     cityOwner === "Neutral"
                         ? ""
