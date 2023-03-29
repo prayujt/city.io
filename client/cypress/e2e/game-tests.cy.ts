@@ -16,6 +16,7 @@ describe('Game tests', () => {
         cy.get('input[matSliderThumb]').focus().type('{rightarrow}');
         cy.get('a').contains('Train').click();
         cy.get("a[matTooltip='Train Troops']").click();
+        cy.wait(2000);
         cy.get('mat-progress-bar');
     });
 
