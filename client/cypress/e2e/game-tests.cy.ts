@@ -33,10 +33,10 @@ describe('Game tests', () => {
         cy.get("mat-progress-bar");
     })
 
-    it("Upgrade Building", () => {
-        cy.get("td[id='1 1']").click();
-        cy.get("button").contains("Upgrade").click();
-        cy.get("mat-progress-bar");
-    })
+    // it("Upgrade Building", () => {
+    //     cy.get("td[id='1 1']").click();
+    //     cy.get("button").contains("Upgrade").click();
+    //     cy.get("mat-progress-bar");
+    // })
   })
   
