@@ -36,6 +36,14 @@ describe('Game tests', () => {
         // cy.get('mat-progress-bar');
     });
 
+    it('Scout Button', () => {
+        cy.get("a[matTooltip='Scout']").click();
+        cy.get("input[placeholder='Username / City Name']").type('prayuj');
+        cy.get('button').contains('prayuj - monkee city').click();
+        cy.wait(2000);
+        // cy.get('mat-progress-bar');
+    });
+
     // it("Upgrade Building", () => {
     //     cy.get("td[id='1 1']").click();
     //     cy.get("button").contains("Upgrade").click();
