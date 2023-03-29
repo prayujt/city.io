@@ -71,6 +71,11 @@ func InitDatabase(dbUrl string) {
 }
 
 func Reset() {
+	_, err := Execute("DELETE FROM Battles")
+	if err != nil {
+		panic(err)
+	}
+	
 	_, err := Execute("DELETE FROM Builds")
 	if err != nil {
 		panic(err)
@@ -82,11 +87,6 @@ func Reset() {
 	}
 
 	_, err = Execute("DELETE FROM Cities")
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = Execute("DELETE FROM Sessions")
 	if err != nil {
 		panic(err)
 	}
