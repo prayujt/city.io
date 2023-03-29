@@ -38,7 +38,7 @@ describe('Game tests', () => {
 
     it('Scout Button', () => {
         cy.get("a[matTooltip='Scout']").click();
-        cy.get("input[placeholder='Username / City Name']").type('prayuj');
+        cy.get('input[aria-label="City"]').type('prayuj');
         cy.get('button').contains('prayuj - monkee city').click();
         cy.wait(2000);
         // cy.get('mat-progress-bar');
