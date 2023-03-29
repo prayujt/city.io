@@ -26,8 +26,17 @@ describe('Game tests', () => {
         cy.get("a").contains("Cypress City");
     })
 
-    it("Attack and View March", () => {
-        cy.get("td[data-id='1 1']").click();
+    it("Build Building", () => {
+        cy.get("td[id='2 2']").click();
+        cy.get("mat-panel-title").contains("Apartment").click();
+        cy.get("button").contains("Build it!").click();
+        cy.get("mat-progress-bar");
+    })
+
+    it("Upgrade Building", () => {
+        cy.get("td[id='1 1']").click();
+        cy.get("button").contains("Upgrade").click();
+        cy.get("mat-progress-bar");
     })
   })
   
