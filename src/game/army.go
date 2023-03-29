@@ -61,7 +61,6 @@ func HandleArmyRoutes(r *mux.Router) {
 
 func armyTrain(response http.ResponseWriter, request *http.Request) {
 	status := false
-	fmt.Println("This is running")
 	defer func() {
 		json.NewEncoder(response).Encode(Status{Status: status})
 	}()
@@ -75,7 +74,6 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		fmt.Println("This is error2")
 		fmt.Errorf("error parsing the token")
 		return
 	}
@@ -123,7 +121,6 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	}
 
 	result, err := database.Execute(query)
-	fmt.Println(query)
 
 	if err != nil {
 		fmt.Errorf("Error in databasequert")
