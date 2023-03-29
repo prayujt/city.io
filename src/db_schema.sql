@@ -196,6 +196,7 @@ INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) 
 DELIMITER &&
 CREATE PROCEDURE reset_tests ()
 BEGIN
+    DELETE FROM city_io.Battles WHERE from_city IN (SELECT city_id FROM city_io.Cities JOIN city_io.Accounts ON city_owner=player_id WHERE username='User200') OR to_city IN (SELECT city_id FROM city_io.Cities JOIN city_io.Accounts ON city_owner=player_id WHERE username='User200');
     DELETE FROM city_io.Buildings WHERE city_id=(SELECT city_id FROM city_io.Cities JOIN city_io.Accounts ON city_owner=player_id WHERE username='User200');
     DELETE FROM city_io.Cities WHERE city_id=(SELECT city_id FROM (SELECT * FROM city_io.Cities) AS TempCities JOIN city_io.Accounts ON city_owner=player_id WHERE username='User200');
     DELETE FROM city_io.Sessions WHERE player_id=(SELECT player_id FROM city_io.Accounts WHERE username='User200');
