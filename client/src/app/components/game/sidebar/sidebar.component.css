@@ -39,9 +39,9 @@
     font-weight: 300;
 }
 
-.city-information:hover {
+/* .city-information:hover {
     background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
-}
+} */
 
 .building-information {
     height: fit-content;
@@ -53,11 +53,7 @@
 }
 
 .train-button {
-    margin-top: 5%;
-    margin-left: 0%;
-    width: 50%;
-    height: 50px;
-    color: white;
+    color: black;
     background-color: orange;
 }
 
