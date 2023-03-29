@@ -76,7 +76,7 @@ func Reset() {
 		panic(err)
 	}
 	
-	_, err := Execute("DELETE FROM Builds")
+	_, err = Execute("DELETE FROM Builds")
 	if err != nil {
 		panic(err)
 	}
