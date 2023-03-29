@@ -2,9 +2,10 @@ package database
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"reflect"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
@@ -75,7 +76,12 @@ func Reset() {
 	if err != nil {
 		panic(err)
 	}
-	
+
+	_, err = Execute("DELETE FROM Training")
+	if err != nil {
+		panic(err)
+	}
+
 	_, err = Execute("DELETE FROM Builds")
 	if err != nil {
 		panic(err)

@@ -183,3 +183,18 @@ func TestUpgradeBuilding(t *testing.T) {
 	}
 
 }
+
+func TestNameChange(t *testing.T) {
+	city := game.CityNameChange{
+		CityNameNew: "monkee monkee",
+	}
+
+	response := Post("/cities/updateName", city)
+	var result game.Status
+
+	json.Unmarshal(response, &result)
+
+	if !result.Status {
+		t.Error("Expected to succeed in changing name")
+	}
+}

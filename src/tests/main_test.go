@@ -39,6 +39,7 @@ func TestMain(m *testing.M) {
 	login.HandleLoginRoutes(router)
 	game.HandleCityRoutes(router)
 	game.HandleVisitRoutes(router)
+	game.HandleArmyRoutes(router)
 
 	server := httptest.NewServer(router)
 	URL = server.URL
