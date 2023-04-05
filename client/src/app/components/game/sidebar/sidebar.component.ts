@@ -611,9 +611,16 @@ export class TrainDialogComponent {
         this.interval = setInterval(() => {
             let headers = new HttpHeaders();
             headers = headers.append('Token', this.cookieService.get('jwtToken'));
+          
+            let parameter = '';
+            let cityName = this.cookieService.get('cityName');
+            if (cityName != '') {
+                parameter = `?cityName=${encodeURIComponent(cityName)}`;
+            }
+          
             this.http
                 .get<any>(
-                    `${environment.API_HOST}/armies/training`,
+                    `${environment.API_HOST}/armies/training${parameter}`,
                     { headers }
                 )
                 .subscribe((response) => {
