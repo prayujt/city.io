@@ -2,6 +2,7 @@ package tests
 
 import (
 	"api/game"
+	"api/login"
 	"strings"
 	"time"
 
@@ -185,14 +186,31 @@ func TestUpgradeBuilding(t *testing.T) {
 }
 
 func TestNameChange(t *testing.T) {
-	city := game.CityNameChange{
-		CityNameNew: "monkee monkee",
+	acc3 := login.Account{
+		Username: "rawr",
+		Password: "rawr",
 	}
 
-	response := Post("/cities/updateName", city)
+	Post("/login/createAccount", acc3)
+
+	response := Post("/login/createSession", acc3)
+
+	var session3 login.JWT
+	json.Unmarshal(response, &session3)
+
+	if session3.Token == "" {
+		fmt.Println("Failed to initialize token for tests")
+		return
+	}
+
+	city := game.CityNameChange{
+		CityNameNew: "monkee3",
+	}
+
+	response1 := Post("/cities/updateName", city, session3.Token)
 	var result game.Status
 
-	json.Unmarshal(response, &result)
+	json.Unmarshal(response1, &result)
 
 	if !result.Status {
 		t.Error("Expected to succeed in changing name")

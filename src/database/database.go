@@ -82,6 +82,11 @@ func Reset() {
 		panic(err)
 	}
 
+	_, err = Execute("DELETE FROM Marches")
+	if err != nil {
+		panic(err)
+	}
+
 	_, err = Execute("DELETE FROM Builds")
 	if err != nil {
 		panic(err)

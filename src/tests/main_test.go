@@ -61,6 +61,19 @@ func TestMain(m *testing.M) {
 		return
 	}
 
+	city := game.CityNameChange{
+		CityNameNew: "monkee monkee",
+	}
+
+	response1 := Post("/cities/updateName", city, session.Token)
+	var result game.Status
+
+	json.Unmarshal(response1, &result)
+
+	if !result.Status {
+		fmt.Println("youre gay")
+	}
+
 	jwtToken = session.Token
 
 	acc2 := login.Account{
@@ -69,6 +82,25 @@ func TestMain(m *testing.M) {
 	}
 
 	Post("/login/createAccount", acc2)
+
+	response2 := Post("/login/createSession", acc2)
+
+	var session1 login.JWT
+	json.Unmarshal(response2, &session1)
+
+	if session1.Token == "" {
+		fmt.Println("Failed to initialize token for tests")
+		return
+	}
+
+	city1 := game.CityNameChange{
+		CityNameNew: "monkee",
+	}
+
+	response3 := Post("/cities/updateName", city1, session1.Token)
+	var result1 game.Status
+
+	json.Unmarshal(response3, &result1)
 
 	m.Run()
 }
