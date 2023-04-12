@@ -172,6 +172,14 @@
                 >
                     Upgrade
                 </button>
+                <button
+                    *ngIf="isOwner"
+                    class="delete-button"
+                    mat-flat-button
+                    (click)="openDeleteDialog()"
+                >
+                    Delete
+                </button>
             </mat-card-content>
             <mat-card-footer class="progress-bar">
                 <div *ngIf="progBar">
