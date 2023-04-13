@@ -9,11 +9,13 @@ Endpoints that require authorization are marked with an `*`
 </br>
 GET endpoints that do not require this additional header, but will only provide restricted information without authorization are marked with `**`
 
-<details>
+## Contents
+**[Login](#login)**<br>
+**[Cities](#cities)**<br>
+**[Armies](#armies)**<br>
+**[Visit](#visit)**<br>
 
-<summary>
-Login
-</summary>
+## Login
 
 #### Create Account: `POST /login/createAccount`
 ##### Body:
@@ -62,18 +64,8 @@ Login
 
 </br>
 
-</details>
 
-<details>
-
-<summary>
-Game
-</summary>
-
-<details>
-<summary>
-Cities
-</summary>
+## Cities
 
 #### Get Available Buildings: `GET /cities/buildings/available`
 
@@ -234,12 +226,8 @@ Cities
 
 </br>
 
-</details>
 
-<details>
-<summary>
-Armies
-</summary>
+## Armies
 
 #### Train Troops: `POST /armies/train` *
 
@@ -337,12 +325,7 @@ Armies
 </br>
 
 
-</details>
-
-<details>
-<summary>
-Visit
-</summary>
+## Visit
 
 #### Get City List: `GET /cities`
 ##### Response:
@@ -384,5 +367,4 @@ Visit
     ...
 ]
 ```
-</details>
 
