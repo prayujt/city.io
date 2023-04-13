@@ -280,6 +280,13 @@ export class SidebarComponent {
     public goHome(): void {
         this.cookieService.delete('cityName');
     }
+
+    public playAudio(filename: string) {
+        let audio = new Audio();
+        audio.src = "../../../../assets/audio/"+filename;
+        audio.load()
+        audio.play()
+    }
 }
 
 export interface City {

@@ -115,7 +115,7 @@
                             <button
                                 mat-fab
                                 extended
-                                (click)="constructBuilding(building.type)"
+                                (click)="constructBuilding(building.type); playAudio('build.mp3')"
                             >
                                 Build it!
                             </button>
@@ -220,7 +220,7 @@
         routerLink="login"
         routerLinkActive="active"
         class="logout-button"
-        (click)="logOut()"
+        (click)="logOut(); playAudio('logout.mp3')"
         >Log out</a
     >
 </div>

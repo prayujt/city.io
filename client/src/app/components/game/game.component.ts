@@ -93,6 +93,13 @@ export class GameComponent {
         return this;
     }
 
+    public playAudio(filename: string) {
+        let audio = new Audio();
+        audio.src = "../../../assets/audio/"+filename;
+        audio.load()
+        audio.play()
+    }
+
     get buildings(): Building[][] {
         return this.cityService.getBuildings();
     }
