@@ -190,6 +190,10 @@ export class SidebarComponent {
             });
     }
 
+    public deleteBuilding() {
+        
+    }
+
     public openCityDialog(): void {
         this.dialog.open(VisitDialogComponent, {
             width: '1000px',
@@ -223,6 +227,14 @@ export class SidebarComponent {
 
     public constructBuilding(buildingType: string): void {
         this.buildBuilding.emit(buildingType);
+    }
+
+    public openDeleteDialog(): void {
+        this.dialog.open(DeleteDialogComponent, {
+            width: '200px',
+            height: '150px',
+            data: { cityName: this.cityName },
+        });
     }
 
     public editCityName(): void {
@@ -267,6 +279,13 @@ export class SidebarComponent {
 
     public goHome(): void {
         this.cookieService.delete('cityName');
+    }
+
+    public playAudio(filename: string) {
+        let audio = new Audio();
+        audio.src = "../../../../assets/audio/"+filename;
+        audio.load()
+        audio.play()
     }
 }
 
@@ -679,5 +698,23 @@ export class TrainDialogComponent {
                     });
                 }
             });
+    }
+}
+
+@Component({
+    selector: 'delete-dialog',
+    templateUrl: './delete-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class DeleteDialogComponent {
+    constructor(
+        public dialogRef: MatDialogRef<DeleteDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        private _snackBar: MatSnackBar
+    ) {}
+    
+    public deleteBuilding() {
+
     }
 }

@@ -18,7 +18,8 @@ import {
     SidebarComponent,
     TrainDialogComponent,
     VisitDialogComponent,
-    MarchesDialogComponent
+    MarchesDialogComponent,
+    DeleteDialogComponent,
 } from './components/game/sidebar/sidebar.component';
 
 import { AngularMaterialModule } from './angular-material.module';
@@ -36,7 +37,8 @@ import { CookieService } from 'ngx-cookie-service';
         CityNameChangeDialogComponent,
         AttackDialogComponent,
         MarchesDialogComponent,
-        TrainDialogComponent
+        TrainDialogComponent,
+        DeleteDialogComponent,
     ],
     imports: [
         BrowserModule,

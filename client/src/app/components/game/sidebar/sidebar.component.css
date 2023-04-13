@@ -32,6 +32,15 @@
     background-color: rgb(109, 214, 29);
 }
 
+.delete-button {
+    background-color: red;
+    color: white;
+    margin-top: 5%;
+    margin-left: 35%;
+    width: 30%;
+    height: 30px;
+}
+
 .player-balance {
     font-family: "Roboto", sans-serif;
     color: green;

@@ -115,7 +115,7 @@
                             <button
                                 mat-fab
                                 extended
-                                (click)="constructBuilding(building.type)"
+                                (click)="constructBuilding(building.type); playAudio('build.mp3')"
                             >
                                 Build it!
                             </button>
@@ -172,6 +172,14 @@
                 >
                     Upgrade
                 </button>
+                <button
+                    *ngIf="isOwner"
+                    class="delete-button"
+                    mat-flat-button
+                    (click)="openDeleteDialog()"
+                >
+                    Delete
+                </button>
             </mat-card-content>
             <mat-card-footer class="progress-bar">
                 <div *ngIf="progBar">
@@ -212,7 +220,7 @@
         routerLink="login"
         routerLinkActive="active"
         class="logout-button"
-        (click)="logOut()"
+        (click)="logOut(); playAudio('logout.mp3')"
         >Log out</a
     >
 </div>
