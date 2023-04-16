@@ -5,6 +5,7 @@ import (
 	"api/database"
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -124,10 +125,10 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				),
 				%d,
 				NOW(),
-				TIMESTAMPADD(SECOND, %d, NOW())
+				TIMESTAMPADD(SECOND, %d	, NOW())
 			)
 			`,
-			train.CityName, train.TroopCount, train.TroopCount*TIME_TO_TRAIN/barrackCount)
+			train.CityName, train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(barrackCount))))
 	} else {
 		query = fmt.Sprintf(
 			`
@@ -142,7 +143,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				TIMESTAMPADD(SECOND, %d, NOW())
 			)
 			`,
-			claims["playerId"], train.TroopCount, train.TroopCount*TIME_TO_TRAIN/barrackCount)
+			claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(barrackCount))))
 	}
 
 	result, err := database.Execute(query)
