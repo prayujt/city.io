@@ -92,6 +92,30 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	if len(train.CityName) > 0 {
 		query = fmt.Sprintf(
 			`
+			SELECT COUNT(*)
+			FROM Buildings
+			WHERE city_id = (SELECT city_id FROM Cities WHERE city_name = '%s')
+				AND building_type = 'Barracks'
+			`,
+			train.CityName)
+	} else {
+		query = fmt.Sprintf(
+			`
+			SELECT COUNT(*)
+			FROM Buildings
+			WHERE city_id = (SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0)
+				AND building_type = 'Barracks'
+			`,
+			claims["playerId"])
+	}
+
+	var barrackCount int
+
+	database.QueryValue(query, &barrackCount)
+
+	if len(train.CityName) > 0 {
+		query = fmt.Sprintf(
+			`
 			INSERT INTO Training VALUES(
 				(
 					SELECT city_id
@@ -103,7 +127,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				TIMESTAMPADD(SECOND, %d, NOW())
 			)
 			`,
-			train.CityName, train.TroopCount, train.TroopCount*TIME_TO_TRAIN)
+			train.CityName, train.TroopCount, train.TroopCount*TIME_TO_TRAIN/barrackCount)
 	} else {
 		query = fmt.Sprintf(
 			`
@@ -118,7 +142,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				TIMESTAMPADD(SECOND, %d, NOW())
 			)
 			`,
-			claims["playerId"], train.TroopCount, train.TroopCount*TIME_TO_TRAIN)
+			claims["playerId"], train.TroopCount, train.TroopCount*TIME_TO_TRAIN/barrackCount)
 	}
 
 	result, err := database.Execute(query)
