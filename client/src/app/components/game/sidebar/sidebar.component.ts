@@ -190,9 +190,7 @@ export class SidebarComponent {
             });
     }
 
-    public deleteBuilding() {
-        
-    }
+    public deleteBuilding() {}
 
     public openCityDialog(): void {
         this.dialog.open(VisitDialogComponent, {
@@ -213,7 +211,6 @@ export class SidebarComponent {
         this.dialog.open(MarchesDialogComponent, {
             width: '1000px',
             height: '600px',
-            data: { cityOwner: this.cityOwner },
         });
     }
 
@@ -283,9 +280,9 @@ export class SidebarComponent {
 
     public playAudio(filename: string) {
         let audio = new Audio();
-        audio.src = "../../../../assets/audio/"+filename;
-        audio.load()
-        audio.play()
+        audio.src = '../../../../assets/audio/' + filename;
+        audio.load();
+        audio.play();
     }
 }
 
@@ -454,6 +451,7 @@ class March {
     startTime!: string;
     endTime!: string;
     attack!: boolean; // if you are attacking someone, then attack is true
+    incoming!: boolean;
     text: string = '';
     ss!: number;
     dd!: number;
@@ -475,12 +473,7 @@ export class MarchesDialogComponent {
     marchTimeInterval!: ReturnType<typeof setInterval>;
     getMarchInterval!: ReturnType<typeof setInterval>;
 
-    constructor(
-        public http: HttpClient,
-        private cookieService: CookieService,
-        @Inject(MAT_DIALOG_DATA) public data: { cityOwner: string }
-    ) {
-        this.cityOwner = data.cityOwner;
+    constructor(public http: HttpClient, private cookieService: CookieService) {
         let headers = new HttpHeaders();
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
         this.http
@@ -494,10 +487,7 @@ export class MarchesDialogComponent {
                         march.text = 'Returning';
                     } else if (march.attack) {
                         march.text = 'Attacking';
-                        march.color =
-                            march.toCityOwner == this.data.cityOwner
-                                ? 'red'
-                                : 'green';
+                        march.color = march.incoming ? 'red' : 'green';
                     } else {
                         march.text = 'Moving';
                     }
@@ -561,10 +551,7 @@ export class MarchesDialogComponent {
                             march.text = 'Returning';
                         } else if (march.attack) {
                             march.text = 'Attacking';
-                            march.color =
-                                march.toCityOwner == this.data.cityOwner
-                                    ? 'red'
-                                    : 'green';
+                            march.color = march.incoming ? 'red' : 'green';
                         } else {
                             march.text = 'Moving';
                         }
@@ -614,7 +601,7 @@ export class TrainDialogComponent {
     progBar: boolean = false;
 
     startTime!: string;
-    endTime!: string;   
+    endTime!: string;
     startUnix!: number;
     endUnix!: number;
     progress!: number;
@@ -626,17 +613,20 @@ export class TrainDialogComponent {
 
     interval!: ReturnType<typeof setInterval>;
 
-    public ngOnInit(): void{
+    public ngOnInit(): void {
         this.interval = setInterval(() => {
             let headers = new HttpHeaders();
-            headers = headers.append('Token', this.cookieService.get('jwtToken'));
-          
+            headers = headers.append(
+                'Token',
+                this.cookieService.get('jwtToken')
+            );
+
             let parameter = '';
             let cityName = this.cookieService.get('cityName');
             if (cityName != '') {
                 parameter = `?cityName=${encodeURIComponent(cityName)}`;
             }
-          
+
             this.http
                 .get<any>(
                     `${environment.API_HOST}/armies/training${parameter}`,
@@ -649,11 +639,14 @@ export class TrainDialogComponent {
                 });
 
             if (this.startTime != '' && this.endTime != '') {
-                console.log('aaaa')
+                console.log('aaaa');
                 this.progBar = true;
                 this.startUnix = Date.parse(this.startTime);
                 this.endUnix = Date.parse(this.endTime);
-                if (Number.isNaN(this.startUnix) || Number.isNaN(this.endUnix)) {
+                if (
+                    Number.isNaN(this.startUnix) ||
+                    Number.isNaN(this.endUnix)
+                ) {
                     this.progBar = false;
                 }
                 let time: number = Date.now();
@@ -713,8 +706,6 @@ export class DeleteDialogComponent {
         private cookieService: CookieService,
         private _snackBar: MatSnackBar
     ) {}
-    
-    public deleteBuilding() {
 
-    }
+    public deleteBuilding() {}
 }

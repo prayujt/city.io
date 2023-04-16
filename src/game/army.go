@@ -39,6 +39,7 @@ type March struct {
 	ToCityOwner   string `database:"to_city_owner" json:"toCityOwner"`
 	ArmySize      int    `database:"army_size" json:"armySize"`
 	IsReturn      bool   `database:"returning" json:"returning"`
+	IsIncoming    bool   `database:"incoming" json:"incoming"`
 	IsAttack      bool   `database:"attack" json:"attack"`
 	StartTime     string `database:"start_time" json:"startTime"`
 	EndTime       string `database:"end_time" json:"endTime"`
@@ -494,7 +495,8 @@ func getMarches(response http.ResponseWriter, request *http.Request) {
 			(SELECT city_name FROM Cities WHERE city_id=from_city) AS from_city_name,
 			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=from_city) AS from_city_owner, 
 			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
-			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=to_city) AS to_city_owner, 
+			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=to_city) AS to_city_owner,
+			(SELECT to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')) as incoming,
 			(SELECT 
 				(SELECT city_owner FROM Cities WHERE city_id=from_city)!=
 				(SELECT city_owner FROM Cities WHERE city_id=to_city)
@@ -507,7 +509,7 @@ func getMarches(response http.ResponseWriter, request *http.Request) {
 			OR
 			to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
 			`,
-			claims["playerId"], claims["playerId"]),
+			claims["playerId"], claims["playerId"], claims["playerId"]),
 		&result)
 }
 
