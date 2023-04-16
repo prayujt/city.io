@@ -201,6 +201,33 @@ GET endpoints that do not require this additional header, but will only provide 
 
 </br>
 
+
+#### Destroy Building in a City: `POST /cities/destroyBuilding` *
+
+##### Query Parameters (optional):
+
+```
+-   cityName:       string
+```
+
+##### Body:
+```
+{
+    cityRow:        int,
+    cityColumn:     int
+}
+```
+
+##### Response:
+```
+{
+    status:         boolean
+}
+```
+
+</br>
+
+
 #### Upgrade Building in a City: `POST /cities/upgradeBuilding` *
 
 ##### Query Parameters (optional):
