@@ -588,7 +588,11 @@ func getTraining(response http.ResponseWriter, request *http.Request) {
 	var result []Training
 
 	defer func() {
-		json.NewEncoder(response).Encode(result[0])
+		if len(result) == 0 {
+			json.NewEncoder(response).Encode(Training{})
+		} else {
+			json.NewEncoder(response).Encode(result[0])
+		}
 	}()
 
 	if request.Header["Token"] == nil {
