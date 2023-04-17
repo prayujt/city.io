@@ -9,6 +9,18 @@ export class CityService {
     private availableBuildings: Building[] = [
         new Building(-1, )
     ];
+    troops: Map<number, number> = new Map([
+        [1, 1000],
+        [2, 5000],
+        [3, 10000],
+        [4, 25000],
+        [5, 50000],
+        [6, 100000],
+        [7, 250000],
+        [8, 500000],
+        [9, 1000000],
+        [10, 10000000]
+    ]);
     constructor() {}
 
     createCity(): CityService {
@@ -39,6 +51,7 @@ export class CityService {
             cityRow: number;
         }>
     ) {
+        let maxTrainCount: number = 0
         if (buildings == null) {
             for (let i = 0; i < 9; i++) {
                 for (let j = 0; j < 13; j++) {
@@ -60,6 +73,9 @@ export class CityService {
                                 buildings[k].buildingLevel;
                             this.buildings[i][j].type =
                                 buildings[k].buildingType;
+                            if (this.buildings[i][j].type == 'Barracks') {
+                                maxTrainCount += this.troops.get(buildings[k].buildingLevel) as number;
+                            }
                             matched = true;
                         }
                         if (!matched) {
@@ -71,5 +87,6 @@ export class CityService {
                 }
             }
         }
+        return maxTrainCount;
     }
 }

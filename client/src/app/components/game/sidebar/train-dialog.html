@@ -1,20 +1,28 @@
 <h1 mat-dialog-title>Train Troops</h1>
 <div mat-dialog-content>
     <div *ngIf="!progBar">
-        <div>
+        <mat-card *ngIf="maxCap == 0">
+            <mat-card-header>
+                <mat-card-title style="color: black">
+                    No Barracks Available To Train Troops!
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content></mat-card-content>
+        </mat-card>
+        <div *ngIf="maxCap != 0">
             <h3>Enter number of troops to train:</h3>
             <label>{{ armySize }}</label>
         </div>
-        <mat-slider
+        <mat-slider *ngIf="maxCap != 0"
             style="width: 95%"
-            [max]="1000"
-            [min]="1"
+            [max]="maxCap"
+            [min]="0"
             [step]="1"
             [discrete]="true"
         >
             <input matSliderThumb [(ngModel)]="armySize" />
         </mat-slider>
-        <a mat-button color="accent" class="train-button-2" (click)="train()">
+        <a *ngIf="maxCap != 0" mat-button color="accent" class="train-button-2" (click)="train()">
             Train
         </a>
     </div>
