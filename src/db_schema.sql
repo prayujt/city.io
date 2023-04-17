@@ -152,7 +152,7 @@ DELETE FROM Training WHERE end_time <= NOW();
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
 ('Apartment', 1, 500.00, 2, 5000, 400000.00, 10),
-('Apartment', 2, 750.00, 2, 7500, 800000.00, 300),
+('Apartment', 2, 750.00, 2, 7500, 800000.00, 10),
 ('Apartment', 3, 1000.00, 3, 10000, 1000000.00, 900),
 ('Apartment', 4, 2000.00, 3, 12500, 1500000.00, 1800),
 ('Apartment', 5, 3000.00, 3, 15000, 2000000.00, 3600),
