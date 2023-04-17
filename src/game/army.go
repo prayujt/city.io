@@ -5,6 +5,7 @@ import (
 	"api/database"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"strings"
 	"time"
@@ -46,6 +47,19 @@ type March struct {
 	EndTime       string `database:"end_time" json:"endTime"`
 }
 
+type Battle struct {
+	FromCityName     string  `database:"from_city_name" json:"fromCityName"`
+	ToCityName       string  `database:"to_city_name" json:"toCityName"`
+	FromCityOwner    string  `database:"from_city_owner" json:"fromCityOwner"`
+	ToCityOwner      string  `database:"to_city_owner" json:"toCityOwner"`
+	AttackerArmySize int     `database:"attacker_army_size" json:"attackerArmySize"`
+	DefenderArmySize int     `database:"defender_army_size" json:"defenderArmySize"`
+	AmountLooted     float64 `database:"amount_looted" json:"amountLooted"`
+	BattleTime       string  `database:"battle_time" json:"battleTime"`
+	AttackVictory    bool    `database:"attack_victory" json:"attackVictory"`
+	Incoming         bool    `database:"incoming" json:"incoming"`
+}
+
 func HandleArmyRoutes(r *mux.Router) {
 	r.HandleFunc("/armies/train", armyTrain).Methods("POST")
 	r.HandleFunc("/armies/move", armyMove).Methods("POST")
@@ -53,6 +67,7 @@ func HandleArmyRoutes(r *mux.Router) {
 	r.HandleFunc("/armies/marches", getMarches).Methods("GET")
 	r.HandleFunc("/armies/training/global", getGlobalTraining).Methods("GET")
 	r.HandleFunc("/armies/training", getTraining).Methods("GET")
+	r.HandleFunc("/armies/battles", getBattleLogs).Methods("GET")
 
 	go func() {
 		for {
@@ -68,15 +83,14 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	}()
 
 	if request.Header["Token"] == nil {
-		fmt.Println("This is error1")
-		fmt.Errorf("Header Token is nil")
+		log.Println("Header Token is nil")
 		return
 	}
 
 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
 	if err != nil {
-		fmt.Errorf("error parsing the token")
+		log.Println("error parsing the token")
 		return
 	}
 
@@ -84,7 +98,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	err = json.NewDecoder(request.Body).Decode(&train)
 
 	if err != nil {
-		fmt.Errorf("Error Decoding Body")
+		log.Println("Error Decoding Body")
 		return
 	}
 
@@ -149,13 +163,13 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	result, err := database.Execute(query)
 
 	if err != nil {
-		fmt.Errorf("Error in databasequert")
+		log.Println("Error querying database")
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		fmt.Errorf("No rows affected")
+		log.Println("No rows affected")
 		return
 	}
 
@@ -605,4 +619,42 @@ func getTraining(response http.ResponseWriter, request *http.Request) {
 	}
 
 	database.Query(query, &result)
+}
+
+func getBattleLogs(response http.ResponseWriter, request *http.Request) {
+	var result []Battle
+	defer func() {
+		json.NewEncoder(response).Encode(result)
+	}()
+
+	if request.Header["Token"] == nil {
+		return
+	}
+
+	claims, err := auth.ParseJWT(request.Header["Token"][0])
+
+	if err != nil {
+		return
+	}
+
+	database.Query(
+		fmt.Sprintf(
+			`
+			SELECT
+			(SELECT city_name FROM Cities WHERE city_id=from_city) AS from_city_name,
+			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=from_city) AS from_city_owner,
+			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
+			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=to_city) AS to_city_owner,
+			(SELECT to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')) as incoming,
+			attacker_army_size, defender_army_size, battle_time, amount_looted, attack_victory
+			FROM Battles
+			WHERE
+			from_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
+			OR
+			to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
+			AND battle_time > TIMESTAMPADD(DAY, -14)
+			ORDER BY battle_time DESC
+			`,
+			claims["playerId"], claims["playerId"], claims["playerId"]),
+		&result)
 }
