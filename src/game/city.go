@@ -120,11 +120,15 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 		database.Query(
 			fmt.Sprintf(
 				`
-				SELECT username, balance, population, population_capacity, IF(username = '%s', army_size, -1) AS army_size, city_name
+				SELECT username, balance, population, 
+				(SELECT SUM(population_capacity_change) 
+				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS population_capacity,
+				IF(username = '%s', army_size, -1) AS army_size, city_name
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE city_name='%s'
 				`,
-				claims["username"], cityName[0]),
+				cityName[0], claims["username"], cityName[0]),
 			&result)
 	} else {
 		database.Query(

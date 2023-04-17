@@ -5,6 +5,7 @@ import (
 	"api/database"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"strings"
 	"time"
@@ -113,6 +114,11 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 	var barrackCount int
 
 	database.QueryValue(query, &barrackCount)
+
+	if barrackCount == 0 {
+		log.Println("You don't have barracks!")
+		return
+	}
 
 	if len(train.CityName) > 0 {
 		query = fmt.Sprintf(
