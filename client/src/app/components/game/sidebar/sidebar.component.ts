@@ -224,6 +224,13 @@ export class SidebarComponent {
         });
     }
 
+    public openBattleLogsDialog(): void {
+        this.dialog.open(BattleLogsDialogComponent, {
+            width: '1000px',
+            height: '600px',
+        });
+    }
+
     public constructBuilding(buildingType: string): void {
         this.buildBuilding.emit(buildingType);
     }
@@ -709,4 +716,43 @@ export class DeleteDialogComponent {
     ) {}
 
     public deleteBuilding() {}
+}
+
+@Component({
+    selector: 'battle-logs-dialog',
+    templateUrl: './battle-logs-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class BattleLogsDialogComponent {
+    interval!: ReturnType<typeof setInterval>;
+
+    constructor(
+        public http: HttpClient,
+        private cookieService: CookieService
+    ) {}
+
+    public ngOnInit(): void {
+        this.interval = setInterval(() => {
+            let headers = new HttpHeaders();
+            headers = headers.append(
+                'Token',
+                this.cookieService.get('jwtToken')
+            );
+
+            let parameter = '';
+            let cityName = this.cookieService.get('cityName');
+            if (cityName != '') {
+                parameter = `?cityName=${encodeURIComponent(cityName)}`;
+            }
+
+            this.http
+                .get<any>(
+                    `${environment.API_HOST}/armies/training${parameter}`,
+                    { headers }
+                )
+                .subscribe((response) => {
+                    
+                });
+        }, 200);
+    }
 }
