@@ -599,7 +599,7 @@ export class TrainDialogComponent {
         @Inject(MAT_DIALOG_DATA) public data: { cityName: string, maxTrainCount: number }
     ) {}
     maxCap: number = 0;
-    armySize: number = 1;
+    armySize: number = 0;
     progBar: boolean = false;
 
     startTime!: string;
@@ -616,10 +616,7 @@ export class TrainDialogComponent {
     interval!: ReturnType<typeof setInterval>;
 
     public ngOnInit(): void {
-        console.log(this.maxCap);
         this.maxCap = this.data.maxTrainCount;
-        console.log(this.maxCap);
-        console.log(this.data.maxTrainCount);
         this.interval = setInterval(() => {
             let headers = new HttpHeaders();
             headers = headers.append(
