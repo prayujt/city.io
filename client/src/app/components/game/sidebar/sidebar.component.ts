@@ -71,6 +71,8 @@ export class SidebarComponent {
     interval1!: ReturnType<typeof setInterval>;
     interval2!: ReturnType<typeof setInterval>;
 
+    @Input() maxTrainCount: number = 0;
+
     public ngOnInit(): void {
         this.interval1 = setInterval(() => {
             this.constructableBuildings =
@@ -218,7 +220,7 @@ export class SidebarComponent {
         this.dialog.open(TrainDialogComponent, {
             width: '1000px',
             height: '600px',
-            data: { cityName: this.cityName },
+            data: { cityName: this.cityName, maxTrainCount: this.maxTrainCount },
         });
     }
 
@@ -594,9 +596,9 @@ export class TrainDialogComponent {
         public http: HttpClient,
         private cookieService: CookieService,
         private _snackBar: MatSnackBar,
-        @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
+        @Inject(MAT_DIALOG_DATA) public data: { cityName: string, maxTrainCount: number }
     ) {}
-    maxCap: number = 1000;
+    maxCap: number = 0;
     armySize: number = 1;
     progBar: boolean = false;
 
@@ -614,6 +616,10 @@ export class TrainDialogComponent {
     interval!: ReturnType<typeof setInterval>;
 
     public ngOnInit(): void {
+        console.log(this.maxCap);
+        this.maxCap = this.data.maxTrainCount;
+        console.log(this.maxCap);
+        console.log(this.data.maxTrainCount);
         this.interval = setInterval(() => {
             let headers = new HttpHeaders();
             headers = headers.append(
@@ -639,7 +645,6 @@ export class TrainDialogComponent {
                 });
 
             if (this.startTime != '' && this.endTime != '') {
-                console.log('aaaa');
                 this.progBar = true;
                 this.startUnix = Date.parse(this.startTime);
                 this.endUnix = Date.parse(this.endTime);
@@ -682,7 +687,6 @@ export class TrainDialogComponent {
                 { headers }
             )
             .subscribe((response) => {
-                console.log(response);
                 if (response.status) {
                     this.dialogRef.close('');
                 } else {

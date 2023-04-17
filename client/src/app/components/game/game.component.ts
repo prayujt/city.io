@@ -27,6 +27,7 @@ export class GameComponent {
     public column: number = 0;
     public jwtToken: string = '';
     public isOwner: boolean = true;
+    public maxTrainCount: number = 0;
 
     public interval!: ReturnType<typeof setInterval>;
 
@@ -75,7 +76,7 @@ export class GameComponent {
                         { headers }
                     )
                     .subscribe((response) => {
-                        this.cityService.setBuildings(response.buildings);
+                        this.maxTrainCount = this.cityService.setBuildings(response.buildings);
                         this.isOwner = response.isOwner;
                     });
             }, 250);
