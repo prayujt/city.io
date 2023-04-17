@@ -369,6 +369,16 @@ func createBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	result, _ = database.Execute(
+		fmt.Sprintf(
+			`
+			UPDATE Cities
+			SET population_capacity = population_capacity +
+				(SELECT population_capacity_change FROM Building_Info WHERE building_type='%s' AND building_level=1)
+			WHERE city_name='%s'
+			`,
+			building.BuildingType, cityName[0]))
+
 	var query string
 	if len(cityName) > 0 {
 		query = fmt.Sprintf(
