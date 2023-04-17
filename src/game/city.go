@@ -20,6 +20,7 @@ type City struct {
 	PlayerBalance      float64 `database:"balance" json:"playerBalance"`
 	CityOwner          string  `database:"username" json:"cityOwner"`
 	ArmySize           int     `database:"army_size" json:"armySize"`
+	Happiness          int     `database:"happiness_total" json:"happinessTotal"`
 }
 
 type CityStats struct {
@@ -72,6 +73,7 @@ func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
+	//r.HandleFunc("/cities/production", getProduction).Methods("GET")
 
 	r.HandleFunc("/cities/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/upgradeBuilding", upgradeBuilding).Methods("POST")
@@ -121,6 +123,9 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 			fmt.Sprintf(
 				`
 				SELECT username, balance, population, 
+				(SELECT SUM(happiness_change) 
+				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS happiness_total,
 				(SELECT SUM(population_capacity_change) 
 				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
 				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS population_capacity,
@@ -128,7 +133,7 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE city_name='%s'
 				`,
-				cityName[0], claims["username"], cityName[0]),
+				cityName[0], cityName[0], claims["username"], cityName[0]),
 			&result)
 	} else {
 		database.Query(
@@ -147,6 +152,10 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 		city = result[0]
 	}
 }
+
+// func getProduction(response http.ResponseWriter, request *http.Request) {
+
+// }
 
 func getTerritory(response http.ResponseWriter, request *http.Request) {
 	var territory []CityStats
