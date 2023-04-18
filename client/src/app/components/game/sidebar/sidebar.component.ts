@@ -773,7 +773,7 @@ export class BattleLogsDialogComponent {
 
                     if (battle.battleTime != '') {
                         let unix = Date.parse(battle.battleTime);
-                        let remaining = unix - Date.now();
+                        let remaining = Date.now() - unix;
                         let seconds = remaining / 1000;
                         seconds %= 86400;
                         battle.hours = Math.floor(seconds / 3600);
@@ -797,9 +797,11 @@ export class BattleLogsDialogComponent {
                         battle.color = "red";
                     }
 
+                    battle.text = battle.fromCityOwner + " attacks " + battle.toCityOwner;
+
                     if (battle.battleTime != '') {
                         let unix = Date.parse(battle.battleTime);
-                        let remaining = unix - Date.now();
+                        let remaining = Date.now() - unix;
                         let seconds = remaining / 1000;
                         seconds %= 86400;
                         battle.hours = Math.floor(seconds / 3600);

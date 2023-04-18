@@ -23,15 +23,13 @@ export class CityService {
     ]);
     constructor() {}
 
-    createCity(): CityService {
+    createCity(): void {
         for (let i = 0; i < 9; i++) {
             this.buildings[i] = [];
             for (let j = 0; j < 13; j++) {
                 this.buildings[i][j] = new Building(0, '', i, j);
             }
         }
-
-        return this;
     }
 
     getBuildings(): Building[][] {
@@ -75,7 +73,7 @@ export class CityService {
                     for (let k = 0; k < buildings.length; k++) {
                         if (
                             buildings[k].cityRow == i &&
-                            buildings[k].cityColumn == j
+                            buildings[k].cityColumn == j && k < 117
                         ) {
                             this.buildings[i][j].level =
                                 buildings[k].buildingLevel;
