@@ -661,7 +661,7 @@ func getBattleLogs(response http.ResponseWriter, request *http.Request) {
 			from_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
 			OR
 			to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')
-			AND battle_time > TIMESTAMPADD(DAY, -14)
+			AND battle_time > TIMESTAMPADD(DAY, -14, NOW())
 			ORDER BY battle_time DESC
 			`,
 			claims["playerId"], claims["playerId"], claims["playerId"]),
