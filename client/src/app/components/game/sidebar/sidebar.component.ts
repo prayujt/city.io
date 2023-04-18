@@ -803,6 +803,8 @@ export class BattleLogsDialogComponent {
 
                     battle.text = battle.fromCityOwner + " attacks " + battle.toCityOwner;
 
+                    battle.amountLooted = Math.round(battle.amountLooted);
+
                     if (battle.battleTime != '') {
                         let unix = Date.parse(battle.battleTime);
                         let remaining = Date.now() - unix;
