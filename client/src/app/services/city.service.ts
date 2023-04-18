@@ -42,6 +42,14 @@ export class CityService {
         return this.availableBuildings;
     }
 
+    updateIcons() {
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 13; j++) {
+                this.buildings[i][j].setIcon();
+            }
+        }
+    }
+
     setBuildings(
         buildings: Array<{
             buildingLevel: number;

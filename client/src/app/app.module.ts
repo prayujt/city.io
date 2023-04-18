@@ -20,6 +20,7 @@ import {
     VisitDialogComponent,
     MarchesDialogComponent,
     DeleteDialogComponent,
+    BattleLogsDialogComponent,
 } from './components/game/sidebar/sidebar.component';
 
 import { AngularMaterialModule } from './angular-material.module';
@@ -39,6 +40,7 @@ import { CookieService } from 'ngx-cookie-service';
         MarchesDialogComponent,
         TrainDialogComponent,
         DeleteDialogComponent,
+        BattleLogsDialogComponent
     ],
     imports: [
         BrowserModule,

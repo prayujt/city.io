@@ -79,6 +79,7 @@ export class GameComponent {
                         this.maxTrainCount = this.cityService.setBuildings(response.buildings);
                         this.isOwner = response.isOwner;
                     });
+                this.cityService.updateIcons();
             }, 250);
         } else {
             this.router.navigate(['login']);

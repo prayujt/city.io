@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Battle Logs</h1>
+<div mat-dialog-content>
+    <mat-card *ngIf="battles.length == 0">
+        <mat-card-header>
+            <mat-card-title style="color: black">
+                No Battle Logs Currently!
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>   
+        </mat-card-content>
+    </mat-card>
+
+    <div role="list" *ngFor="let battle of battles">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-subtitle>
+                    {{ battle.hours }} hours ago
+                </mat-card-subtitle>
+                <mat-card-title style="color: {{ battle.color }}">
+                    {{ battle.text }}
+                </mat-card-title>
+                <mat-card-subtitle>
+                    Attacking Army: {{ battle.attackerArmySize.toLocaleString("en-US") }} troops
+                    Defending Army: {{ battle.defenderArmySize.toLocaleString("en-US") }} troops
+                </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+                <p>
+                    {{ battle.fromCityName }}
+                    <mat-icon fontIcon="east"></mat-icon>
+                    {{ battle.toCityName }}
+                </p>
+                <p>
+                    "🪙" + {{ battle.amountLooted }} looted!
+                </p>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
