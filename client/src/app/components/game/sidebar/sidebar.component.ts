@@ -192,8 +192,6 @@ export class SidebarComponent {
             });
     }
 
-    public deleteBuilding() {}
-
     public openCityDialog(): void {
         this.dialog.open(VisitDialogComponent, {
             width: '1000px',
@@ -220,7 +218,10 @@ export class SidebarComponent {
         this.dialog.open(TrainDialogComponent, {
             width: '1000px',
             height: '600px',
-            data: { cityName: this.cityName, maxTrainCount: this.maxTrainCount },
+            data: {
+                cityName: this.cityName,
+                maxTrainCount: this.maxTrainCount,
+            },
         });
     }
 
@@ -232,7 +233,7 @@ export class SidebarComponent {
         this.dialog.open(DeleteDialogComponent, {
             width: '200px',
             height: '150px',
-            data: { cityName: this.cityName },
+            data: { cityRow: this.row, cityColumn: this.column },
         });
     }
 
@@ -596,9 +597,11 @@ export class TrainDialogComponent {
         public http: HttpClient,
         private cookieService: CookieService,
         private _snackBar: MatSnackBar,
-        @Inject(MAT_DIALOG_DATA) public data: { cityName: string, maxTrainCount: number }
+        @Inject(MAT_DIALOG_DATA)
+        public data: { cityName: string; maxTrainCount: number }
     ) {}
     maxCap: number = 0;
+    trainArmySize: number = 1;
     armySize: number = 0;
     progBar: boolean = false;
 
@@ -678,7 +681,7 @@ export class TrainDialogComponent {
             .post<any>(
                 `${environment.API_HOST}/armies/train`,
                 {
-                    troopCount: this.armySize,
+                    troopCount: this.trainArmySize,
                     cityName: this.data.cityName,
                 },
                 { headers }
@@ -705,8 +708,37 @@ export class DeleteDialogComponent {
         public dialogRef: MatDialogRef<DeleteDialogComponent>,
         public http: HttpClient,
         private cookieService: CookieService,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
+        @Inject(MAT_DIALOG_DATA)
+        public data: { cityRow: number; cityColumn: number }
     ) {}
 
-    public deleteBuilding() {}
+    public deleteBuilding() {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        let parameter = '';
+        let cityName = this.cookieService.get('cityName');
+        if (cityName != '') {
+            parameter = `?cityName=${encodeURIComponent(cityName)}`;
+        }
+
+        this.http
+            .post<any>(
+                `${environment.API_HOST}/cities/destroyBuilding${parameter}`,
+                {
+                    cityRow: this.data.cityRow,
+                    cityColumn: this.data.cityColumn,
+                },
+                { headers }
+            )
+            .subscribe((response) => {
+                if (response.status) {
+                    this.dialogRef.close('');
+                } else {
+                    this._snackBar.open('Error Training Troops!', 'Close', {
+                        duration: 2000,
+                    });
+                }
+            });
+    }
 }

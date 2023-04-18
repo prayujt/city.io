@@ -11,18 +11,25 @@
         </mat-card>
         <div *ngIf="maxCap != 0">
             <h3>Enter number of troops to train:</h3>
-            <label>{{ armySize }}</label>
+            <label>{{ trainArmySize }}</label>
         </div>
-        <mat-slider *ngIf="maxCap != 0"
+        <mat-slider
+            *ngIf="maxCap != 0"
             style="width: 95%"
             [max]="maxCap"
-            [min]="0"
+            [min]="1"
             [step]="1"
             [discrete]="true"
         >
-            <input matSliderThumb [(ngModel)]="armySize" />
+            <input matSliderThumb [(ngModel)]="trainArmySize" />
         </mat-slider>
-        <a *ngIf="maxCap != 0" mat-button color="accent" class="train-button-2" (click)="train()">
+        <a
+            *ngIf="maxCap != 0"
+            mat-button
+            color="accent"
+            class="train-button-2"
+            (click)="train()"
+        >
             Train
         </a>
     </div>

@@ -332,6 +332,10 @@ func getBuilding(response http.ResponseWriter, request *http.Request) {
 			building[0].BuildingType, building[0].BuildingLevel+1),
 		&upgradeBuilding)
 
+	if len(upgradeBuilding) == 0 {
+		return
+	}
+
 	building[0].UpgradeCost = upgradeBuilding[0].BuildCost
 	building[0].UpgradedProduction = upgradeBuilding[0].BuildingProduction
 	building[0].UpgradedHappiness = upgradeBuilding[0].HappinessChange
@@ -449,18 +453,34 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err := database.Execute(
-		fmt.Sprintf(
+	var query string
+	if len(cityName) > 0 {
+		query = fmt.Sprintf(
 			`
 			UPDATE Accounts
 			SET balance = balance +
 				(SELECT SUM(build_cost)/2 AS total_cost
 				FROM Building_Info
-				WHERE building_level <= (SELECT building_level FROM Buildings 
-				WHERE city_id=(SELECT city_id FROM Cities WHERE city_name = '%s') AND city_row=%d and city_column=%d))
-				WHERE player_id='%s'
+				WHERE building_level <=
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s') AND city_row=%d and city_column=%d AND city_owner='%s'))
+			WHERE player_id='%s'
 			`,
-			cityName[0], building.CityRow, building.CityColumn, claims["playerId"]))
+			cityName[0], building.CityRow, building.CityColumn, claims["playerId"], claims["playerId"])
+	} else {
+		query = fmt.Sprintf(
+			`
+			UPDATE Accounts
+			SET balance = balance +
+				(SELECT SUM(build_cost)/2 AS total_cost
+				FROM Building_Info
+				WHERE building_level <=
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d))
+			WHERE player_id='%s'
+			`,
+			claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
+	}
+
+	result, err := database.Execute(query)
 
 	if err != nil {
 		return
@@ -471,14 +491,23 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	var query string
-	query = fmt.Sprintf(
-		`
+	if len(cityName) > 0 {
+		query = fmt.Sprintf(
+			`
 		DELETE FROM Buildings
-		WHERE city_row=%d AND city_column=%d AND city_id IN 
-		(SELECT city_id FROM Cities WHERE city_owner='%s' AND city_name='%s')
+		WHERE city_row=%d AND city_column=%d
+		AND city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND city_name='%s')
 		`,
-		building.CityRow, building.CityColumn, claims["playerId"], cityName[0])
+			building.CityRow, building.CityColumn, claims["playerId"], cityName[0])
+	} else {
+		query = fmt.Sprintf(
+			`
+		DELETE FROM Buildings
+		WHERE city_row=%d AND city_column=%d
+		AND city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0)
+		`,
+			building.CityRow, building.CityColumn, claims["playerId"])
+	}
 
 	result, err = database.Execute(query)
 
@@ -488,7 +517,6 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 	}
 
 	status = true
-
 }
 
 func upgradeBuilding(response http.ResponseWriter, request *http.Request) {
