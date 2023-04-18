@@ -34,7 +34,7 @@
                     {{ battle.toCityName }}
                 </p>
                 <p *ngIf="battle.amountLooted > 0">
-                    🪙 {{ battle.amountLooted }} looted!
+                    🪙 {{ battle.amountLooted.toLocaleString("en-US") }} looted!
                 </p>
             </mat-card-content>
         </mat-card>
