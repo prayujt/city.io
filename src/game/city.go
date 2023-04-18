@@ -73,7 +73,7 @@ func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
-	r.HandleFunc("/cities/production", getProduction).Methods("GET")
+	//r.HandleFunc("/cities/production", getProduction).Methods("GET")
 
 	r.HandleFunc("/cities/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/upgradeBuilding", upgradeBuilding).Methods("POST")
@@ -153,35 +153,36 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func getProduction(response http.ResponseWriter, request *http.Request) {
-	var city City
+// func getProduction(response http.ResponseWriter, request *http.Request) {
+// 	var city City
 
-	defer func() {
-		json.NewEncoder(response).Encode(city)
-	}()
+// 	defer func() {
+// 		json.NewEncoder(response).Encode(city)
+// 	}()
 
-	if request.Header["Token"] == nil {
-		return
-	}
+// 	if request.Header["Token"] == nil {
+// 		return
+// 	}
 
-	claims, err := auth.ParseJWT(request.Header["Token"][0])
+// 	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
-	if err != nil {
-		return
-	}
+// 	if err != nil {
+// 		return
+// 	}
 
-	cityName := request.URL.Query()["cityName"]
+// 	cityName := request.URL.Query()["cityName"]
 
-	database.Query(
-		fmt.Sprintf(
-			`
-			SELECT building_type, SUM(building_production) as total_production
-			FROM Building_Info
-			JOIN Buildings ON Building_Info.building_type = Buildings.building_type AND Building_Info.building_level = Buildings.building_level
-			`,
-			claims["playerId"]),
-		&territory)
-}
+// 	database.Query(
+// 		fmt.Sprintf(
+// 			`
+// 			SELECT building_type, SUM(building_production) as total_production
+// 			FROM Building_Info
+// 			JOIN Buildings ON Building_Info.building_type = Buildings.building_type AND Building_Info.building_level = Buildings.building_level
+// 			WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')
+// 			GROUP BY building_type
+// 			`,
+// 			cityName[0]))
+// }
 
 func getTerritory(response http.ResponseWriter, request *http.Request) {
 	var territory []CityStats
