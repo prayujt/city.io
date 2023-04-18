@@ -225,6 +225,14 @@ export class SidebarComponent {
         });
     }
 
+    public openBattleLogsDialog(): void {
+        this.dialog.open(BattleLogsDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: { cityName: this.cityName, cityOwner: this.cityOwner }
+        });
+    }
+
     public constructBuilding(buildingType: string): void {
         this.buildBuilding.emit(buildingType);
     }
@@ -740,5 +748,101 @@ export class DeleteDialogComponent {
                     });
                 }
             });
+    }
+}
+
+class Battle {
+    fromCityName!: string;
+	toCityName!: string;
+	fromCityOwner!: string;
+	toCityOwner!: string;
+	attackerArmySize!: number;
+	defenderArmySize!: number;
+	amountLooted!: number;
+	battleTime!: string;
+	attackVictory!: boolean;
+	incoming!: boolean;
+    color!: string;
+    hours!: number;
+    text!: string;
+}
+
+@Component({
+    selector: 'battle-logs-dialog',
+    templateUrl: './battle-logs-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class BattleLogsDialogComponent {
+    battles: Battle[] = [];
+    getBattlesInterval!: ReturnType<typeof setInterval>;
+
+    constructor(
+        public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { cityName: string, cityOwner: string }
+    ) {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+
+        this.http
+            .get<any>(
+                `${environment.API_HOST}/armies/battles`, { headers }
+            )
+            .subscribe((response) => {
+                this.battles = response ? response : [];
+                console.log(this.battles);
+                for (let i = 0; i < this.battles.length; i++) {
+                    let battle = this.battles[i];
+
+                    if ((battle.incoming && !battle.attackVictory) || (!battle.incoming && battle.attackVictory)) {
+                        battle.color = "green";
+                    }
+                    else {
+                        battle.color = "red";
+                    }
+
+                    battle.text = battle.fromCityOwner + " attacks " + battle.toCityOwner;
+
+                    if (battle.battleTime != '') {
+                        let unix = Date.parse(battle.battleTime);
+                        let remaining = unix - Date.now();
+                        let seconds = remaining / 1000;
+                        seconds %= 86400;
+                        battle.hours = Math.floor(seconds / 3600);
+                    }
+                }
+            });
+
+        this.getBattlesInterval = setInterval(() => {
+            this.http
+            .get<any>(
+                `${environment.API_HOST}/armies/battles`, { headers }
+            )
+            .subscribe((response) => {
+                this.battles = response ? response : [];
+                for (let i = 0; i < this.battles.length; i++) {
+                    let battle = this.battles[i];
+                    if ((battle.incoming && !battle.attackVictory) || (!battle.incoming && battle.attackVictory)) {
+                        battle.color = "green";
+                    }
+                    else {
+                        battle.color = "red";
+                    }
+
+                    if (battle.battleTime != '') {
+                        let unix = Date.parse(battle.battleTime);
+                        let remaining = unix - Date.now();
+                        let seconds = remaining / 1000;
+                        seconds %= 86400;
+                        battle.hours = Math.floor(seconds / 3600);
+                    }
+                }
+            });
+        }, 1000);
+    }
+
+    
+    public ngOnDestroy(): void {
+        clearInterval(this.getBattlesInterval);
     }
 }
