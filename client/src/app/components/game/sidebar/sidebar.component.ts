@@ -701,6 +701,10 @@ export class TrainDialogComponent {
                 }
             });
     }
+
+    public ngOnDestroy(): void {
+        clearInterval(this.interval);
+    }
 }
 
 @Component({
