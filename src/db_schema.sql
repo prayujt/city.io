@@ -96,7 +96,9 @@ CREATE TABLE Battles (
     attack_victory BOOLEAN,
     amount_looted DOUBLE,
     FOREIGN KEY(from_city) REFERENCES Cities(city_id),
-    FOREIGN KEY(to_city) REFERENCES Cities(city_id)
+    FOREIGN KEY(to_city) REFERENCES Cities(city_id),
+    FOREIGN KEY(from_city_owner) REFERENCES Accounts(player_id),
+    FOREIGN KEY(to_city_owner) REFERENCES Accounts(player_id)
 );
 
 CREATE VIEW Building_Ownership
