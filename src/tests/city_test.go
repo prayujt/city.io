@@ -76,6 +76,23 @@ func TestBuildingNotOwnedGet(t *testing.T) {
 }
 
 func TestBuildingCreate(t *testing.T) {
+	acc6 := login.Account{
+		Username: "rawr6",
+		Password: "rawr4",
+	}
+
+	Post("/login/createAccount", acc6)
+
+	response := Post("/login/createSession", acc6)
+
+	var session3 login.JWT
+	json.Unmarshal(response, &session3)
+
+	if session3.Token == "" {
+		fmt.Println("Failed to initialize token for tests")
+		return
+	}
+
 	building := game.Building{
 		BuildingType:  "Hospital",
 		BuildingLevel: 1,
@@ -83,15 +100,15 @@ func TestBuildingCreate(t *testing.T) {
 		CityColumn:    0,
 	}
 
-	response := Post("/cities/createBuilding", building)
+	response2 := Post("/cities/createBuilding", building, session3.Token)
 	var result game.Status
-	json.Unmarshal(response, &result)
+	json.Unmarshal(response2, &result)
 
 	if !result.Status {
 		t.Error("Expected to succeed in creating building")
 	}
 
-	response = Get("/cities/buildings")
+	response = Get("/cities/buildings", session3.Token)
 
 	var buildingsResult game.Buildings
 	json.Unmarshal(response, &buildingsResult)
@@ -106,6 +123,51 @@ func TestBuildingCreate(t *testing.T) {
 }
 
 func TestBuildingCreateDuplicate(t *testing.T) {
+	acc := login.Account{
+		Username: "rawr7",
+		Password: "rawr4",
+	}
+
+	Post("/login/createAccount", acc)
+
+	response := Post("/login/createSession", acc)
+
+	var session login.JWT
+	json.Unmarshal(response, &session)
+
+	if session.Token == "" {
+		fmt.Println("Failed to initialize token for tests")
+		return
+	}
+
+	building1 := game.Building{
+		BuildingType:  "Hospital",
+		BuildingLevel: 1,
+		CityRow:       0,
+		CityColumn:    0,
+	}
+
+	response2 := Post("/cities/createBuilding", building1, session.Token)
+	var result1 game.Status
+	json.Unmarshal(response2, &result1)
+
+	if !result1.Status {
+		t.Error("Expected to succeed in creating building")
+	}
+
+	response = Get("/cities/buildings", session.Token)
+
+	var buildingsResult1 game.Buildings
+	json.Unmarshal(response, &buildingsResult1)
+
+	if !buildingsResult1.IsOwner {
+		t.Error("Expected city to be owned by player")
+	}
+
+	if len(buildingsResult1.Buildings) != 2 {
+		t.Error("Expected city to have exactly two buildings")
+	}
+
 	building := game.Building{
 		BuildingType:  "School",
 		BuildingLevel: 1,
@@ -113,15 +175,15 @@ func TestBuildingCreateDuplicate(t *testing.T) {
 		CityColumn:    0,
 	}
 
-	response := Post("/cities/createBuilding", building)
+	response3 := Post("/cities/createBuilding", building, session.Token)
 	var result game.Status
-	json.Unmarshal(response, &result)
+	json.Unmarshal(response3, &result)
 
 	if result.Status {
 		t.Error("Expected to fail in creating duplicate building")
 	}
 
-	response = Get("/cities/buildings")
+	response = Get("/cities/buildings", session.Token)
 
 	var buildingsResult game.Buildings
 	json.Unmarshal(response, &buildingsResult)
