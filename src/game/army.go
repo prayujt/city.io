@@ -17,7 +17,7 @@ import (
 
 const TIME_TO_TRAIN int = 5
 const PERCENTAGE_LOOTED float64 = 0.99
-const MARCH_TIME int = 180
+const MARCH_TIME int = 60
 
 type Train struct {
 	CityName   string `database:"city_name" json:"cityName"`
@@ -484,16 +484,18 @@ func handleMarches() {
 						return
 					}
 				}
-
 			}
+
 			result, err := database.Execute(
 				fmt.Sprintf(
 					`
 					INSERT INTO Battles
 					VALUES(
 						uuid(),
-						'%s', (SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s')
-						'%s', (SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s')
+						'%s',
+						(SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s'),
+						'%s',
+						(SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s'),
 						'%s',
 						'%d',
 						'%d',
@@ -504,6 +506,7 @@ func handleMarches() {
 					march.FromCity, march.FromCity, march.ToCity, march.ToCity, march.EndTime, march.ArmySize, enemyPlayer[0].ArmySize, enemyPlayer[0].ArmySize < march.ArmySize, change))
 
 			if err != nil {
+				log.Println(err)
 				return
 			}
 
