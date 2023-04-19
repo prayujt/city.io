@@ -660,7 +660,7 @@ func getBattleLogs(response http.ResponseWriter, request *http.Request) {
 			from_city_owner,
 			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
 			to_city_owner,
-			(SELECT to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')) as incoming,
+			to_city_owner=(SELECT username FROM Accounts WHERE player_id='%s') as incoming,
 			attacker_army_size, defender_army_size, battle_time, amount_looted, attack_victory
 			FROM Battles
 			WHERE
