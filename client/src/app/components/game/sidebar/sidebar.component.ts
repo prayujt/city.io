@@ -754,9 +754,13 @@ export class DeleteDialogComponent {
                 if (response.status) {
                     this.dialogRef.close('');
                 } else {
-                    this._snackBar.open('Error Training Troops!', 'Close', {
-                        duration: 2000,
-                    });
+                    this._snackBar.open(
+                        'Error destroying the building!',
+                        'Close',
+                        {
+                            duration: 2000,
+                        }
+                    );
                 }
             });
     }
