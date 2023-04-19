@@ -2,7 +2,7 @@
 <div class="sidebar-container">
     <mat-card class="city-information">
         <mat-card-header>
-            <mat-card-title>
+            <mat-card-title (click)="openTerritoryDialog()">
                 <a>{{ cityName }}</a>
             </mat-card-title>
             <a
@@ -26,10 +26,7 @@
                 (click)="openTrainDialog()"
                 ><mat-icon fontIcon="group_add"></mat-icon
             ></a>
-            <a
-                mat-button
-                matTooltip="Scout"
-                (click)="openCityDialog()"
+            <a mat-button matTooltip="Scout" (click)="openCityDialog()"
                 ><mat-icon fontIcon="search"></mat-icon
             ></a>
             <a
@@ -44,11 +41,14 @@
                 matTooltip="View Battle Logs"
                 ><mat-icon fontIcon="inbox"></mat-icon
             ></a>
-            <mat-card-subtitle>
+            <mat-card-subtitle (click)="openTerritoryDialog()">
                 {{ cityOwner }}
             </mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content class="city-properties">
+        <mat-card-content
+            (click)="openTerritoryDialog()"
+            class="city-properties"
+        >
             <p class="player-balance" matTooltip="DobraCoins">
                 {{
                     cityOwner === "Neutral"
@@ -56,8 +56,14 @@
                         : "🪙" + playerBalance.toLocaleString("en-US")
                 }}
             </p>
+            <p class="city-population" matTooltip="Population">
+                Population: {{ population.toLocaleString("en-US") }}
+            </p>
             <p *ngIf="isOwner || armySize != -1" matTooltip="Army Size">
-                {{ armySize === -1 ? "" : armySize.toLocaleString("en-US") }}
+                {{
+                    armySize === -1 ? "" : armySize.toLocaleString("en-US")
+                }}
+                troops
             </p>
         </mat-card-content>
     </mat-card>
@@ -121,7 +127,10 @@
                             <button
                                 mat-fab
                                 extended
-                                (click)="constructBuilding(building.type); playAudio('build.mp3')"
+                                (click)="
+                                    constructBuilding(building.type);
+                                    playAudio('build.mp3')
+                                "
                             >
                                 Build it!
                             </button>
@@ -184,7 +193,7 @@
                     mat-flat-button
                     (click)="openDeleteDialog()"
                 >
-                    Delete
+                    Destroy
                 </button>
             </mat-card-content>
             <mat-card-footer class="progress-bar">

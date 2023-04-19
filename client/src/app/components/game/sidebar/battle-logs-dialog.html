@@ -6,24 +6,26 @@
                 No Battle Logs Currently!
             </mat-card-title>
         </mat-card-header>
-        <mat-card-content>   
-        </mat-card-content>
+        <mat-card-content> </mat-card-content>
     </mat-card>
 
     <div role="list" *ngFor="let battle of battles">
         <mat-card>
             <mat-card-header>
                 <mat-card-subtitle>
+                    {{ battle.days > 0 ? battle.days + " days, " : "" }}
                     {{ battle.hours }} hours ago
                 </mat-card-subtitle>
                 <mat-card-title style="color: {{ battle.color }}">
                     {{ battle.text }}
                 </mat-card-title>
                 <mat-card-subtitle>
-                    Attacking Army: {{ battle.attackerArmySize.toLocaleString("en-US") }} troops
+                    Attacking Army:
+                    {{ battle.attackerArmySize.toLocaleString("en-US") }} troops
                 </mat-card-subtitle>
                 <mat-card-subtitle>
-                    Defending Army: {{ battle.defenderArmySize.toLocaleString("en-US") }} troops
+                    Defending Army:
+                    {{ battle.defenderArmySize.toLocaleString("en-US") }} troops
                 </mat-card-subtitle>
             </mat-card-header>
 

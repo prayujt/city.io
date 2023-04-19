@@ -229,7 +229,14 @@ export class SidebarComponent {
         this.dialog.open(BattleLogsDialogComponent, {
             width: '1000px',
             height: '600px',
-            data: { cityName: this.cityName, cityOwner: this.cityOwner }
+            data: { cityName: this.cityName, cityOwner: this.cityOwner },
+        });
+    }
+
+    public openTerritoryDialog(): void {
+        this.dialog.open(TerritoryDialogComponent, {
+            width: '1000px',
+            height: '600px',
         });
     }
 
@@ -757,17 +764,18 @@ export class DeleteDialogComponent {
 
 class Battle {
     fromCityName!: string;
-	toCityName!: string;
-	fromCityOwner!: string;
-	toCityOwner!: string;
-	attackerArmySize!: number;
-	defenderArmySize!: number;
-	amountLooted!: number;
-	battleTime!: string;
-	attackVictory!: boolean;
-	incoming!: boolean;
+    toCityName!: string;
+    fromCityOwner!: string;
+    toCityOwner!: string;
+    attackerArmySize!: number;
+    defenderArmySize!: number;
+    amountLooted!: number;
+    battleTime!: string;
+    attackVictory!: boolean;
+    incoming!: boolean;
     color!: string;
     hours!: number;
+    days!: number;
     text!: string;
 }
 
@@ -780,32 +788,28 @@ export class BattleLogsDialogComponent {
     battles: Battle[] = [];
     getBattlesInterval!: ReturnType<typeof setInterval>;
 
-    constructor(
-        public http: HttpClient,
-        private cookieService: CookieService,
-        @Inject(MAT_DIALOG_DATA) public data: { cityName: string, cityOwner: string }
-    ) {
+    constructor(public http: HttpClient, private cookieService: CookieService) {
         let headers = new HttpHeaders();
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
 
         this.http
-            .get<any>(
-                `${environment.API_HOST}/armies/battles`, { headers }
-            )
+            .get<any>(`${environment.API_HOST}/armies/battles`, { headers })
             .subscribe((response) => {
                 this.battles = response ? response : [];
-                console.log(this.battles);
                 for (let i = 0; i < this.battles.length; i++) {
                     let battle = this.battles[i];
 
-                    if ((battle.incoming && !battle.attackVictory) || (!battle.incoming && battle.attackVictory)) {
-                        battle.color = "green";
-                    }
-                    else {
-                        battle.color = "red";
+                    if (
+                        (battle.incoming && !battle.attackVictory) ||
+                        (!battle.incoming && battle.attackVictory)
+                    ) {
+                        battle.color = 'green';
+                    } else {
+                        battle.color = 'red';
                     }
 
-                    battle.text = battle.fromCityOwner + " attacks " + battle.toCityOwner;
+                    battle.text =
+                        battle.fromCityOwner + ' attacks ' + battle.toCityOwner;
 
                     battle.amountLooted = Math.round(battle.amountLooted);
 
@@ -813,6 +817,7 @@ export class BattleLogsDialogComponent {
                         let unix = Date.parse(battle.battleTime);
                         let remaining = Date.now() - unix;
                         let seconds = remaining / 1000;
+                        battle.days = Math.floor(seconds / 86400);
                         seconds %= 86400;
                         battle.hours = Math.floor(seconds / 3600);
                     }
@@ -821,38 +826,77 @@ export class BattleLogsDialogComponent {
 
         this.getBattlesInterval = setInterval(() => {
             this.http
-            .get<any>(
-                `${environment.API_HOST}/armies/battles`, { headers }
-            )
-            .subscribe((response) => {
-                this.battles = response ? response : [];
-                for (let i = 0; i < this.battles.length; i++) {
-                    let battle = this.battles[i];
-                    if ((battle.incoming && !battle.attackVictory) || (!battle.incoming && battle.attackVictory)) {
-                        battle.color = "green";
-                    }
-                    else {
-                        battle.color = "red";
-                    }
+                .get<any>(`${environment.API_HOST}/armies/battles`, { headers })
+                .subscribe((response) => {
+                    this.battles = response ? response : [];
+                    for (let i = 0; i < this.battles.length; i++) {
+                        let battle = this.battles[i];
+                        if (
+                            (battle.incoming && !battle.attackVictory) ||
+                            (!battle.incoming && battle.attackVictory)
+                        ) {
+                            battle.color = 'green';
+                        } else {
+                            battle.color = 'red';
+                        }
 
-                    battle.text = battle.fromCityOwner + " attacks " + battle.toCityOwner;
+                        battle.text =
+                            battle.fromCityOwner +
+                            ' attacks ' +
+                            battle.toCityOwner;
 
-                    battle.amountLooted = Math.round(battle.amountLooted);
+                        battle.amountLooted = Math.round(battle.amountLooted);
 
-                    if (battle.battleTime != '') {
-                        let unix = Date.parse(battle.battleTime);
-                        let remaining = Date.now() - unix;
-                        let seconds = remaining / 1000;
-                        seconds %= 86400;
-                        battle.hours = Math.floor(seconds / 3600);
+                        if (battle.battleTime != '') {
+                            let unix = Date.parse(battle.battleTime);
+                            let remaining = Date.now() - unix;
+                            let seconds = remaining / 1000;
+                            battle.days = Math.floor(seconds / 86400);
+                            seconds %= 86400;
+                            battle.hours = Math.floor(seconds / 3600);
+                        }
                     }
-                }
-            });
+                });
         }, 1000);
     }
 
-    
     public ngOnDestroy(): void {
         clearInterval(this.getBattlesInterval);
+    }
+}
+
+class Territory {
+    cityName!: string;
+    totalProduction!: number;
+    armySize!: number;
+    totalPopulation!: number;
+}
+
+@Component({
+    selector: 'territory-dialog',
+    templateUrl: './territory-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class TerritoryDialogComponent {
+    territory: Territory[] = [];
+
+    constructor(
+        public http: HttpClient,
+        private cookieService: CookieService,
+        public dialogRef: MatDialogRef<AttackDialogComponent>
+    ) {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+
+        this.http
+            .get<any>(`${environment.API_HOST}/cities/production`, { headers })
+            .subscribe((response) => {
+                this.territory = response ? response : [];
+            });
+    }
+
+    public visitCity(cityName: string): void {
+        this.cookieService.set('cityName', cityName);
+        this.dialogRef.close('');
     }
 }
