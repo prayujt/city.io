@@ -153,6 +153,12 @@ STARTS '2023-01-01 00:00:00'
 DO
 DELETE FROM Training WHERE end_time <= NOW();
 
+CREATE EVENT Generate_Town ON SCHEDULE EVERY 1 DAY
+STARTS '2023-01-01 00:00:00'
+DO
+INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) VALUES
+(uuid(), 'neutral', (SELECT RAND()*(50000-1000)+1000), 50000, 1); 
+
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
 ('Apartment', 1, 500.00, 2, 5000, 400000.00, 10),
