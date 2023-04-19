@@ -246,7 +246,7 @@ export class SidebarComponent {
 
     public openDeleteDialog(): void {
         this.dialog.open(DeleteDialogComponent, {
-            width: '200px',
+            width: '210px',
             height: '150px',
             data: { cityRow: this.row, cityColumn: this.column },
         });
