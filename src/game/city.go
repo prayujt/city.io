@@ -217,7 +217,7 @@ func getBuildings(response http.ResponseWriter, request *http.Request) {
 			`
 			SELECT building_type, building_level, city_row, city_column
 			FROM Buildings NATURAL JOIN Cities
-			WHERE city_owner='%s'
+			WHERE city_owner='%s' AND town=0
 			`,
 			claims["playerId"])
 	}

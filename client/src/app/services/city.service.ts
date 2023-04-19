@@ -73,7 +73,7 @@ export class CityService {
                     for (let k = 0; k < buildings.length; k++) {
                         if (
                             buildings[k].cityRow == i &&
-                            buildings[k].cityColumn == j && k < 117
+                            buildings[k].cityColumn == j
                         ) {
                             this.buildings[i][j].level =
                                 buildings[k].buildingLevel;
