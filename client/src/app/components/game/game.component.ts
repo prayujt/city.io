@@ -75,7 +75,6 @@ export class GameComponent {
                         { headers }
                     )
                     .subscribe((response) => {
-                        console.log(response.buildings.length);
                         this.maxTrainCount = this.cityService.setBuildings(response.buildings);
                         this.isOwner = response.isOwner;
                     });
@@ -130,8 +129,6 @@ export class GameComponent {
 
         this.row = row;
         this.column = column;
-
-        console.log(this.buildings[row][column].type, this.buildings[row][column].building_icon);
     }
 
     onBuildingClick(buildingType: string): void {
