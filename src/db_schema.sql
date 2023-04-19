@@ -87,7 +87,9 @@ CREATE TABLE Training (
 CREATE TABLE Battles (
     battle_id VARCHAR(50) PRIMARY KEY,
     from_city VARCHAR(50),
+    from_city_owner VARCHAR(50),
     to_city VARCHAR(50),
+    to_city_owner VARCHAR(50),
     battle_time TIMESTAMP,
     attacker_army_size INT,
     defender_army_size INT,
