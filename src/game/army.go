@@ -492,8 +492,8 @@ func handleMarches() {
 					INSERT INTO Battles
 					VALUES(
 						uuid(),
-						'%s',
-						'%s',
+						'%s', (SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s')
+						'%s', (SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s')
 						'%s',
 						'%d',
 						'%d',
@@ -501,7 +501,7 @@ func handleMarches() {
 						%v
 					)
 					`,
-					march.FromCity, march.ToCity, march.EndTime, march.ArmySize, enemyPlayer[0].ArmySize, enemyPlayer[0].ArmySize < march.ArmySize, change))
+					march.FromCity, march.FromCity, march.ToCity, march.ToCity, march.EndTime, march.ArmySize, enemyPlayer[0].ArmySize, enemyPlayer[0].ArmySize < march.ArmySize, change))
 
 			if err != nil {
 				return
@@ -651,9 +651,9 @@ func getBattleLogs(response http.ResponseWriter, request *http.Request) {
 			`
 			SELECT
 			(SELECT city_name FROM Cities WHERE city_id=from_city) AS from_city_name,
-			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=from_city) AS from_city_owner,
+			from_city_owner,
 			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
-			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=to_city) AS to_city_owner,
+			to_city_owner,
 			(SELECT to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')) as incoming,
 			attacker_army_size, defender_army_size, battle_time, amount_looted, attack_victory
 			FROM Battles
