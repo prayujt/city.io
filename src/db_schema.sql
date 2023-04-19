@@ -97,8 +97,8 @@ CREATE TABLE Battles (
     amount_looted DOUBLE,
     FOREIGN KEY(from_city) REFERENCES Cities(city_id),
     FOREIGN KEY(to_city) REFERENCES Cities(city_id),
-    FOREIGN KEY(from_city_owner) REFERENCES Accounts(player_id),
-    FOREIGN KEY(to_city_owner) REFERENCES Accounts(player_id)
+    FOREIGN KEY(from_city_owner) REFERENCES Accounts(username),
+    FOREIGN KEY(to_city_owner) REFERENCES Accounts(username)
 );
 
 CREATE VIEW Building_Ownership
