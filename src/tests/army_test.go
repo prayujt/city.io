@@ -55,8 +55,8 @@ func TestStartMarchAttackPass(t *testing.T) {
 	building := game.Building{
 		BuildingType:  "Barracks",
 		BuildingLevel: 1,
-		CityRow:       0,
-		CityColumn:    0,
+		CityRow:       1,
+		CityColumn:    1,
 	}
 
 	response2 := Post("/cities/createBuilding", building, session3.Token)
@@ -134,8 +134,8 @@ func TestArmyTrainSuccess(t *testing.T) {
 	building := game.Building{
 		BuildingType:  "Barracks",
 		BuildingLevel: 1,
-		CityRow:       0,
-		CityColumn:    0,
+		CityRow:       1,
+		CityColumn:    1,
 	}
 
 	response2 := Post("/cities/createBuilding", building, session3.Token)
