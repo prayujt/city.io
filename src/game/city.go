@@ -549,6 +549,37 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if err != nil {
+		if len(cityName) > 0 {
+			result, _ = database.Execute(
+				fmt.Sprintf(
+					`
+					UPDATE Accounts
+					SET balance = balance -
+					(SELECT SUM(build_cost)/2 AS total_cost
+					FROM Building_Info
+					WHERE building_level <=
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s') AND city_row=%d and city_column=%d AND city_owner='%s'))
+					WHERE player_id='%s'
+					`,
+					cityName[0], building.CityRow, building.CityColumn, claims["playerId"], claims["playerId"]))
+		} else {
+			result, _ = database.Execute(
+				fmt.Sprintf(
+					`
+							UPDATE Accounts
+							SET balance = balance -
+								(SELECT SUM(build_cost)/2 AS total_cost
+								FROM Building_Info
+								WHERE building_level <=
+									(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d))
+							WHERE player_id='%s'
+							`,
+					claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"]))
+		}
+		return
+	}
+
 	status = true
 }
 
