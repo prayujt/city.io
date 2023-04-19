@@ -507,7 +507,7 @@ export class MarchesDialogComponent {
                         march.text = 'Attacking';
                         march.color = march.incoming ? 'red' : 'green';
                     } else {
-                        march.text = 'Moving';
+                        march.text = 'Reinforcing';
                     }
                     if (march.startTime != '' && march.endTime != '') {
                         let startUnix = Date.parse(march.startTime);
@@ -571,7 +571,7 @@ export class MarchesDialogComponent {
                             march.text = 'Attacking';
                             march.color = march.incoming ? 'red' : 'green';
                         } else {
-                            march.text = 'Moving';
+                            march.text = 'Reinforcing';
                         }
                         if (march.startTime != '' && march.endTime != '') {
                             let startUnix = Date.parse(march.startTime);
@@ -887,7 +887,8 @@ export class TerritoryDialogComponent {
     constructor(
         public http: HttpClient,
         private cookieService: CookieService,
-        public dialogRef: MatDialogRef<AttackDialogComponent>
+        public dialogRef: MatDialogRef<AttackDialogComponent>,
+        private dialog: MatDialog
     ) {
         let headers = new HttpHeaders();
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
@@ -902,5 +903,91 @@ export class TerritoryDialogComponent {
     public visitCity(cityName: string): void {
         this.cookieService.set('cityName', cityName);
         this.dialogRef.close('');
+    }
+
+    public reinforce(cityName: string): void {
+        this.dialog.open(MoveDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: { cityName: cityName },
+        });
+    }
+}
+
+@Component({
+    selector: 'move-dialog',
+    templateUrl: './move-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class MoveDialogComponent {
+    ownedTerritory: CityArmy[] = [];
+    territoryCtrl = new FormControl('');
+    filteredTerritory!: Observable<CityArmy[]>;
+
+    selectedTerritory!: CityArmy;
+    selected: boolean = false;
+
+    armySize: number = 1;
+
+    constructor(
+        public dialogRef: MatDialogRef<MoveDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { cityName: string }
+    ) {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+            .get<any>(`${environment.API_HOST}/cities/territory`, { headers })
+            .subscribe((response) => {
+                this.ownedTerritory = response;
+                for (let i = 0; i < this.ownedTerritory.length; i++) {
+                    if (this.ownedTerritory[i].cityName == this.data.cityName) {
+                        this.ownedTerritory.splice(i, 1);
+                        break;
+                    }
+                }
+
+                this.filteredTerritory = of(this.ownedTerritory);
+                this.filteredTerritory = this.territoryCtrl.valueChanges.pipe(
+                    startWith(''),
+                    map((territory) =>
+                        territory
+                            ? this._filterCities(territory)
+                            : this.ownedTerritory.slice()
+                    )
+                );
+            });
+    }
+
+    public saveCityInfo(selectedTerritory: CityArmy) {
+        this.selected = true;
+        this.selectedTerritory = selectedTerritory;
+    }
+
+    public march() {
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+            .post<any>(
+                `${environment.API_HOST}/armies/move`,
+                {
+                    armySize: this.armySize,
+                    fromCity: this.selectedTerritory.cityName,
+                    toCity: this.data.cityName,
+                },
+                { headers }
+            )
+            .subscribe((response) => {
+                if (response.status === true) this.dialogRef.close('');
+            });
+    }
+
+    private _filterCities(value: string): any[] {
+        const filterValue = value.toLowerCase();
+
+        return this.ownedTerritory.filter((territory) =>
+            territory.cityName.toLowerCase().includes(filterValue)
+        );
     }
 }

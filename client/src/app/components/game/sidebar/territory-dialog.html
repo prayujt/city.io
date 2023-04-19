@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Your Territory</h1>
 <div mat-dialog-content>
     <div role="list" *ngFor="let city of territory">
-        <mat-card (click)="visitCity(city.cityName)">
+        <mat-card>
             <mat-card-header>
                 <mat-card-title>
                     {{ city.cityName }}
@@ -16,6 +16,20 @@
                     Population:
                     {{ city.totalPopulation.toLocaleString("en-US") }}
                 </mat-card-subtitle>
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="visitCity(city.cityName)"
+                >
+                    Visit
+                </button>
+                <button
+                    mat-button
+                    color="warn"
+                    (click)="reinforce(city.cityName)"
+                >
+                    Reinforce
+                </button>
             </mat-card-header>
         </mat-card>
     </div>

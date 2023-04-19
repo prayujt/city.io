@@ -22,6 +22,7 @@ import {
     DeleteDialogComponent,
     BattleLogsDialogComponent,
     TerritoryDialogComponent,
+    MoveDialogComponent,
 } from './components/game/sidebar/sidebar.component';
 
 import { AngularMaterialModule } from './angular-material.module';
@@ -43,6 +44,7 @@ import { CookieService } from 'ngx-cookie-service';
         DeleteDialogComponent,
         BattleLogsDialogComponent,
         TerritoryDialogComponent,
+        MoveDialogComponent,
     ],
     imports: [
         BrowserModule,

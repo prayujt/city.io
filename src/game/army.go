@@ -17,7 +17,8 @@ import (
 
 const TIME_TO_TRAIN int = 5
 const PERCENTAGE_LOOTED float64 = 0.99
-const MARCH_TIME int = 60
+
+// const MARCH_TIME int = 60
 
 type Train struct {
 	CityName   string `database:"city_name" json:"cityName"`
@@ -215,11 +216,13 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 			march.ArmySize, march.FromCity, claims["playerId"]))
 
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
+		log.Println(err)
 		return
 	}
 
@@ -237,9 +240,10 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 				NOW(),
 				TIMESTAMPADD(SECOND, %d, NOW()))
 			`,
-			march.FromCity, claims["playerId"], march.ToCity, march.ArmySize, march.FromCity, march.ToCity, MARCH_TIME))
+			march.FromCity, claims["playerId"], march.ToCity, march.ArmySize, march.FromCity, march.ToCity, int(math.Floor(math.Max(1, math.Log10(float64(march.ArmySize))*20)))))
 
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -485,7 +489,7 @@ func handleMarches() {
 								TIMESTAMPADD(SECOND, %d, NOW())
 							)
 							`,
-							march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize, MARCH_TIME))
+							march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize, int(math.Floor(math.Max(1, math.Log10(float64(march.ArmySize))*20)))))
 
 					if err != nil {
 						return
