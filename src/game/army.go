@@ -325,6 +325,38 @@ func handleMarches() {
 				&enemyPlayer)
 
 			change := 0.0
+			if !willConquer && enemyPlayer[0].ArmySize < march.ArmySize {
+				change = enemyPlayer[0].Balance * PERCENTAGE_LOOTED
+			}
+
+			result, err := database.Execute(
+				fmt.Sprintf(
+					`
+					INSERT INTO Battles
+					VALUES(
+						uuid(),
+						'%s',
+						(SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s'),
+						'%s',
+						(SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s'),
+						'%s',
+						'%d',
+						'%d',
+						%v,
+						%v
+					)
+					`,
+					march.FromCity, march.FromCity, march.ToCity, march.ToCity, march.EndTime, march.ArmySize, enemyPlayer[0].ArmySize, enemyPlayer[0].ArmySize < march.ArmySize, change))
+
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			rowsAffected, err := result.RowsAffected()
+			if err != nil || rowsAffected == 0 {
+				return
+			}
 
 			if willConquer {
 				// runs if the player is attacking a town to conquer it
@@ -484,35 +516,6 @@ func handleMarches() {
 						return
 					}
 				}
-			}
-
-			result, err := database.Execute(
-				fmt.Sprintf(
-					`
-					INSERT INTO Battles
-					VALUES(
-						uuid(),
-						'%s',
-						(SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s'),
-						'%s',
-						(SELECT username FROM Accounts JOIN Cities ON player_id=city_owner WHERE city_id='%s'),
-						'%s',
-						'%d',
-						'%d',
-						%v,
-						%v
-					)
-					`,
-					march.FromCity, march.FromCity, march.ToCity, march.ToCity, march.EndTime, march.ArmySize, enemyPlayer[0].ArmySize, enemyPlayer[0].ArmySize < march.ArmySize, change))
-
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			rowsAffected, err := result.RowsAffected()
-			if err != nil || rowsAffected == 0 {
-				return
 			}
 		}
 		completedMarches = append(completedMarches, march.MarchId)
