@@ -59,7 +59,7 @@ func TestStartMarchAttackPass(t *testing.T) {
 		CityColumn:    0,
 	}
 
-	response2 := Post("/cities/createBuilding", building)
+	response2 := Post("/cities/createBuilding", building, session3.Token)
 	var result2 game.Status
 	json.Unmarshal(response2, &result2)
 
@@ -71,7 +71,7 @@ func TestStartMarchAttackPass(t *testing.T) {
 		TroopCount: 1,
 	}
 
-	response3 := Post("/armies/train", train)
+	response3 := Post("/armies/train", train, session3.Token)
 	var result3 game.Status
 	json.Unmarshal(response3, &result3)
 
@@ -79,24 +79,24 @@ func TestStartMarchAttackPass(t *testing.T) {
 		t.Error("Expected to succeed")
 	}
 
-	response = Get("/armies/training")
+	response = Get("/armies/training", session3.Token)
 
 	var trainingResult game.Training
 	json.Unmarshal(response, &trainingResult)
+
+	database.Execute("DELETE FROM Training")
 
 	if trainingResult.ArmySize != 1 {
 		t.Error("Expected army size of 1")
 	}
 
-	database.Execute("DELETE FROM Training")
-
 	march := game.March{
 		ArmySize: 1,
-		FromCity: "monkee monkee",
-		ToCity:   "monkee",
+		FromCity: "monkee3",
+		ToCity:   "monkee monkee",
 	}
 
-	response4 := Post("/armies/move", march)
+	response4 := Post("/armies/move", march, session3.Token)
 	var result4 game.Status
 	json.Unmarshal(response4, &result4)
 
@@ -104,7 +104,7 @@ func TestStartMarchAttackPass(t *testing.T) {
 		t.Error("Expected to succeed in starting march")
 	}
 
-	response4 = Get("/armies/marches")
+	response4 = Get("/armies/marches", session3.Token)
 	var marchResult []game.March
 	json.Unmarshal(response4, &marchResult)
 
@@ -138,7 +138,7 @@ func TestArmyTrainSuccess(t *testing.T) {
 		CityColumn:    0,
 	}
 
-	response2 := Post("/cities/createBuilding", building)
+	response2 := Post("/cities/createBuilding", building, session3.Token)
 	var result2 game.Status
 	json.Unmarshal(response2, &result2)
 
@@ -150,7 +150,7 @@ func TestArmyTrainSuccess(t *testing.T) {
 		TroopCount: 1,
 	}
 
-	response3 := Post("/armies/train", train)
+	response3 := Post("/armies/train", train, session3.Token)
 	var result3 game.Status
 	json.Unmarshal(response3, &result3)
 
@@ -158,7 +158,7 @@ func TestArmyTrainSuccess(t *testing.T) {
 		t.Error("Expected to succeed")
 	}
 
-	response = Get("/armies/training")
+	response = Get("/armies/training", session3.Token)
 
 	var trainingResult game.Training
 	json.Unmarshal(response, &trainingResult)
