@@ -204,7 +204,7 @@ func TestNameChange(t *testing.T) {
 	}
 
 	city := game.CityNameChange{
-		CityNameNew: "monkee3",
+		CityNameNew: "monkee5",
 	}
 
 	response1 := Post("/cities/updateName", city, session3.Token)
