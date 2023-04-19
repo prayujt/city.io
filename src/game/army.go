@@ -665,7 +665,9 @@ func getBattleLogs(response http.ResponseWriter, request *http.Request) {
 			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
 			to_city_owner,
 			to_city_owner=(SELECT username FROM Accounts WHERE player_id='%s') as incoming,
-			attacker_army_size, defender_army_size, battle_time, amount_looted, attack_victory
+			(SELECT IF(from_city_owner='%s' OR (to_city_owner='%s' AND attack_victory=0), attacker_army_size, -1)) as attacker_army_size,
+			(SELECT IF(to_city_owner='%s' OR (from_city_owner='%s' AND attack_victory=1), defender_army_size, -1)) as defender_army_size,
+			battle_time, amount_looted, attack_victory
 			FROM Battles
 			WHERE
 			from_city_owner='%s'
@@ -674,6 +676,6 @@ func getBattleLogs(response http.ResponseWriter, request *http.Request) {
 			AND battle_time > TIMESTAMPADD(DAY, -14, NOW())
 			ORDER BY battle_time DESC
 			`,
-			claims["playerId"], claims["username"], claims["username"]),
+			claims["playerId"], claims["username"], claims["username"], claims["username"], claims["username"], claims["username"], claims["username"]),
 		&result)
 }
