@@ -63,6 +63,13 @@ type NewBuilding struct {
 	HappinessChange    int     `database:"happiness_change" json:"happinessChange"`
 }
 
+type CityInfo struct {
+	CityName        string `database:"city_name" json:"cityName"`
+	ProductionTotal int    `database:"total_production" json:"totalProduction"`
+	ArmySize        int    `database:"army_size" json:"armySize"`
+	Population      int    `database:"population_total" json:"totalPopulation"`
+}
+
 type Status struct {
 	Status bool `json:"status"`
 }
@@ -73,7 +80,7 @@ func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
-	//r.HandleFunc("/cities/production", getProduction).Methods("GET")
+	r.HandleFunc("/cities/production", getProduction).Methods("GET")
 
 	r.HandleFunc("/cities/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/upgradeBuilding", upgradeBuilding).Methods("POST")
@@ -153,36 +160,35 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-// func getProduction(response http.ResponseWriter, request *http.Request) {
-// 	var city City
+func getProduction(response http.ResponseWriter, request *http.Request) {
+	var city []CityInfo
 
-// 	defer func() {
-// 		json.NewEncoder(response).Encode(city)
-// 	}()
+	defer func() {
+		json.NewEncoder(response).Encode(city)
+	}()
 
-// 	if request.Header["Token"] == nil {
-// 		return
-// 	}
+	if request.Header["Token"] == nil {
+		return
+	}
 
-// 	claims, err := auth.ParseJWT(request.Header["Token"][0])
+	claims, err := auth.ParseJWT(request.Header["Token"][0])
 
-// 	if err != nil {
-// 		return
-// 	}
+	if err != nil {
+		return
+	}
 
-// 	cityName := request.URL.Query()["cityName"]
-
-// 	database.Query(
-// 		fmt.Sprintf(
-// 			`
-// 			SELECT building_type, SUM(building_production) as total_production
-// 			FROM Building_Info
-// 			JOIN Buildings ON Building_Info.building_type = Buildings.building_type AND Building_Info.building_level = Buildings.building_level
-// 			WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')
-// 			GROUP BY building_type
-// 			`,
-// 			cityName[0]))
-// }
+	database.Query(
+		fmt.Sprintf(
+			`
+			SELECT city_name, SUM(building_production) as total_production, MAX(army_size) as army_size, MAX(population) as population_total
+			FROM Building_Info
+			JOIN Buildings ON Building_Info.building_type = Buildings.building_type AND Building_Info.building_level = Buildings.building_level
+            NATURAL JOIN Cities WHERE city_owner = '%s'
+            GROUP BY city_name
+			`,
+			claims["playerId"]),
+		&city)
+}
 
 func getTerritory(response http.ResponseWriter, request *http.Request) {
 	var territory []CityStats
