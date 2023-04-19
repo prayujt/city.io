@@ -188,9 +188,19 @@
                     Upgrade
                 </button>
                 <button
-                    *ngIf="isOwner"
+                    *ngIf="isOwner && !progBar"
+                    class="delete-button"
+                    style="background-color: red; color: white;"
+                    mat-flat-button
+                    (click)="openDeleteDialog()"
+                >
+                    Destroy
+                </button>
+                <button
+                    *ngIf="isOwner && progBar"
                     class="delete-button"
                     mat-flat-button
+                    disabled
                     (click)="openDeleteDialog()"
                 >
                     Destroy
