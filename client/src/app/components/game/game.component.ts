@@ -20,9 +20,7 @@ export class GameComponent {
         private cookieService: CookieService,
         private _snackBar: MatSnackBar,
         private cityService: CityService
-    ) {
-        this.createCity();
-    }
+    ) {}
     public row: number = 0;
     public column: number = 0;
     public jwtToken: string = '';
@@ -52,6 +50,7 @@ export class GameComponent {
                     this.cookieService.get('cityName')
                 )}`;
             }
+            this.createCity();
 
             this.http
                 .get<any>(
@@ -79,8 +78,7 @@ export class GameComponent {
                         this.maxTrainCount = this.cityService.setBuildings(response.buildings);
                         this.isOwner = response.isOwner;
                     });
-                this.cityService.updateIcons();
-            }, 250);
+            }, 1000);
         } else {
             this.router.navigate(['login']);
         }

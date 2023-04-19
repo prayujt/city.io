@@ -21,6 +21,8 @@
                 </mat-card-title>
                 <mat-card-subtitle>
                     Attacking Army: {{ battle.attackerArmySize.toLocaleString("en-US") }} troops
+                </mat-card-subtitle>
+                <mat-card-subtitle>
                     Defending Army: {{ battle.defenderArmySize.toLocaleString("en-US") }} troops
                 </mat-card-subtitle>
             </mat-card-header>
@@ -31,8 +33,8 @@
                     <mat-icon fontIcon="east"></mat-icon>
                     {{ battle.toCityName }}
                 </p>
-                <p>
-                    "🪙" + {{ battle.amountLooted }} looted!
+                <p *ngIf="battle.amountLooted > 0">
+                    🪙 {{ battle.amountLooted.toLocaleString("en-US") }} looted!
                 </p>
             </mat-card-content>
         </mat-card>
