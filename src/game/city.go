@@ -473,10 +473,12 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 				(SELECT SUM(build_cost)/2 AS total_cost
 				FROM Building_Info
 				WHERE building_level <=
-					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s' AND city_owner='%s') AND city_row=%d and city_column=%d))
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s' AND city_owner='%s') AND city_row=%d and city_column=%d)
+				AND
+				building_type=(SELECT building_type FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s' AND city_owner='%s') AND city_row=%d AND city_column=%d))
 			WHERE player_id='%s'
 			`,
-			cityName[0], claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
+			cityName[0], claims["playerId"], building.CityRow, building.CityColumn, cityName[0], claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
 	} else {
 		query = fmt.Sprintf(
 			`
@@ -485,10 +487,12 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 				(SELECT SUM(build_cost)/2 AS total_cost
 				FROM Building_Info
 				WHERE building_level <=
-					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d))
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d)
+				AND
+				building_type=(SELECT building_type FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d))
 			WHERE player_id='%s'
 			`,
-			claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
+			claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
 	}
 
 	result, err := database.Execute(query)
