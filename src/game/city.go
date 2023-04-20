@@ -24,12 +24,6 @@ type City struct {
 	Happiness          int     `database:"happiness_total" json:"happinessTotal"`
 }
 
-type CityStats struct {
-	CityName       string `database:"city_name" json:"cityName"`
-	ArmySize       int    `database:"army_size" json:"armySize"`
-	CityProduction int    `database:"city_production" json:"cityProduction"`
-}
-
 type CityNameChange struct {
 	CityNameOriginal string `json:"cityNameOriginal"`
 	CityNameNew      string `json:"cityNameNew"`
@@ -64,11 +58,11 @@ type NewBuilding struct {
 	HappinessChange    int     `database:"happiness_change" json:"happinessChange"`
 }
 
-type CityInfo struct {
+type CityStats struct {
 	CityName        string `database:"city_name" json:"cityName"`
-	ProductionTotal int    `database:"total_production" json:"totalProduction"`
+	ProductionTotal int    `database:"city_production" json:"cityProduction"`
 	ArmySize        int    `database:"army_size" json:"armySize"`
-	Population      int    `database:"population_total" json:"totalPopulation"`
+	Population      int    `database:"city_population" json:"cityPopulation"`
 }
 
 type Status struct {
@@ -81,7 +75,6 @@ func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
-	r.HandleFunc("/cities/production", getProduction).Methods("GET")
 
 	r.HandleFunc("/cities/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/upgradeBuilding", upgradeBuilding).Methods("POST")
@@ -169,8 +162,8 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func getProduction(response http.ResponseWriter, request *http.Request) {
-	var city []CityInfo
+func getTerritory(response http.ResponseWriter, request *http.Request) {
+	var city []CityStats
 
 	defer func() {
 		json.NewEncoder(response).Encode(city)
@@ -189,42 +182,16 @@ func getProduction(response http.ResponseWriter, request *http.Request) {
 	database.Query(
 		fmt.Sprintf(
 			`
-			SELECT city_name, SUM(building_production) as total_production, MAX(army_size) as army_size, MAX(population) as population_total
-			FROM Building_Info
-			JOIN Buildings ON Building_Info.building_type = Buildings.building_type AND Building_Info.building_level = Buildings.building_level
-            NATURAL JOIN Cities WHERE city_owner = '%s'
+			SELECT city_name,
+				IF(COUNT(building_production) > 0, SUM(building_production), 0) as city_production,
+				MAX(army_size) as army_size,
+				MAX(population) as city_population
+			FROM Cities LEFT JOIN (Building_Info JOIN Buildings ON Building_Info.building_type=Buildings.building_type AND Building_Info.building_level=Buildings.building_level) ON Cities.city_id=Buildings.city_id
+            WHERE city_owner='%s'
             GROUP BY city_name
 			`,
 			claims["playerId"]),
 		&city)
-}
-
-func getTerritory(response http.ResponseWriter, request *http.Request) {
-	var territory []CityStats
-
-	defer func() {
-		json.NewEncoder(response).Encode(territory)
-	}()
-
-	if request.Header["Token"] == nil {
-		return
-	}
-
-	claims, err := auth.ParseJWT(request.Header["Token"][0])
-
-	if err != nil {
-		return
-	}
-
-	database.Query(
-		fmt.Sprintf(
-			`
-			SELECT city_name, any_value(army_size) AS army_size, SUM(building_production) AS city_production
-			FROM Building_Ownership
-			WHERE player_id='%s' GROUP BY city_name
-			`,
-			claims["playerId"]),
-		&territory)
 }
 
 func getBuildings(response http.ResponseWriter, request *http.Request) {

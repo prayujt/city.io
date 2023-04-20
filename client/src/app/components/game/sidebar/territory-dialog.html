@@ -7,14 +7,14 @@
                     {{ city.cityName }}
                 </mat-card-title>
                 <mat-card-subtitle>
-                    🪙{{ city.totalProduction.toLocaleString("en-US") }} / hour
+                    🪙{{ city.cityProduction.toLocaleString("en-US") }} / hour
                 </mat-card-subtitle>
                 <mat-card-subtitle>
                     {{ city.armySize.toLocaleString("en-US") }} troops
                 </mat-card-subtitle>
                 <mat-card-subtitle>
                     Population:
-                    {{ city.totalPopulation.toLocaleString("en-US") }}
+                    {{ city.cityPopulation.toLocaleString("en-US") }}
                 </mat-card-subtitle>
                 <button
                     mat-button

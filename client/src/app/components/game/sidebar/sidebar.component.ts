@@ -871,9 +871,9 @@ export class BattleLogsDialogComponent {
 
 class Territory {
     cityName!: string;
-    totalProduction!: number;
+    cityProduction!: number;
     armySize!: number;
-    totalPopulation!: number;
+    cityPopulation!: number;
 }
 
 @Component({
@@ -894,7 +894,7 @@ export class TerritoryDialogComponent {
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
 
         this.http
-            .get<any>(`${environment.API_HOST}/cities/production`, { headers })
+            .get<any>(`${environment.API_HOST}/cities/territory`, { headers })
             .subscribe((response) => {
                 this.territory = response ? response : [];
             });
