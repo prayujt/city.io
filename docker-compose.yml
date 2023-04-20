@@ -1,5 +1,12 @@
 version: '3.4'
 services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+    volumes:
+      - mysql:/var/lib/mysql
   backend:
     container_name: city.io-backend
     image: city.io/backend
@@ -8,6 +15,8 @@ services:
       - "host.docker.internal:host-gateway"
     build:
       context: src
+    depends_on:
+      - mysql
     ports:
       - "8000:8000"
   frontend:
@@ -19,3 +28,6 @@ services:
       context: client
     ports:
       - "4200:80"
+
+volumes:
+  mysql:
