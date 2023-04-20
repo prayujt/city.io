@@ -29,8 +29,8 @@ jobs:
     - name: Make .env file
       run: |
         touch .env
-        echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env
-        echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env
+        echo MYSQL_USER=${{ secrets.MYSQL_DEV_USER }} >> .env
+        echo MYSQL_PASSWORD=${{ secrets.MYSQL_DEV_PASSWORD }} >> .env
         echo MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }} >> .env
         echo MYSQL_TEST_DB_NAME=${{ secrets.MYSQL_TEST_DB_NAME }} >> .env
         echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
