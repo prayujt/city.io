@@ -130,14 +130,15 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 		database.Query(
 			fmt.Sprintf(
 				`
-				SELECT username, balance, population, 
-				(SELECT SUM(happiness_change) 
-				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
-				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS happiness_total,
-				(SELECT SUM(population_capacity_change) 
-				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
-				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS population_capacity,
-				IF(username = '%s', army_size, -1) AS army_size, city_name
+				SELECT username, balance, population,
+				(SELECT IF(COUNT(happiness_change) > 0, SUM(happiness_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS happiness_total,
+				(SELECT IF(COUNT(population_capacity_change) > 0, SUM(population_capacity_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS population_capacity,
+				IF(username = '%s', army_size, -1) AS army_size,
+				city_name
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE city_name='%s'
 				`,
@@ -147,11 +148,18 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 		database.Query(
 			fmt.Sprintf(
 				`
-				SELECT username, balance, population, population_capacity, army_size, city_name
+				SELECT username, balance, population,
+				(SELECT IF(COUNT(happiness_change) > 0, SUM(happiness_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_owner='%s' AND town=0)) AS happiness_total,
+				(SELECT IF(COUNT(population_capacity_change) > 0, SUM(population_capacity_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_owner='%s' AND town=0)) AS population_capacity,
+				army_size, city_name
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE player_id='%s' AND town=0
 				`,
-				claims["playerId"]),
+				claims["playerId"], claims["playerId"], claims["playerId"]),
 			&result)
 	}
 
