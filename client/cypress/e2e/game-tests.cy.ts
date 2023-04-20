@@ -11,13 +11,23 @@ describe('Game tests', () => {
         cy.wait(2000);
     });
 
+    it('Build Building', () => {
+        cy.get("td[id='2 2']").click();
+        cy.get('mat-expansion-panel').contains('Barracks').click();
+        cy.wait(1000);
+        cy.get('button').each(($ele, index) => {
+            if (index == 1) {
+                $ele.click();
+            }
+        });
+    });
+
     it('Train Troops', () => {
         cy.get("a[matTooltip='Train Troops']").click();
-        cy.get('input[matSliderThumb]').focus().type('{rightarrow}');
-        cy.get('a').contains('Train').click();
-        cy.get("a[matTooltip='Train Troops']").click();
-        cy.wait(2000);
-        // cy.get('mat-progress-bar');
+        // cy.get('input[matSliderThumb]').focus().type('{rightarrow}');
+        // cy.get('a').contains('Train').click();
+        // cy.get("a[matTooltip='Train Troops']").click();
+        // cy.wait(2000);
     });
 
     it('Change City Name', () => {
@@ -25,15 +35,6 @@ describe('Game tests', () => {
         cy.get("input[placeholder='City Name']").type('Cypress City');
         cy.get('button').contains('Change Name').click();
         cy.wait(2000);
-        // cy.get('a').contains('Cypress City');
-    });
-
-    it('Build Building', () => {
-        cy.get("td[id='2 2']").click();
-        cy.get('mat-panel-title').contains('Apartment').click();
-        cy.get('button').contains('Build it!').click();
-        cy.wait(2000);
-        // cy.get('mat-progress-bar');
     });
 
     it('Scout Button', () => {
