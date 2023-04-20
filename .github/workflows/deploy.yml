@@ -34,4 +34,4 @@ jobs:
       run: |
         docker compose build backend
         docker compose build frontend --build-arg API_PORT=${{ secrets.API_PORT }} --build-arg API_HOST=${{ secrets.API_HOST }}
-        docker compose up -d
+        MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} MYSQL_DATABASE=${{ secrets.MYSQL_DB_NAME }} docker compose up -d
