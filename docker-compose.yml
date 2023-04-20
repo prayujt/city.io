@@ -5,6 +5,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE
+      - TZ=America/New_York
     volumes:
       - mysql:/var/lib/mysql
   backend:
