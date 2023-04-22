@@ -184,7 +184,7 @@ func getTerritory(response http.ResponseWriter, request *http.Request) {
 		fmt.Sprintf(
 			`
 			SELECT city_name,
-				IF(COUNT(building_production) > 0, SUM(building_production), 0) as city_production,
+				IF(COUNT(building_production) > 0, SUM(building_production) + SUM(population * tax_rate / 86400), SUM(population * tax_rate / 86400)) as city_production,
 				MAX(army_size) as army_size,
 				MAX(population) as city_population
 			FROM Cities LEFT JOIN (Building_Info JOIN Buildings ON Building_Info.building_type=Buildings.building_type AND Building_Info.building_level=Buildings.building_level) ON Cities.city_id=Buildings.city_id
