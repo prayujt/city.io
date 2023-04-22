@@ -53,16 +53,16 @@
                 {{
                     cityOwner === "Neutral"
                         ? ""
-                        : "🪙" + playerBalance.toLocaleString("en-US")
+                        : isOwner || armySize != -1
+                        ? "🪙" + playerBalance.toLocaleString("en-US")
+                        : "🪙 ???"
                 }}
             </p>
             <p class="city-population" matTooltip="Population">
                 Population: {{ population.toLocaleString("en-US") }}
             </p>
             <p *ngIf="isOwner || armySize != -1" matTooltip="Army Size">
-                {{
-                    armySize === -1 ? "" : armySize.toLocaleString("en-US")
-                }}
+                {{ armySize === -1 ? "" : armySize.toLocaleString("en-US") }}
                 troops
             </p>
         </mat-card-content>
@@ -190,7 +190,7 @@
                 <button
                     *ngIf="isOwner && !progBar"
                     class="delete-button"
-                    style="background-color: red; color: white;"
+                    style="background-color: red; color: white"
                     mat-flat-button
                     (click)="openDeleteDialog()"
                 >

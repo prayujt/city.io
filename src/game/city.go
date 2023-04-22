@@ -123,7 +123,8 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 		database.Query(
 			fmt.Sprintf(
 				`
-				SELECT username, balance, population,
+				SELECT username,
+				IF(username='%s', balance, -1) AS balance, population,
 				(SELECT IF(COUNT(happiness_change) > 0, SUM(happiness_change), 0)
 					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
 					WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS happiness_total,
@@ -135,7 +136,7 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE city_name='%s'
 				`,
-				cityName[0], cityName[0], claims["username"], cityName[0]),
+				claims["username"], cityName[0], cityName[0], claims["username"], cityName[0]),
 			&result)
 	} else {
 		database.Query(
