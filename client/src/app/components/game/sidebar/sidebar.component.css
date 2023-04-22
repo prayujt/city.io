@@ -69,14 +69,16 @@
 }
 
 .train-button-3 {
-    margin-left: 85%;
+    margin-left: 25%;
+    width: 50%;
+    height: 50px;
 }
 
 .upgrade-button {
     margin-top: 60%;
-    margin-left: 25%;
-    width: 50%;
-    height: 50px;
+    margin-left: 49%;
+    width: 2%;
+    height: 40px;
 }
 
 .timer {
