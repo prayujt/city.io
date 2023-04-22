@@ -226,6 +226,18 @@ export class SidebarComponent {
         });
     }
 
+    public openUpgradeDialog(): void {
+        this.dialog.open(UpgradeDialogComponent, {
+            width: '1000px',
+            height: '600px',
+            data: {
+                sidebar: this,
+                cityRow: this.row,
+                cityColumn: this.column
+            },
+        });
+    }
+
     public openBattleLogsDialog(): void {
         this.dialog.open(BattleLogsDialogComponent, {
             width: '1000px',
@@ -995,5 +1007,61 @@ export class MoveDialogComponent {
         return this.ownedTerritory.filter((territory) =>
             territory.cityName.toLowerCase().includes(filterValue)
         );
+    }
+}
+
+@Component({
+    selector: 'upgrade-dialog',
+    templateUrl: './upgrade-dialog.html',
+    styleUrls: ['./sidebar.component.css']
+})
+export class UpgradeDialogComponent {
+    buildingType!: string;
+    oldType!: string;
+    oldLevel!: number;
+    oldProduction!: number;
+    oldHappiness!: number;
+    oldStartTime!: string;
+    oldEndTime!: string;
+    upgradeCost!: number;
+    upgradeProduction!: number;
+    upgradeHappiness!: number;
+    upgradeTime!: number;
+
+    constructor(
+        public dialogRef: MatDialogRef<UpgradeDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA) public data: { sidebar: SidebarComponent, cityRow: number, cityColumn: number }
+    ) {
+        let parameter = '';
+            let cityName = this.cookieService.get('cityName');
+            if (cityName != '') {
+                parameter = `?cityName=${encodeURIComponent(cityName)}`;
+            }
+
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+                .get<any>(
+                    `${environment.API_HOST}/cities/buildings/${this.data.cityRow}/${this.data.cityColumn}${parameter}`,
+                    { headers }
+                )
+                .subscribe((response) => {
+                    this.buildingType = response.buildingType;
+                    this.oldLevel = response.buildingLevel;
+                    this.oldProduction = response.buildingProduction;
+                    this.oldHappiness = response.happinessChange;
+                    this.upgradeCost = response.upgradeCost;
+                    this.upgradeProduction = response.upgradedProduction;
+                    this.upgradeHappiness = response.upgradeHappniess;
+                    this.upgradeTime = response.upgradeTime;
+                    console.log(response);
+                });
+    }
+
+    public upgradeBuilding(): void {
+        this.data.sidebar.upgrade();
+        this.dialogRef.close('');
     }
 }

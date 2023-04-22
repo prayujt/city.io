@@ -23,6 +23,7 @@ import {
     BattleLogsDialogComponent,
     TerritoryDialogComponent,
     MoveDialogComponent,
+    UpgradeDialogComponent,
 } from './components/game/sidebar/sidebar.component';
 
 import { AngularMaterialModule } from './angular-material.module';
@@ -45,6 +46,7 @@ import { CookieService } from 'ngx-cookie-service';
         BattleLogsDialogComponent,
         TerritoryDialogComponent,
         MoveDialogComponent,
+        UpgradeDialogComponent
     ],
     imports: [
         BrowserModule,
