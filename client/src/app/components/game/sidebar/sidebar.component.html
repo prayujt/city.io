@@ -53,7 +53,7 @@
                 {{
                     cityOwner === "Neutral"
                         ? ""
-                        : isOwner || armySize != -1
+                        : isOwner && armySize != -1
                         ? "🪙" + playerBalance.toLocaleString("en-US")
                         : "🪙 ???"
                 }}

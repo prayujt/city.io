@@ -11,7 +11,7 @@ CREATE TABLE Cities (
     city_id VARCHAR(50) PRIMARY KEY,
     city_name VARCHAR(50) UNIQUE,
     city_owner VARCHAR(50),
-    population INT DEFAULT 1000,
+    population INT DEFAULT 1000000,
     population_capacity INT DEFAULT 1000,
     tax_rate DOUBLE DEFAULT 15.0,
     army_size INT DEFAULT 0,
@@ -157,7 +157,7 @@ CREATE EVENT Generate_Town ON SCHEDULE EVERY 1 DAY
 STARTS '2023-01-01 00:00:00'
 DO
 INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) VALUES
-(uuid(), 'neutral', (SELECT RAND()*(50000-1000)+1000), 50000, 1); 
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1);
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
@@ -215,19 +215,19 @@ INSERT INTO Building_Info VALUES
 ('Test', 2, 0.0, 0, 0, 1.00, 1);
 
 INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) VALUES
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 25000, 25000, 1);
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1);
 
 DELIMITER &&
 CREATE PROCEDURE reset_tests ()

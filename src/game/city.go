@@ -59,10 +59,10 @@ type NewBuilding struct {
 }
 
 type CityStats struct {
-	CityName        string `database:"city_name" json:"cityName"`
-	ProductionTotal int    `database:"city_production" json:"cityProduction"`
-	ArmySize        int    `database:"army_size" json:"armySize"`
-	Population      int    `database:"city_population" json:"cityPopulation"`
+	CityName        string  `database:"city_name" json:"cityName"`
+	ProductionTotal float64 `database:"city_production" json:"cityProduction"`
+	ArmySize        int     `database:"army_size" json:"armySize"`
+	Population      int     `database:"city_population" json:"cityPopulation"`
 }
 
 type Status struct {
@@ -179,12 +179,11 @@ func getTerritory(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		return
 	}
-
 	database.Query(
 		fmt.Sprintf(
 			`
 			SELECT city_name,
-				IF(COUNT(building_production) > 0, SUM(building_production) + SUM(population * tax_rate / 86400), SUM(population * tax_rate / 86400)) as city_production,
+				IF(COUNT(building_production) > 0, SUM(building_production) + MAX(population * tax_rate / 24), SUM(population * tax_rate / 24)) as city_production,
 				MAX(army_size) as army_size,
 				MAX(population) as city_population
 			FROM Cities LEFT JOIN (Building_Info JOIN Buildings ON Building_Info.building_type=Buildings.building_type AND Building_Info.building_level=Buildings.building_level) ON Cities.city_id=Buildings.city_id
