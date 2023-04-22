@@ -221,6 +221,7 @@ export class SidebarComponent {
             data: {
                 cityName: this.cityName,
                 maxTrainCount: this.maxTrainCount,
+                playerBalance: this.playerBalance
             },
         });
     }
@@ -613,7 +614,7 @@ export class TrainDialogComponent {
         private cookieService: CookieService,
         private _snackBar: MatSnackBar,
         @Inject(MAT_DIALOG_DATA)
-        public data: { cityName: string; maxTrainCount: number }
+        public data: { cityName: string; maxTrainCount: number, playerBalance: number }
     ) {}
     maxCap: number = 0;
     trainArmySize: number = 1;
@@ -634,7 +635,7 @@ export class TrainDialogComponent {
     interval!: ReturnType<typeof setInterval>;
 
     public ngOnInit(): void {
-        this.maxCap = this.data.maxTrainCount;
+        this.maxCap = Math.min(this.data.maxTrainCount, (Math.trunc(this.data.playerBalance / 1000)));
         this.interval = setInterval(() => {
             let headers = new HttpHeaders();
             headers = headers.append(
@@ -710,6 +711,11 @@ export class TrainDialogComponent {
                     });
                 }
             });
+    }
+
+    public trainMax() {
+        this.trainArmySize = this.maxCap;
+        this.train()
     }
 
     public ngOnDestroy(): void {
