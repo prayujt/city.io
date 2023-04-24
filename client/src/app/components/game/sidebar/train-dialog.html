@@ -11,7 +11,14 @@
         </mat-card>
         <div *ngIf="maxCap != 0">
             <h2>Enter number of troops to train:</h2>
-            <label>Troops: {{ trainArmySize }} | Cost: {{ (trainArmySize * 1000).toLocaleString("en-US") }}</label>
+            <label
+                >Cost: 🪙{{
+                    (trainArmySize * 1000).toLocaleString("en-US")
+                }}</label
+            >
+            <br />
+            <br />
+            <label>Troops: {{ trainArmySize }}</label>
         </div>
         <mat-slider
             *ngIf="maxCap != 0"
@@ -28,17 +35,18 @@
             mat-button
             color="accent"
             class="train-button-2"
-            (click)="train()"
+            (click)="setMax()"
         >
-            Train
+            Set Max
         </a>
         <a
             *ngIf="maxCap != 0"
             mat-raised-button
             color="accent"
             class="train-max-button"
-            (click)="trainMax()">
-            Train Max
+            (click)="train()"
+        >
+            Train
         </a>
     </div>
     <mat-card-footer class="progress-bar">

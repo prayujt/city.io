@@ -1,12 +1,10 @@
 <h1 mat-dialog-title>Upgrade {{ buildingType }}</h1>
 <div mat-dialog content>
-    <mat-grid-list cols="2">
-        <mat-grid-tile>
+    <mat-grid-list cols="7" rowHeight="400px">
+        <mat-grid-tile [colspan]="3">
             <mat-card class="building-information">
                 <mat-card-header>
-                    <mat-card-title>
-                        Before Upgrade
-                    </mat-card-title>
+                    <mat-card-title> {{ buildingType }} </mat-card-title>
                     <mat-card-subtitle>
                         Level {{ oldLevel }}
                     </mat-card-subtitle>
@@ -14,52 +12,67 @@
                 <mat-card-content>
                     <mat-list>
                         <mat-list-item
-                            >Production 🪙: ${{
-                                oldProduction
+                            >Production: 🪙{{
+                                oldProduction.toLocaleString("en-US")
                             }}/hr</mat-list-item
                         >
                         <mat-list-item
-                            >Happiness 🙂:
-                            {{ oldHappiness }}</mat-list-item
+                            >Happiness 🙂: {{ oldHappiness }}</mat-list-item
                         >
-                        <mat-list-item>
-
-                        </mat-list-item>
-                        <mat-list-item>
-
-                        </mat-list-item>
+                        <mat-list-item> </mat-list-item>
+                        <mat-list-item> </mat-list-item>
                     </mat-list>
                 </mat-card-content>
             </mat-card>
         </mat-grid-tile>
-        <mat-grid-tile>
+        <mat-grid-tile [colspan]="1">
+            <mat-icon fontIcon="arrow_forward"></mat-icon>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="3">
             <mat-card class="building-information">
                 <mat-card-header>
-                    <mat-card-title>
-                        After Upgrade
-                    </mat-card-title>
+                    <mat-card-title> {{ buildingType }} </mat-card-title>
                     <mat-card-subtitle>
-                        Level {{ oldLevel + 1}}
+                        Level {{ oldLevel + 1 }}
                     </mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
                     <mat-list>
-                        <mat-list-item
-                            >Production 🪙: ${{
-                                upgradeProduction
-                            }}/hr</mat-list-item
-                        >
+                        <mat-list-item>
+                            Production: 🪙
+                            <span
+                                [style.color]="
+                                    upgradeProduction > oldProduction
+                                        ? 'green'
+                                        : 'black'
+                                "
+                            >
+                                {{
+                                    upgradeProduction.toLocaleString("en-US")
+                                }}/hr
+                            </span>
+                        </mat-list-item>
                         <mat-list-item
                             >Happiness 🙂:
-                            {{ upgradeHappiness }}</mat-list-item
-                        >
+                            <span
+                                [style.color]="
+                                    upgradeHappiness > oldHappiness
+                                        ? 'green'
+                                        : 'black'
+                                "
+                            >
+                                {{ upgradeHappiness }}
+                            </span>
+                        </mat-list-item>
                         <mat-list-item
-                            >Upgrade Cost:
-                            ${{ upgradeCost.toLocaleString('en-US') }}</mat-list-item
+                            >Upgrade Cost: 🪙
+                            <span [style.color]="'red'">
+                                {{ upgradeCost.toLocaleString("en-US") }}
+                            </span></mat-list-item
                         >
                         <mat-list-item
                             >Upgrade Time:
-                            {{ upgradeTime }}</mat-list-item
+                            {{ upgradeTime }} seconds</mat-list-item
                         >
                     </mat-list>
                 </mat-card-content>

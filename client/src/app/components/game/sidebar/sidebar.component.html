@@ -108,21 +108,28 @@
                         </mat-expansion-panel-header>
                         <mat-list>
                             <mat-list-item
-                                >Production 🪙: ${{
-                                    building.production
+                                >Production: 🪙{{
+                                    building.production.toLocaleString("en-US")
                                 }}/hr</mat-list-item
                             >
                             <mat-list-item
-                                >Happiness 🙂:
-                                {{ building.happiness_change }}</mat-list-item
+                                >Happiness: 🙂{{
+                                    building.happiness_change.toLocaleString(
+                                        "en-US"
+                                    )
+                                }}</mat-list-item
                             >
                             <mat-list-item
-                                >Build Cost:
-                                {{ building.build_cost }}</mat-list-item
+                                >Build Cost: 🪙{{
+                                    building.build_cost.toLocaleString("en-US")
+                                }}</mat-list-item
                             >
                             <mat-list-item
                                 >Build Time:
-                                {{ building.build_time }}</mat-list-item
+                                {{
+                                    building.build_time.toLocaleString("en-US")
+                                }}
+                                seconds</mat-list-item
                             >
                             <button
                                 mat-fab
@@ -145,9 +152,11 @@
                 <mat-accordion>
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
-                            <mat-panel-title> Production 🪙 </mat-panel-title>
+                            <mat-panel-title> Production 🪙</mat-panel-title>
                             <mat-panel-description>
-                                ${{ buildingProduction }}/hr
+                                {{
+                                    buildingProduction.toLocaleString("en-US")
+                                }}/hr
                             </mat-panel-description>
                         </mat-expansion-panel-header>
                         <p>

@@ -13,7 +13,7 @@ CREATE TABLE Cities (
     city_owner VARCHAR(50),
     population INT DEFAULT 1000000,
     population_capacity INT DEFAULT 1000,
-    tax_rate DOUBLE DEFAULT 15.0,
+    tax_rate DOUBLE DEFAULT 10.0,
     army_size INT DEFAULT 0,
     town BOOLEAN DEFAULT FALSE,
     CHECK (army_size >= 0),

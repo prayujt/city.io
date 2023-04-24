@@ -189,6 +189,7 @@ func getTerritory(response http.ResponseWriter, request *http.Request) {
 			FROM Cities LEFT JOIN (Building_Info JOIN Buildings ON Building_Info.building_type=Buildings.building_type AND Building_Info.building_level=Buildings.building_level) ON Cities.city_id=Buildings.city_id
             WHERE city_owner='%s'
             GROUP BY city_name
+			ORDER BY any_value(town), city_production DESC;
 			`,
 			claims["playerId"]),
 		&city)
