@@ -229,7 +229,7 @@ export class SidebarComponent {
     public openUpgradeDialog(): void {
         this.dialog.open(UpgradeDialogComponent, {
             width: '1000px',
-            height: '600px',
+            height: '650px',
             data: {
                 sidebar: this,
                 cityRow: this.row,
