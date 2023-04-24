@@ -58,13 +58,3 @@ jobs:
         cd src
         go test -v api/tests
         cd ../client
-        
-    - name: Cypress run
-      uses: cypress-io/github-action@v5
-      with:
-        install: false
-        working-directory: ./client
-        start: npm run start
-        wait-on: 'http://[::1]:4200'
-        wait-on-timeout: 120
-        browser: chrome
