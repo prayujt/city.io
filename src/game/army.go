@@ -110,8 +110,10 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 			`
 			SELECT COUNT(*)
 			FROM Buildings
-			WHERE city_id = (SELECT city_id FROM Cities WHERE city_name = '%s')
-				AND building_type = 'Barracks'
+			WHERE
+				city_id=(SELECT city_id FROM Cities WHERE city_name='%s')
+				AND
+				building_type = 'Barracks'
 			`,
 			train.CityName)
 	} else {
@@ -119,18 +121,20 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 			`
 			SELECT COUNT(*)
 			FROM Buildings
-			WHERE city_id = (SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0)
-				AND building_type = 'Barracks'
+			WHERE
+				city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0)
+				AND
+				building_type='Barracks'
 			`,
 			claims["playerId"])
 	}
 
-	var barrackCount int
+	var numBarracks int
 
-	database.QueryValue(query, &barrackCount)
+	database.QueryValue(query, &numBarracks)
 
-	if barrackCount == 0 {
-		log.Println("You don't have barracks!")
+	if numBarracks == 0 {
+		log.Println("No barracks present in city")
 		return
 	}
 
@@ -141,14 +145,17 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				(
 					SELECT city_id
 					FROM Cities
-					WHERE city_name='%s'
+					WHERE
+						city_name='%s'
+						AND
+						city_owner='%s'
 				),
 				%d,
 				NOW(),
 				TIMESTAMPADD(SECOND, %d	, NOW())
 			)
 			`,
-			train.CityName, train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(barrackCount))))
+			train.CityName, claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(numBarracks))))
 	} else {
 		query = fmt.Sprintf(
 			`
@@ -163,7 +170,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				TIMESTAMPADD(SECOND, %d, NOW())
 			)
 			`,
-			claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(barrackCount))))
+			claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(numBarracks))))
 	}
 
 	result, err := database.Execute(query)
