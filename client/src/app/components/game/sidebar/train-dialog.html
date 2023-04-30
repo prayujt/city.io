@@ -4,14 +4,21 @@
         <mat-card *ngIf="maxCap == 0">
             <mat-card-header>
                 <mat-card-title style="color: black">
-                    No Barracks Available To Train Troops!
+                    Unable To Train Troops!
                 </mat-card-title>
             </mat-card-header>
             <mat-card-content></mat-card-content>
         </mat-card>
         <div *ngIf="maxCap != 0">
-            <h3>Enter number of troops to train:</h3>
-            <label>{{ trainArmySize }}</label>
+            <h2>Enter number of troops to train:</h2>
+            <label
+                >Cost: 🪙{{
+                    (trainArmySize * 1000).toLocaleString("en-US")
+                }}</label
+            >
+            <br />
+            <br />
+            <label>Troops: {{ trainArmySize }}</label>
         </div>
         <mat-slider
             *ngIf="maxCap != 0"
@@ -28,6 +35,15 @@
             mat-button
             color="accent"
             class="train-button-2"
+            (click)="setMax()"
+        >
+            Set Max
+        </a>
+        <a
+            *ngIf="maxCap != 0"
+            mat-raised-button
+            color="accent"
+            class="train-max-button"
             (click)="train()"
         >
             Train

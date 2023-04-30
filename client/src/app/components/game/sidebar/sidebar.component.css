@@ -75,6 +75,12 @@
     height: 50px;
 }
 
+.train-max-button {
+    margin-left: 40%;
+    width: 20%;
+    height: 40px;
+}
+
 .timer {
     text-align: center;
     font-family: Arial, sans-serif;

@@ -221,6 +221,19 @@ export class SidebarComponent {
             data: {
                 cityName: this.cityName,
                 maxTrainCount: this.maxTrainCount,
+                playerBalance: this.playerBalance,
+            },
+        });
+    }
+
+    public openUpgradeDialog(): void {
+        this.dialog.open(UpgradeDialogComponent, {
+            width: '1000px',
+            height: '650px',
+            data: {
+                sidebar: this,
+                cityRow: this.row,
+                cityColumn: this.column,
             },
         });
     }
@@ -613,7 +626,11 @@ export class TrainDialogComponent {
         private cookieService: CookieService,
         private _snackBar: MatSnackBar,
         @Inject(MAT_DIALOG_DATA)
-        public data: { cityName: string; maxTrainCount: number }
+        public data: {
+            cityName: string;
+            maxTrainCount: number;
+            playerBalance: number;
+        }
     ) {}
     maxCap: number = 0;
     trainArmySize: number = 1;
@@ -634,7 +651,10 @@ export class TrainDialogComponent {
     interval!: ReturnType<typeof setInterval>;
 
     public ngOnInit(): void {
-        this.maxCap = this.data.maxTrainCount;
+        this.maxCap = Math.min(
+            this.data.maxTrainCount,
+            Math.trunc(this.data.playerBalance / 1000)
+        );
         this.interval = setInterval(() => {
             let headers = new HttpHeaders();
             headers = headers.append(
@@ -710,6 +730,10 @@ export class TrainDialogComponent {
                     });
                 }
             });
+    }
+
+    public setMax() {
+        this.trainArmySize = this.maxCap;
     }
 
     public ngOnDestroy(): void {
@@ -871,9 +895,9 @@ export class BattleLogsDialogComponent {
 
 class Territory {
     cityName!: string;
-    totalProduction!: number;
+    cityProduction!: number;
     armySize!: number;
-    totalPopulation!: number;
+    cityPopulation!: number;
 }
 
 @Component({
@@ -894,7 +918,7 @@ export class TerritoryDialogComponent {
         headers = headers.append('Token', this.cookieService.get('jwtToken'));
 
         this.http
-            .get<any>(`${environment.API_HOST}/cities/production`, { headers })
+            .get<any>(`${environment.API_HOST}/cities/territory`, { headers })
             .subscribe((response) => {
                 this.territory = response ? response : [];
             });
@@ -989,5 +1013,66 @@ export class MoveDialogComponent {
         return this.ownedTerritory.filter((territory) =>
             territory.cityName.toLowerCase().includes(filterValue)
         );
+    }
+}
+
+@Component({
+    selector: 'upgrade-dialog',
+    templateUrl: './upgrade-dialog.html',
+    styleUrls: ['./sidebar.component.css'],
+})
+export class UpgradeDialogComponent {
+    buildingType!: string;
+    oldType!: string;
+    oldLevel!: number;
+    oldProduction!: number;
+    oldHappiness!: number;
+    oldStartTime!: string;
+    oldEndTime!: string;
+    upgradeCost!: number;
+    upgradeProduction!: number;
+    upgradeHappiness!: number;
+    upgradeTime!: number;
+
+    constructor(
+        public dialogRef: MatDialogRef<UpgradeDialogComponent>,
+        public http: HttpClient,
+        private cookieService: CookieService,
+        @Inject(MAT_DIALOG_DATA)
+        public data: {
+            sidebar: SidebarComponent;
+            cityRow: number;
+            cityColumn: number;
+        }
+    ) {
+        let parameter = '';
+        let cityName = this.cookieService.get('cityName');
+        if (cityName != '') {
+            parameter = `?cityName=${encodeURIComponent(cityName)}`;
+        }
+
+        let headers = new HttpHeaders();
+        headers = headers.append('Token', this.cookieService.get('jwtToken'));
+        this.http
+            .get<any>(
+                `${environment.API_HOST}/cities/buildings/${this.data.cityRow}/${this.data.cityColumn}${parameter}`,
+                { headers }
+            )
+            .subscribe((response) => {
+                this.buildingType = response.buildingType;
+                this.oldLevel = response.buildingLevel;
+                this.oldProduction = response.buildingProduction;
+                this.oldHappiness = response.happinessChange;
+                this.upgradeCost = response.upgradeCost;
+                this.upgradeProduction = response.upgradedProduction;
+                this.upgradeHappiness = response.upgradeHappniess;
+                this.upgradeTime = response.upgradeTime;
+                console.log(response);
+            });
+    }
+
+    public upgradeBuilding(): void {
+        this.data.sidebar.upgrade();
+        this.dialogRef.close('');
     }
 }

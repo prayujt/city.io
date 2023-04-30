@@ -110,8 +110,10 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 			`
 			SELECT COUNT(*)
 			FROM Buildings
-			WHERE city_id = (SELECT city_id FROM Cities WHERE city_name = '%s')
-				AND building_type = 'Barracks'
+			WHERE
+				city_id=(SELECT city_id FROM Cities WHERE city_name='%s')
+				AND
+				building_type = 'Barracks'
 			`,
 			train.CityName)
 	} else {
@@ -119,18 +121,20 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 			`
 			SELECT COUNT(*)
 			FROM Buildings
-			WHERE city_id = (SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0)
-				AND building_type = 'Barracks'
+			WHERE
+				city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0)
+				AND
+				building_type='Barracks'
 			`,
 			claims["playerId"])
 	}
 
-	var barrackCount int
+	var numBarracks int
 
-	database.QueryValue(query, &barrackCount)
+	database.QueryValue(query, &numBarracks)
 
-	if barrackCount == 0 {
-		log.Println("You don't have barracks!")
+	if numBarracks == 0 {
+		log.Println("No barracks present in city")
 		return
 	}
 
@@ -141,14 +145,17 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				(
 					SELECT city_id
 					FROM Cities
-					WHERE city_name='%s'
+					WHERE
+						city_name='%s'
+						AND
+						city_owner='%s'
 				),
 				%d,
 				NOW(),
 				TIMESTAMPADD(SECOND, %d	, NOW())
 			)
 			`,
-			train.CityName, train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(barrackCount))))
+			train.CityName, claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(numBarracks))))
 	} else {
 		query = fmt.Sprintf(
 			`
@@ -163,7 +170,7 @@ func armyTrain(response http.ResponseWriter, request *http.Request) {
 				TIMESTAMPADD(SECOND, %d, NOW())
 			)
 			`,
-			claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(barrackCount))))
+			claims["playerId"], train.TroopCount, int(math.Floor(float64(train.TroopCount*TIME_TO_TRAIN)/float64(numBarracks))))
 	}
 
 	result, err := database.Execute(query)
@@ -240,7 +247,7 @@ func armyMove(response http.ResponseWriter, request *http.Request) {
 				NOW(),
 				TIMESTAMPADD(SECOND, %d, NOW()))
 			`,
-			march.FromCity, claims["playerId"], march.ToCity, march.ArmySize, march.FromCity, march.ToCity, int(math.Floor(math.Max(1, math.Log10(float64(march.ArmySize))*20)))))
+			march.FromCity, claims["playerId"], march.ToCity, march.ArmySize, march.FromCity, march.ToCity, int(math.Floor(math.Max(1, math.Sqrt(float64(march.ArmySize)))))))
 
 	if err != nil {
 		log.Println(err)
@@ -489,7 +496,7 @@ func handleMarches() {
 								TIMESTAMPADD(SECOND, %d, NOW())
 							)
 							`,
-							march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize, int(math.Floor(math.Max(1, math.Log10(float64(march.ArmySize))*20)))))
+							march.ToCity, march.FromCity, march.ArmySize-enemyPlayer[0].ArmySize, int(math.Floor(math.Max(1, math.Sqrt(float64(march.ArmySize)))))))
 
 					if err != nil {
 						return
@@ -551,7 +558,7 @@ func getMarches(response http.ResponseWriter, request *http.Request) {
 			(SELECT city_name FROM Cities WHERE city_id=to_city) AS to_city_name,
 			(SELECT username FROM Cities JOIN Accounts ON city_owner=player_id WHERE city_id=to_city) AS to_city_owner,
 			(SELECT to_city IN (SELECT city_id FROM Cities WHERE city_owner='%s')) as incoming,
-			(SELECT 
+			(SELECT
 				(SELECT city_owner FROM Cities WHERE city_id=from_city)!=
 				(SELECT city_owner FROM Cities WHERE city_id=to_city)
 				AND attack=0

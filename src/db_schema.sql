@@ -11,9 +11,9 @@ CREATE TABLE Cities (
     city_id VARCHAR(50) PRIMARY KEY,
     city_name VARCHAR(50) UNIQUE,
     city_owner VARCHAR(50),
-    population INT DEFAULT 1000,
+    population INT DEFAULT 1000000,
     population_capacity INT DEFAULT 1000,
-    tax_rate DOUBLE DEFAULT 15.0,
+    tax_rate DOUBLE DEFAULT 10.0,
     army_size INT DEFAULT 0,
     town BOOLEAN DEFAULT FALSE,
     CHECK (army_size >= 0),
@@ -157,7 +157,7 @@ CREATE EVENT Generate_Town ON SCHEDULE EVERY 1 DAY
 STARTS '2023-01-01 00:00:00'
 DO
 INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) VALUES
-(uuid(), 'neutral', (SELECT RAND()*(50000-1000)+1000), 50000, 1); 
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1);
 
 INSERT INTO Building_Info VALUES
 ('City Hall', 1, 0.0, 0, 100, 0.0, 0),
@@ -192,15 +192,15 @@ INSERT INTO Building_Info VALUES
 ('School', 9, 2000000.00, 3, 500, 600000000.00, 300000),
 ('School', 10, 9999999.99, 3, 500, 1000000000.00, 600000),
 ('Supermarket', 1, 5000.00, 1, 250, 250000.00, 120),
-('Supermarket', 2, 7500.00, 1, 250, 750000.00, 360),
-('Supermarket', 3, 10000.00, 1, 250, 1500000.00, 900),
-('Supermarket', 4, 20000.00, 1, 250, 2500000.00, 1800),
-('Supermarket', 5, 30000.00, 1, 250, 5000000.00, 3600),
-('Supermarket', 6, 40000.00, 1, 250, 5000000.00, 4800),
-('Supermarket', 7, 50000.00, 1, 250, 5000000.00, 6000),
-('Supermarket', 8, 60000.00, 1, 250, 5000000.00, 7200),
-('Supermarket', 9, 70000.00, 1, 250, 5000000.00, 8400),
-('Supermarket', 10, 80000.00, 1, 250, 5000000.00, 9600),
+('Supermarket', 2, 10000.00, 1, 250, 750000.00, 360),
+('Supermarket', 3, 20000.00, 1, 250, 1500000.00, 900),
+('Supermarket', 4, 30000.00, 1, 250, 2500000.00, 1800),
+('Supermarket', 5, 50000.00, 1, 250, 5000000.00, 3600),
+('Supermarket', 6, 75000.00, 1, 250, 5000000.00, 4800),
+('Supermarket', 7, 100000.00, 1, 250, 5000000.00, 6000),
+('Supermarket', 8, 150000.00, 1, 250, 5000000.00, 7200),
+('Supermarket', 9, 250000.00, 1, 250, 5000000.00, 8400),
+('Supermarket', 10, 500000.00, 1, 250, 5000000.00, 9600),
 ('Barracks', 1, 1000.00, 3, 500, 300000.00, 120),
 ('Barracks', 2, 2000.00, 3, 500, 600000.00, 360),
 ('Barracks', 3, 3000.00, 4, 500, 900000.00, 720),
@@ -215,19 +215,19 @@ INSERT INTO Building_Info VALUES
 ('Test', 2, 0.0, 0, 0, 1.00, 1);
 
 INSERT INTO Cities (city_id, city_owner, population, population_capacity, town) VALUES
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 2500, 2500, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 5000, 5000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 10000, 10000, 1),
-(uuid(), 'neutral', 25000, 25000, 1);
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1),
+(uuid(), 'neutral', (SELECT RAND()*(1000000-50000)+50000), 1000000, 1);
 
 DELIMITER &&
 CREATE PROCEDURE reset_tests ()

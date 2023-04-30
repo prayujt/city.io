@@ -24,12 +24,6 @@ type City struct {
 	Happiness          int     `database:"happiness_total" json:"happinessTotal"`
 }
 
-type CityStats struct {
-	CityName       string `database:"city_name" json:"cityName"`
-	ArmySize       int    `database:"army_size" json:"armySize"`
-	CityProduction int    `database:"city_production" json:"cityProduction"`
-}
-
 type CityNameChange struct {
 	CityNameOriginal string `json:"cityNameOriginal"`
 	CityNameNew      string `json:"cityNameNew"`
@@ -64,11 +58,11 @@ type NewBuilding struct {
 	HappinessChange    int     `database:"happiness_change" json:"happinessChange"`
 }
 
-type CityInfo struct {
-	CityName        string `database:"city_name" json:"cityName"`
-	ProductionTotal int    `database:"total_production" json:"totalProduction"`
-	ArmySize        int    `database:"army_size" json:"armySize"`
-	Population      int    `database:"population_total" json:"totalPopulation"`
+type CityStats struct {
+	CityName        string  `database:"city_name" json:"cityName"`
+	ProductionTotal float64 `database:"city_production" json:"cityProduction"`
+	ArmySize        int     `database:"army_size" json:"armySize"`
+	Population      int     `database:"city_population" json:"cityPopulation"`
 }
 
 type Status struct {
@@ -81,7 +75,6 @@ func HandleCityRoutes(r *mux.Router) {
 	r.HandleFunc("/cities/territory", getTerritory).Methods("GET")
 	r.HandleFunc("/cities/buildings", getBuildings).Methods("GET")
 	r.HandleFunc("/cities/buildings/{city_row}/{city_column}", getBuilding).Methods("GET")
-	r.HandleFunc("/cities/production", getProduction).Methods("GET")
 
 	r.HandleFunc("/cities/createBuilding", createBuilding).Methods("POST")
 	r.HandleFunc("/cities/upgradeBuilding", upgradeBuilding).Methods("POST")
@@ -130,28 +123,37 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 		database.Query(
 			fmt.Sprintf(
 				`
-				SELECT username, balance, population, 
-				(SELECT SUM(happiness_change) 
-				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
-				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS happiness_total,
-				(SELECT SUM(population_capacity_change) 
-				FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
-				WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS population_capacity,
-				IF(username = '%s', army_size, -1) AS army_size, city_name
+				SELECT username,
+				IF(username='%s', balance, -1) AS balance, population,
+				(SELECT IF(COUNT(happiness_change) > 0, SUM(happiness_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS happiness_total,
+				(SELECT IF(COUNT(population_capacity_change) > 0, SUM(population_capacity_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_name='%s')) AS population_capacity,
+				IF(username = '%s', army_size, -1) AS army_size,
+				city_name
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE city_name='%s'
 				`,
-				cityName[0], cityName[0], claims["username"], cityName[0]),
+				claims["username"], cityName[0], cityName[0], claims["username"], cityName[0]),
 			&result)
 	} else {
 		database.Query(
 			fmt.Sprintf(
 				`
-				SELECT username, balance, population, population_capacity, army_size, city_name
+				SELECT username, balance, population,
+				(SELECT IF(COUNT(happiness_change) > 0, SUM(happiness_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_owner='%s' AND town=0)) AS happiness_total,
+				(SELECT IF(COUNT(population_capacity_change) > 0, SUM(population_capacity_change), 0)
+					FROM Buildings JOIN Building_Info ON Buildings.building_type=Building_Info.building_type AND Buildings.building_level=Building_Info.building_level
+					WHERE city_id =(SELECT city_id FROM Cities where city_owner='%s' AND town=0)) AS population_capacity,
+				army_size, city_name
 				FROM Cities JOIN Accounts ON city_owner=player_id
 				WHERE player_id='%s' AND town=0
 				`,
-				claims["playerId"]),
+				claims["playerId"], claims["playerId"], claims["playerId"]),
 			&result)
 	}
 
@@ -161,8 +163,8 @@ func getCityStats(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func getProduction(response http.ResponseWriter, request *http.Request) {
-	var city []CityInfo
+func getTerritory(response http.ResponseWriter, request *http.Request) {
+	var city []CityStats
 
 	defer func() {
 		json.NewEncoder(response).Encode(city)
@@ -177,46 +179,20 @@ func getProduction(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		return
 	}
-
 	database.Query(
 		fmt.Sprintf(
 			`
-			SELECT city_name, SUM(building_production) as total_production, MAX(army_size) as army_size, MAX(population) as population_total
-			FROM Building_Info
-			JOIN Buildings ON Building_Info.building_type = Buildings.building_type AND Building_Info.building_level = Buildings.building_level
-            NATURAL JOIN Cities WHERE city_owner = '%s'
+			SELECT city_name,
+				IF(COUNT(building_production) > 0, SUM(building_production) + MAX(population * tax_rate / 24), SUM(population * tax_rate / 24)) as city_production,
+				MAX(army_size) as army_size,
+				MAX(population) as city_population
+			FROM Cities LEFT JOIN (Building_Info JOIN Buildings ON Building_Info.building_type=Buildings.building_type AND Building_Info.building_level=Buildings.building_level) ON Cities.city_id=Buildings.city_id
+            WHERE city_owner='%s'
             GROUP BY city_name
+			ORDER BY any_value(town), city_production DESC;
 			`,
 			claims["playerId"]),
 		&city)
-}
-
-func getTerritory(response http.ResponseWriter, request *http.Request) {
-	var territory []CityStats
-
-	defer func() {
-		json.NewEncoder(response).Encode(territory)
-	}()
-
-	if request.Header["Token"] == nil {
-		return
-	}
-
-	claims, err := auth.ParseJWT(request.Header["Token"][0])
-
-	if err != nil {
-		return
-	}
-
-	database.Query(
-		fmt.Sprintf(
-			`
-			SELECT city_name, any_value(army_size) AS army_size, SUM(building_production) AS city_production
-			FROM Building_Ownership
-			WHERE player_id='%s' GROUP BY city_name
-			`,
-			claims["playerId"]),
-		&territory)
 }
 
 func getBuildings(response http.ResponseWriter, request *http.Request) {
@@ -498,10 +474,12 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 				(SELECT SUM(build_cost)/2 AS total_cost
 				FROM Building_Info
 				WHERE building_level <=
-					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s' AND city_owner='%s') AND city_row=%d and city_column=%d))
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s' AND city_owner='%s') AND city_row=%d and city_column=%d)
+				AND
+				building_type=(SELECT building_type FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_name='%s' AND city_owner='%s') AND city_row=%d AND city_column=%d))
 			WHERE player_id='%s'
 			`,
-			cityName[0], claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
+			cityName[0], claims["playerId"], building.CityRow, building.CityColumn, cityName[0], claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
 	} else {
 		query = fmt.Sprintf(
 			`
@@ -510,10 +488,12 @@ func destroyBuilding(response http.ResponseWriter, request *http.Request) {
 				(SELECT SUM(build_cost)/2 AS total_cost
 				FROM Building_Info
 				WHERE building_level <=
-					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d))
+					(SELECT building_level FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d)
+				AND
+				building_type=(SELECT building_type FROM Buildings WHERE city_id=(SELECT city_id FROM Cities WHERE city_owner='%s' AND town=0) AND city_row=%d and city_column=%d))
 			WHERE player_id='%s'
 			`,
-			claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
+			claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"], building.CityRow, building.CityColumn, claims["playerId"])
 	}
 
 	result, err := database.Execute(query)
