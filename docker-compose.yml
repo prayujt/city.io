@@ -6,6 +6,7 @@ services:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE
       - TZ=America/New_York
+    restart: unless-stopped
     volumes:
       - mysql:/var/lib/mysql
   backend:
@@ -20,6 +21,7 @@ services:
       - mysql
     ports:
       - "8000:8000"
+    restart: unless-stopped
   frontend:
     container_name: city.io-frontend
     image: city.io/frontend
@@ -29,6 +31,7 @@ services:
       context: client
     ports:
       - "4200:80"
+    restart: unless-stopped
 
 volumes:
   mysql:
